@@ -1,106 +1,486 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>nickp — Playful, modern starter</title>
-  <meta name="description" content="A clean, modern, and playful HTML starter with responsive layout and smooth interactions.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CBC Report Form (Sheet 3) – Single & Batch Print (Index-based Range)</title>
+<!-- SheetJS (XLSX) – client-side Excel parsing -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+<style>
+  :root{
+    --page-w: 210mm;      /* A4 width */
+    --page-h: 297mm;      /* A4 height */
+    --margin: 10mm;       /* print margin */
+    --content-w: calc(var(--page-w) - 2*var(--margin));
+    --content-h: calc(var(--page-h) - 2*var(--margin));
+    --accent: #0b3d91;
+    --border: #333;
+    --font: "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  html, body { height:100%; margin:0; background:#f4f6f8; font-family:var(--font); color:#111; }
+  .app { max-width: 1200px; margin: 16px auto; padding: 16px; }
+  .toolbar {
+    display:flex; flex-wrap:wrap; gap:12px; align-items:center; background:#fff; padding:12px; border-radius:8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  }
+  .toolbar .group { display:flex; gap:8px; align-items:center; }
+  .toolbar label { font-size: 0.95rem; color:#333; }
+  select, input[type="text"], input[type="date"], input[type="number"] {
+    padding:8px 10px; border:1px solid #ccc; border-radius:6px; min-width: 120px;
+  }
+  input[type="file"] { border:1px dashed #aaa; padding:8px; border-radius:6px; background:#fafafa; }
+  button {
+    padding:10px 14px; background:var(--accent); color:#fff; border:none; border-radius:6px; cursor:pointer;
+  }
+  button:disabled { background:#9bb1e1; cursor:not-allowed; }
+  .note { color:#555; font-size:0.9rem; }
+
+  /* Report canvas (single view) */
+  #singleView .sheet {
+    width: var(--content-w);
+    min-height: var(--content-h);
+    background:#fff; margin:16px auto; padding:16mm 14mm; box-sizing:border-box;
+    border: 1px solid #ddd; border-radius: 8px;
+  }
+  .school-head { text-align:center; line-height:1.15; margin-bottom:8px; }
+  .school-head h1 { margin:0; font-size:22px; letter-spacing: 0.5px; }
+  .school-head .addr { font-size:12px; color:#333; }
+  .school-head .motto { margin-top:2px; font-weight:600; color:#0b3d91; font-size:12px; }
+  .key { font-size:11px; color:#333; text-align:center; margin:6px 0 4px; }
+  .title { text-align:center; font-weight:700; margin:6px 0 12px; font-size:14px; }
+
+  .meta {
+    display:grid; grid-template-columns: 1fr 1fr; gap:6px 16px;
+    border:1px solid var(--border); padding:6px 10px; font-size:12px; margin-bottom:10px;
+  }
+  .meta div { display:flex; gap:6px; }
+  .meta label { font-weight:600; min-width: 120px; }
+
+  table.report {
+    width:100%; border-collapse:collapse; font-size:12px; margin-top:6px;
+  }
+  table.report th, table.report td {
+    border:1px solid #000; padding:5px 6px; text-align:center;
+  }
+  table.report th { background:#eef2ff; font-weight:700; }
+  table.report td.label { text-align:left; font-weight:600; }
+
+  .totals { margin-top:8px; }
+  .comments { display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; font-size:12px; }
+  .comments .block { border:1px solid var(--border); padding:8px; min-height: 56px; }
+  .comments label { font-weight:700; display:block; margin-bottom:4px; }
+  .sign-row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:6px; }
+  .sign { border:1px solid var(--border); padding:6px; min-height:40px; font-size:12px; }
+  .foot-dates {
+    display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px; font-size:12px;
+  }
+  .small { color:#555; font-size:11px; }
+
+  /* Batch container (hidden on screen, used for printing all pages) */
+  #batchContainer { display:none; }
+  #batchContainer .sheet {
+    width: auto; min-height: auto;
+    padding:0; margin:0;
+  }
+
+  /* Print rules */
+  @media print {
+    @page { size: A4 portrait; margin: 10mm; }
+    body { background:#fff; }
+    .toolbar { display:none !important; }
+    /* During print, show batch container only (we inject selected or range pages there) */
+    #singleView { display:none !important; }
+    #batchContainer { display:block !important; }
+    .sheet {
+      width: auto; min-height: auto; margin:0; border:none; border-radius:0; padding:0;
+      page-break-after: always;
+    }
+    .sheet:last-child { page-break-after: auto; }
+  }
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand" href="/">nickp</a>
-      <nav class="nav">
-        <a href="#features">Features</a>
-        <a href="#about">About</a>
-        <a class="btn" href="#get-started">Get started</a>
-      </nav>
+<div class="app">
+  <div class="toolbar">
+    <div class="group">
+      <label>Workbook (.xlsx):</label>
+      <input id="file" type="file" accept=".xlsx,.xls" />
     </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="container hero-inner">
-        <h1 class="hero-title">A bright, playful, and modern HTML starter</h1>
-        <p class="hero-sub">Built with attention to typography, color, and motion — responsive by default, easy to customize with CSS variables.</p>
-        <div class="hero-cta">
-          <a class="btn primary" href="#get-started">Get started</a>
-          <a class="btn ghost" href="#about">Learn more</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="features" class="section features">
-      <div class="container">
-        <h2 class="section-title">Features</h2>
-        <div class="feature-grid">
-          <article class="feature">
-            <div class="feature-icon">🎨</div>
-            <h3>Colorful & customizable</h3>
-            <p>CSS variables make swapping the palette effortless while keeping great contrast.</p>
-          </article>
-
-          <article class="feature">
-            <div class="feature-icon">⚡</div>
-            <h3>Fast & lightweight</h3>
-            <p>Minimal CSS and no heavy frameworks so pages load quickly on any connection.</p>
-          </article>
-
-          <article class="feature">
-            <div class="feature-icon">📱</div>
-            <h3>Responsive by design</h3>
-            <p>Flexible layouts that adapt smoothly from mobile to desktop.</p>
-          </article>
-
-          <article class="feature">
-            <div class="feature-icon">✨</div>
-            <h3>Smooth interactions</h3>
-            <p>Subtle hover effects and transitions to make the UI feel alive.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" class="section about">
-      <div class="container about-inner">
-        <h2 class="section-title">About this template</h2>
-        <p>This template focuses on delivering a friendly, modern aesthetic while staying small and accessible. It's a great starting point for landing pages, portfolios, or small projects.</p>
-        <div class="cards">
-          <div class="card">
-            <h4>Easy to modify</h4>
-            <p>Tweak fonts, colors, and spacing using the top-level CSS variables.</p>
-          </div>
-          <div class="card">
-            <h4>Accessible</h4>
-            <p>High-contrast colors and readable type sizes help make content accessible to more users.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="get-started" class="section cta">
-      <div class="container cta-inner">
-        <h2 class="section-title">Ready to build something fun?</h2>
-        <p class="muted">Fork this repo, tweak the CSS variables, and make it yours.</p>
-        <a class="btn primary large" href="/">Start customizing</a>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <p>Made with <span class="heart">❤</span> by nickp</p>
-      <nav class="footer-nav">
-        <a href="#">Privacy</a>
-        <a href="#">Cookies</a>
-        <a href="#">Contact</a>
-      </nav>
+    <div class="group">
+      <label>Learner:</label>
+      <select id="learnerSel" disabled></select>
     </div>
-  </footer>
+    <div class="group">
+      <button id="printOneBtn" disabled>Print selected</button>
+      <button id="printAllBtn" disabled>Batch Print (all)</button>
+    </div>
+    <div class="group" id="rangeGroup" style="display:none;">
+      <label>Index Range:</label>
+      <input id="rangeStart" type="number" step="1" style="width:100px;" />
+      <span>to</span>
+      <input id="rangeEnd" type="number" step="1" style="width:100px;" />
+      <button id="printRangeBtn" disabled>Batch Print (range)</button>
+    </div>
+    <div class="group">
+      <span class="note">All processing is local in your browser.</span>
+    </div>
+  </div>
 
+  <!-- Single-learner preview (on screen) -->
+  <div id="singleView">
+    <div class="sheet" id="singleSheet" aria-label="Report Form (Sheet 3)"></div>
+  </div>
+
+  <!-- Batch container (only visible in print) -->
+  <div id="batchContainer" aria-hidden="true"></div>
+</div>
+
+<script>
+(function(){
+  // Subject mapping aligned with your "Learners" sheet column prefixes.
+  const SUBJECTS = [
+    { key:'ENG',    label:'ENGLISH' },
+    { key:'COMP',   label:'COMPOSITION' },
+    { key:'KISW',   label:'KISWAHILI' },
+    { key:'INSHA',  label:'INSHA' },
+    { key:'MATH',   label:'MATHEMATICS' },
+    { key:'SCIE',   label:'INTER/SCIE' },
+    { key:'SST',    label:'S/S' },
+    { key:'CRE',    label:'CRE' },
+    { key:'AGRI',   label:'AGRI/NUT' },
+    { key:'CA',     label:'C/ART' },
+    { key:'PRETECH',label:'PRE-TECH' },
+  ];
+
+  // Fallback thresholds if "Grading" sheet can't be parsed
+  const DEFAULT_THRESHOLDS = [
+    { min:81, grade:'EE' },
+    { min:50, grade:'ME' },
+    { min:26, grade:'AE' },
+    { min:0,  grade:'BE' },
+  ];
+
+  const $file = document.getElementById('file');
+  const $learnerSel = document.getElementById('learnerSel');
+  const $printOne = document.getElementById('printOneBtn');
+  const $printAll = document.getElementById('printAllBtn');
+  const $printRange = document.getElementById('printRangeBtn');
+  const $rangeStart = document.getElementById('rangeStart');
+  const $rangeEnd = document.getElementById('rangeEnd');
+  const $rangeGroup = document.getElementById('rangeGroup');
+  const $singleSheet = document.getElementById('singleSheet');
+  const $batchContainer = document.getElementById('batchContainer');
+
+  let learners = [];
+  let thresholds = DEFAULT_THRESHOLDS;
+  let indexMin = null, indexMax = null;
+
+  const getIndex = (row) => {
+    let v = row.Index ?? row['INDEX'] ?? row['index'];
+    if (v === undefined || v === null || v === '') return NaN;
+    const n = Number(v);
+    if (Number.isNaN(n)) return NaN;
+    // Many Excel numeric cells come as floats like 1.0 -> cast to int when possible
+    return Number.isInteger(n) ? n : Math.round(n);
+  };
+
+  function pctGrade(score, outOf){
+    if (outOf <= 0 || score == null || score === "") return { pct: 0, grade:'BE' };
+    const pct = Math.max(0, Math.round((Number(score) / Number(outOf)) * 100));
+    const t = thresholds.find(t => pct >= t.min) || { grade:'BE' };
+    return { pct, grade: t.grade };
+  }
+
+  function parseGrading(ws){
+    try{
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:""});
+      const map = rows
+        .filter(r => (r.Grade || r.grade) && (r.Score !== undefined && r.Score !== ""))
+        .map(r => ({ min: Number(r.Score), grade: String(r.Grade || r.grade).trim() }))
+        .filter(r => !Number.isNaN(r.min) && ['EE','ME','AE','BE'].includes(r.grade));
+      if(map.length >= 4){
+        map.sort((a,b) => b.min - a.min);
+        return map;
+      }
+    }catch(e){ /* use default below */ }
+    return DEFAULT_THRESHOLDS;
+  }
+
+  function termWord(n){
+    const names = {1:'ONE', 2:'TWO', 3:'THREE'};
+    return names[n] || String(n);
+  }
+
+  function buildSheetHTML(row){
+    // Static school header (customise if needed)
+    const school = {
+      name: 'ITIATI JUNIOR SCHOOL',
+      address1: 'P.O. BOX 160-10101',
+      town: 'KARATINA',
+      motto: 'SCHOOL MOTTO: HARDWORK FOR EXCELLENCE'
+    };
+
+    const pupilName = row["Pupil's Name"] || row["Pupil's Name "] || row["Pupil Name"] || "";
+    const grade = row["Grade"] ?? row["GRADE"] ?? "";
+    const term = Number(row["Term"] ?? 0);
+    const year = row["Year"] ?? "";
+    const closingDate = row["Closing_Date"] || row["Closing Date"] || row["Closing"] || "";
+    const openingDate = row["Opening_Date"] || row["Opening Date"] || row["Opening"] || "";
+
+    // Comments & names
+    const ctComment = row["Class_Teacher_Comment"] || "";
+    const ctName = row["Class_Teacher_Name"] || "";
+    const ctDate = row["CT_Date"] || "";
+    const htComment = row["Head_Teacher_Comment"] || "";
+    const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || "";
+    const htDate = row["HT_Date"] || "";
+
+    // Build subject rows
+    const subRows = SUBJECTS.map(s => {
+      const oSc = Number(row[`${s.key}_Opener`]) || 0;
+      const oMax = Number(row[`${s.key}_Opener_OutOf`]) || 0;
+      const mSc = Number(row[`${s.key}_Mid`]) || 0;
+      const mMax = Number(row[`${s.key}_Mid_OutOf`]) || 0;
+      const eSc = Number(row[`${s.key}_End`]) || 0;
+      const eMax = Number(row[`${s.key}_End_OutOf`]) || 0;
+      const oG = pctGrade(oSc, oMax).grade;
+      const mG = pctGrade(mSc, mMax).grade;
+      const eG = pctGrade(eSc, eMax).grade;
+      return { label:s.label, oSc,oMax,oG, mSc,mMax,mG, eSc,eMax,eG };
+    });
+
+    // Totals
+    const total = subRows.reduce((acc,r) => {
+      acc.oSc += r.oSc; acc.oMax += r.oMax;
+      acc.mSc += r.mSc; acc.mMax += r.mMax;
+      acc.eSc += r.eSc; acc.eMax += r.eMax;
+      return acc;
+    }, {oSc:0,oMax:0,mSc:0,mMax:0,eSc:0,eMax:0});
+
+    const oG = pctGrade(total.oSc, total.oMax).grade;
+    const mG = pctGrade(total.mSc, total.mMax).grade;
+    const eG = pctGrade(total.eSc, total.eMax).grade;
+
+    const title = `END TERM ${termWord(term)} ASSESSMENT - YEAR ${year}`;
+
+    return `
+      <div class="sheet" aria-label="Report Form">
+        <div style="padding:16mm 14mm; box-sizing:border-box;">
+          <div class="school-head">
+            <h1>${school.name}</h1>
+            <div class="addr">${school.address1}</div>
+            <div class="addr">${school.town}</div>
+            <div class="motto">${school.motto}</div>
+          </div>
+
+          <div class="key">KEY: <b>EE</b> – Exceed Expectations, <b>ME</b> – Meet Expectations,
+            <b>AE</b> – Approach Expectation, <b>BE</b> – Below Expectation</div>
+
+          <div class="title">${title}</div>
+
+          <div class="meta">
+            <div><label>PUPIL'S NAME:</label> <div>${pupilName}</div></div>
+            <div><label>GRADE:</label> <div>${grade}</div></div>
+          </div>
+
+          <table class="report" aria-label="Learning Areas">
+            <thead>
+              <tr>
+                <th rowspan="2">LEARNING AREA</th>
+                <th colspan="3">OPENER</th>
+                <th colspan="3">MIDTERM</th>
+                <th colspan="3">END TERM</th>
+              </tr>
+              <tr>
+                <th>OUT OF</th><th>SCORE</th><th>GRADE</th>
+                <th>OUT OF</th><th>SCORE</th><th>GRADE</th>
+                <th>OUT OF</th><th>SCORE</th><th>GRADE</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${subRows.map(r => `
+                <tr>
+                  <td class="label">${r.label}</td>
+                  <td>${r.oMax}</td><td>${r.oSc}</td><td>${r.oG}</td>
+                  <td>${r.mMax}</td><td>${r.mSc}</td><td>${r.mG}</td>
+                  <td>${r.eMax}</td><td>${r.eSc}</td><td>${r.eG}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+            <tfoot>
+              <tr class="totals">
+                <th class="label">TOTAL MARK</th>
+                <th>${total.oMax}</th><th>${total.oSc}</th><th>${oG}</th>
+                <th>${total.mMax}</th><th>${total.mSc}</th><th>${mG}</th>
+                <th>${total.eMax}</th><th>${total.eSc}</th><th>${eG}</th>
+              </tr>
+            </tfoot>
+          </table>
+
+          <div class="comments">
+            <div class="block">
+              <label>CLASS TEACHER COMMENT:</label>
+              <div>${ctComment || "&nbsp;"}</div>
+              <div class="sign-row">
+                <div class="sign"><b>CLASS TEACHER NAME:</b> ${ctName || "&nbsp;"}</div>
+                <div class="sign"><b>DATE:</b> ${ctDate || "&nbsp;"}</div>
+              </div>
+            </div>
+            <div class="block">
+              <label>HEAD TEACHER COMMENT:</label>
+              <div>${htComment || "&nbsp;"}</div>
+              <div class="sign-row">
+                <div class="sign"><b>Signature:</b> ${htSign || "&nbsp;"}</div>
+                <div class="sign"><b>Date:</b> ${htDate || "&nbsp;"}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="foot-dates">
+            <div class="sign"><b>CLOSING DATE:</b> ${closingDate || "&nbsp;"}</div>
+            <div class="sign"><b>OPENING DATE:</b> ${openingDate || "&nbsp;"}</div>
+          </div>
+
+          <div class="small" style="margin-top:8px;">Note: Use the browser’s Print dialog to save as PDF (A4 portrait, 100% scale).</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function hydrateLearnerDropdown(){
+    // Compute min/max Index and prepare dropdown options
+    indexMin = null; indexMax = null;
+    const options = learners.map((r, i) => {
+      const idx = getIndex(r);
+      if (!Number.isNaN(idx)) {
+        indexMin = (indexMin === null) ? idx : Math.min(indexMin, idx);
+        indexMax = (indexMax === null) ? idx : Math.max(indexMax, idx);
+      }
+      const name = r["Pupil's Name"] || `Learner ${i+1}`;
+      const labelIdx = Number.isNaN(idx) ? (i+1) : idx;
+      return `<option value="${i}">${labelIdx}. ${name}</option>`;
+    });
+
+    $learnerSel.innerHTML = `<option value="">— Select learner —</option>` + options.join('');
+    const has = learners.length > 0;
+    $learnerSel.disabled = !has;
+    $printOne.disabled = !has;
+    $printAll.disabled = !has;
+    $rangeGroup.style.display = has ? 'flex' : 'none';
+
+    if (has) {
+      // Fill range inputs using Index min/max if available; else fall back to 1..N
+      const minVal = (indexMin === null) ? 1 : indexMin;
+      const maxVal = (indexMax === null) ? learners.length : indexMax;
+      $rangeStart.value = minVal; $rangeEnd.value = maxVal;
+      $rangeStart.min = minVal; $rangeEnd.min = minVal;
+      $rangeStart.max = maxVal; $rangeEnd.max = maxVal;
+      $printRange.disabled = false;
+    }
+  }
+
+  function renderSingle(idx){
+    const row = learners[idx];
+    $singleSheet.innerHTML = buildSheetHTML(row);
+  }
+
+  function normalizeRange(){
+    let s = parseInt($rangeStart.value, 10);
+    let e = parseInt($rangeEnd.value, 10);
+    const minVal = (indexMin === null) ? 1 : indexMin;
+    const maxVal = (indexMax === null) ? learners.length : indexMax;
+
+    if (Number.isNaN(s)) s = minVal;
+    if (Number.isNaN(e)) e = maxVal;
+    if (s > e) { const t = s; s = e; e = t; }
+
+    // clamp to min/max index space
+    s = Math.max(minVal, Math.min(s, maxVal));
+    e = Math.max(minVal, Math.min(e, maxVal));
+    return {start:s, end:e};
+  }
+
+  function filterByIndexRange(start, end){
+    return learners
+      .map(r => ({ row:r, idx:getIndex(r) }))
+      .filter(x => !Number.isNaN(x.idx) && x.idx >= start && x.idx <= end)
+      .sort((a,b) => a.idx - b.idx)
+      .map(x => x.row);
+  }
+
+  function renderPagesToBatch(rows){
+    const html = rows.map(buildSheetHTML).join('');
+    $batchContainer.innerHTML = html;
+  }
+
+  function doPrint(){
+    requestAnimationFrame(() => {
+      window.print();
+      setTimeout(() => { $batchContainer.innerHTML = ""; }, 600);
+    });
+  }
+
+  // UI events
+  $learnerSel.addEventListener('change', (e) => {
+    const idx = Number(e.target.value);
+    if (Number.isInteger(idx) && idx >= 0) renderSingle(idx);
+  });
+
+  $printOne.addEventListener('click', () => {
+    // Print the currently selected learner (inject into batch container for consistent print CSS)
+    const idx = Number($learnerSel.value);
+    const chosen = (Number.isInteger(idx) && idx >= 0) ? [learners[idx]] : (learners.length ? [learners[0]] : []);
+    if (!chosen.length) return;
+    renderPagesToBatch(chosen);
+    doPrint();
+  });
+
+  $printAll.addEventListener('click', () => {
+    // Sort all by Index if available
+    const rows = filterByIndexRange(
+      (indexMin === null) ? 1 : indexMin,
+      (indexMax === null) ? learners.length : indexMax
+    );
+    // If none had an Index, fall back to current order
+    const finalRows = rows.length ? rows : learners;
+    renderPagesToBatch(finalRows);
+    doPrint();
+  });
+
+  $printRange.addEventListener('click', () => {
+    const {start, end} = normalizeRange();
+    const rows = filterByIndexRange(start, end);
+    if (!rows.length) return; // nothing in that index span
+    renderPagesToBatch(rows);
+    doPrint();
+  });
+
+  // Workbook loading
+  $file.addEventListener('change', async (ev) => {
+    const f = ev.target.files?.[0];
+    if (!f) return;
+    const data = await f.arrayBuffer();
+    const wb = XLSX.read(data, {type:"array"});
+
+    // 1) Grading thresholds
+    const wsGrading = wb.Sheets["Grading"] || wb.Sheets["grading"] || wb.Sheets["GRADING"];
+    thresholds = wsGrading ? parseGrading(wsGrading) : DEFAULT_THRESHOLDS;
+
+    // 2) Learners
+    const wsLearners = wb.Sheets["Learners"] || wb.Sheets["LEARNERS"] || wb.Sheets[wb.SheetNames[0]];
+    learners = XLSX.utils.sheet_to_json(wsLearners, {defval:""});
+
+    hydrateLearnerDropdown();
+
+    // 3) Auto-render first learner
+    if (learners.length > 0) {
+      $learnerSel.selectedIndex = 1; // first option after placeholder
+      renderSingle(0);
+    } else {
+      $singleSheet.innerHTML = `<p>No learner rows were found.</p>`;
+    }
+  });
+})();
+</script>
 </body>
 </html>
