@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CBC Report Form (Sheet 3) – Single & Batch Print (Index-based Range)</title>
+<title>CBC Report Form – Pro (Presets • Settings • Filters • Archives • Consent • Error UI)</title>
 <!-- SheetJS (XLSX) – client-side Excel parsing -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <style>
@@ -12,36 +12,37 @@
     --page-h: 297mm;      /* A4 height */
     --margin: 10mm;       /* print margin */
     --content-w: calc(var(--page-w) - 2*var(--margin));
-    --content-h: calc(var(--page-h) - 2*var(--margin));
     --accent: #0b3d91;
     --border: #333;
+    --bg: #f4f6f8;
     --font: "Segoe UI", Roboto, Arial, sans-serif;
   }
-  html, body { height:100%; margin:0; background:#f4f6f8; font-family:var(--font); color:#111; }
-  .app { max-width: 1200px; margin: 16px auto; padding: 16px; }
-  .toolbar {
-    display:flex; flex-wrap:wrap; gap:12px; align-items:center; background:#fff; padding:12px; border-radius:8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  }
-  .toolbar .group { display:flex; gap:8px; align-items:center; }
-  .toolbar label { font-size: 0.95rem; color:#333; }
-  select, input[type="text"], input[type="date"], input[type="number"] {
-    padding:8px 10px; border:1px solid #ccc; border-radius:6px; min-width: 120px;
+  html, body { height:100%; margin:0; background:var(--bg); font-family:var(--font); color:#111; }
+  .app { max-width: 1240px; margin: 16px auto; padding: 16px; }
+  .bar { display:flex; flex-wrap:wrap; gap:12px; align-items:center; background:#fff; padding:12px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+  .group { display:flex; gap:8px; align-items:center; }
+  .group label { font-size: 0.95rem; color:#333; white-space:nowrap; }
+  select, input[type="text"], input[type="date"], input[type="number"], textarea {
+    padding:8px 10px; border:1px solid #ccc; border-radius:6px; min-width: 120px; font-family:var(--font);
   }
   input[type="file"] { border:1px dashed #aaa; padding:8px; border-radius:6px; background:#fafafa; }
-  button {
-    padding:10px 14px; background:var(--accent); color:#fff; border:none; border-radius:6px; cursor:pointer;
-  }
+  button { padding:10px 12px; background:var(--accent); color:#fff; border:none; border-radius:6px; cursor:pointer; }
+  button.secondary { background:#5b6f94; }
+  button.danger { background:#b9372b; }
   button:disabled { background:#9bb1e1; cursor:not-allowed; }
   .note { color:#555; font-size:0.9rem; }
 
-  /* Report canvas (single view) */
-  #singleView .sheet {
-    width: var(--content-w);
-    min-height: var(--content-h);
-    background:#fff; margin:16px auto; padding:16mm 14mm; box-sizing:border-box;
-    border: 1px solid #ddd; border-radius: 8px;
-  }
+  .panel { background:#fff; border:1px solid #e6e6e6; border-radius:8px; padding:12px; margin-top:12px; }
+  .panel h3 { margin:0 0 8px 0; font-size:1.05rem; }
+
+  details.settings summary { cursor:pointer; font-weight:600; }
+  .settings-grid { display:grid; grid-template-columns: repeat(3, minmax(220px, 1fr)); gap:10px; margin-top:10px; }
+  .settings-grid label { font-weight:600; display:block; margin-bottom:4px; font-size:0.9rem; }
+  .settings-grid input, .settings-grid textarea { width:100%; box-sizing:border-box; }
+  .settings-actions { display:flex; gap:8px; margin-top:10px; }
+
+  /* Report canvas (single preview) */
+  #singleView .sheet { width: calc(var(--page-w) - 2*var(--margin)); min-height: calc(var(--page-h) - 2*var(--margin)); background:#fff; margin:16px auto; padding:16mm 14mm; box-sizing:border-box; border: 1px solid #ddd; border-radius: 8px; }
   .school-head { text-align:center; line-height:1.15; margin-bottom:8px; }
   .school-head h1 { margin:0; font-size:22px; letter-spacing: 0.5px; }
   .school-head .addr { font-size:12px; color:#333; }
@@ -49,19 +50,12 @@
   .key { font-size:11px; color:#333; text-align:center; margin:6px 0 4px; }
   .title { text-align:center; font-weight:700; margin:6px 0 12px; font-size:14px; }
 
-  .meta {
-    display:grid; grid-template-columns: 1fr 1fr; gap:6px 16px;
-    border:1px solid var(--border); padding:6px 10px; font-size:12px; margin-bottom:10px;
-  }
+  .meta { display:grid; grid-template-columns: 1fr 1fr; gap:6px 16px; border:1px solid var(--border); padding:6px 10px; font-size:12px; margin-bottom:10px; }
   .meta div { display:flex; gap:6px; }
   .meta label { font-weight:600; min-width: 120px; }
 
-  table.report {
-    width:100%; border-collapse:collapse; font-size:12px; margin-top:6px;
-  }
-  table.report th, table.report td {
-    border:1px solid #000; padding:5px 6px; text-align:center;
-  }
+  table.report { width:100%; border-collapse:collapse; font-size:12px; margin-top:6px; }
+  table.report th, table.report td { border:1px solid #000; padding:5px 6px; text-align:center; }
   table.report th { background:#eef2ff; font-weight:700; }
   table.report td.label { text-align:left; font-weight:600; }
 
@@ -71,59 +65,133 @@
   .comments label { font-weight:700; display:block; margin-bottom:4px; }
   .sign-row { display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:6px; }
   .sign { border:1px solid var(--border); padding:6px; min-height:40px; font-size:12px; }
-  .foot-dates {
-    display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px; font-size:12px;
-  }
+  .foot-dates { display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px; font-size:12px; }
   .small { color:#555; font-size:11px; }
+  .consent { margin-top:6px; font-size:10.5px; color:#444; }
 
   /* Batch container (hidden on screen, used for printing all pages) */
   #batchContainer { display:none; }
-  #batchContainer .sheet {
-    width: auto; min-height: auto;
-    padding:0; margin:0;
-  }
+  #batchContainer .sheet { width:auto; min-height:auto; padding:0; margin:0; }
 
   /* Print rules */
   @media print {
     @page { size: A4 portrait; margin: 10mm; }
     body { background:#fff; }
-    .toolbar { display:none !important; }
-    /* During print, show batch container only (we inject selected or range pages there) */
+    .bar, .panel { display:none !important; }
     #singleView { display:none !important; }
     #batchContainer { display:block !important; }
-    .sheet {
-      width: auto; min-height: auto; margin:0; border:none; border-radius:0; padding:0;
-      page-break-after: always;
-    }
+    .sheet { width: auto; min-height: auto; margin:0; border:none; border-radius:0; padding:0; page-break-after: always; }
     .sheet:last-child { page-break-after: auto; }
   }
+
+  /* Error dialog */
+  dialog#errorDlg { border:1px solid #c00; border-radius:8px; padding:0; max-width:760px; width:90%; }
+  .dlg-hd { background:#ffecec; color:#a00; padding:10px 12px; font-weight:700; border-bottom:1px solid #f6caca; }
+  .dlg-bd { padding:12px; }
+  .dlg-ft { padding:10px 12px; display:flex; gap:8px; justify-content:flex-end; border-top:1px solid #eee; }
+  pre.err { background:#fafafa; border:1px solid #eee; padding:8px; max-height:240px; overflow:auto; }
+
+  .chip { display:inline-flex; align-items:center; gap:6px; background:#eef2ff; color:#0b3d91; border:1px solid #ccd6ff; border-radius:999px; padding:2px 8px; font-size:12px; }
 </style>
 </head>
 <body>
 <div class="app">
-  <div class="toolbar">
+  <!-- Top bar: file, dataset, archives, printing -->
+  <div class="bar">
     <div class="group">
       <label>Workbook (.xlsx):</label>
       <input id="file" type="file" accept=".xlsx,.xls" />
     </div>
+
+    <div class="group">
+      <label>Dataset:</label>
+      <select id="datasetSel" disabled>
+        <option value="current">Current workbook</option>
+      </select>
+      <button id="saveArchiveBtn" class="secondary" disabled>Save archive</button>
+      <button id="deleteArchiveBtn" class="danger" disabled>Delete archive</button>
+    </div>
+
     <div class="group">
       <label>Learner:</label>
       <select id="learnerSel" disabled></select>
     </div>
+
     <div class="group">
-      <button id="printOneBtn" disabled>Print selected</button>
-      <button id="printAllBtn" disabled>Batch Print (all)</button>
+      <button id="printSelectedBtn" disabled>Print selected</button>
+      <button id="printFilteredBtn" disabled>Batch Print (filtered)</button>
+      <button id="printRangeBtn" disabled>Batch Print (Index range)</button>
     </div>
-    <div class="group" id="rangeGroup" style="display:none;">
-      <label>Index Range:</label>
-      <input id="rangeStart" type="number" step="1" style="width:100px;" />
-      <span>to</span>
-      <input id="rangeEnd" type="number" step="1" style="width:100px;" />
-      <button id="printRangeBtn" disabled>Batch Print (range)</button>
-    </div>
+
     <div class="group">
       <span class="note">All processing is local in your browser.</span>
     </div>
+  </div>
+
+  <!-- Filters & Range & Presets -->
+  <div class="panel" id="filtersPanel" aria-label="Filters & Range">
+    <h3>Filters</h3>
+    <div class="bar" style="gap:16px; box-shadow:none; padding:8px;">
+      <div class="group">
+        <label>Gender:</label>
+        <select id="fGender"><option value="">All</option><option>M</option><option>F</option></select>
+      </div>
+      <div class="group">
+        <label>Grade:</label>
+        <select id="fGrade"><option value="">All</option></select>
+      </div>
+      <div class="group">
+        <label>Tag column:</label>
+        <select id="fTagCol"><option value="">(none)</option></select>
+        <label>Value:</label>
+        <select id="fTagVal"><option value="">All</option></select>
+      </div>
+      <div class="group">
+        <button id="applyFiltersBtn" class="secondary" disabled>Apply filters</button>
+        <button id="clearFiltersBtn" class="secondary" disabled>Clear</button>
+        <span class="chip" id="matchCountChip" title="Matched learners">0 selected</span>
+      </div>
+    </div>
+
+    <h3 style="margin-top:10px;">Index Range</h3>
+    <div class="bar" style="gap:16px; box-shadow:none; padding:8px;">
+      <div class="group">
+        <label>From:</label>
+        <input id="rangeStart" type="number" step="1" style="width:120px;" />
+        <label>To:</label>
+        <input id="rangeEnd" type="number" step="1" style="width:120px;" />
+        <span class="note">(Uses the <b>Index</b> column)</span>
+      </div>
+      <div class="group">
+        <label>Presets:</label>
+        <select id="presetSel"><option value="">— Select preset —</option></select>
+        <input id="presetName" type="text" placeholder="Preset name (e.g., G7 Girls T2 2025)" style="min-width:260px;" />
+        <button id="savePresetBtn" class="secondary" disabled>Save preset</button>
+        <button id="deletePresetBtn" class="danger" disabled>Delete preset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- School settings / consent / term & year -->
+  <div class="panel">
+    <details class="settings" open>
+      <summary>School settings & notices</summary>
+      <div class="settings-grid">
+        <div><label>School Name</label><input id="sName" /></div>
+        <div><label>Address</label><input id="sAddress" /></div>
+        <div><label>Town</label><input id="sTown" /></div>
+        <div><label>Motto</label><input id="sMotto" /></div>
+        <div><label>Term</label><input id="sTerm" type="number" min="1" max="3" step="1" /></div>
+        <div><label>Year</label><input id="sYear" type="number" min="2000" max="2100" step="1" /></div>
+        <div style="grid-column: 1 / -1;"><label>Consent & notices (footer on each report)</label>
+          <textarea id="sConsent" rows="2" placeholder="This report contains personal data handled in accordance with our school's data protection policy and applicable laws."></textarea>
+        </div>
+      </div>
+      <div class="settings-actions">
+        <button id="saveSettingsBtn" class="secondary" disabled>Save settings</button>
+        <span class="note">Settings auto‑persist in this browser.</span>
+      </div>
+    </details>
   </div>
 
   <!-- Single-learner preview (on screen) -->
@@ -135,9 +203,28 @@
   <div id="batchContainer" aria-hidden="true"></div>
 </div>
 
+<!-- Robust Error UI -->
+<dialog id="errorDlg">
+  <div class="dlg-hd">Something went wrong</div>
+  <div class="dlg-bd">
+    <p>We hit a problem while processing your data. You can try again, or copy the details and share them for support.</p>
+    <pre class="err" id="errDetails" aria-label="Error details"></pre>
+  </div>
+  <div class="dlg-ft">
+    <button id="copyErrBtn" class="secondary">Copy error details</button>
+    <button id="closeErrBtn">Close</button>
+  </div>
+</dialog>
+
 <script>
 (function(){
-  // Subject mapping aligned with your "Learners" sheet column prefixes.
+  // ====== Constants ======
+  const LS_KEYS = {
+    SETTINGS: 'cbc.settings.v1',
+    PRESETS:  'cbc.presets.v1',
+    ARCHIVES: 'cbc.archives.v1'
+  };
+
   const SUBJECTS = [
     { key:'ENG',    label:'ENGLISH' },
     { key:'COMP',   label:'COMPOSITION' },
@@ -152,7 +239,6 @@
     { key:'PRETECH',label:'PRE-TECH' },
   ];
 
-  // Fallback thresholds if "Grading" sheet can't be parsed
   const DEFAULT_THRESHOLDS = [
     { min:81, grade:'EE' },
     { min:50, grade:'ME' },
@@ -160,34 +246,83 @@
     { min:0,  grade:'BE' },
   ];
 
-  const $file = document.getElementById('file');
-  const $learnerSel = document.getElementById('learnerSel');
-  const $printOne = document.getElementById('printOneBtn');
-  const $printAll = document.getElementById('printAllBtn');
-  const $printRange = document.getElementById('printRangeBtn');
-  const $rangeStart = document.getElementById('rangeStart');
-  const $rangeEnd = document.getElementById('rangeEnd');
-  const $rangeGroup = document.getElementById('rangeGroup');
-  const $singleSheet = document.getElementById('singleSheet');
-  const $batchContainer = document.getElementById('batchContainer');
+  const DEFAULT_SCHOOL = {
+    name: 'ITIATI JUNIOR SCHOOL',
+    address: 'P.O. BOX 160-10101',
+    town: 'KARATINA',
+    motto: 'SCHOOL MOTTO: HARDWORK FOR EXCELLENCE',
+    term: 2,
+    year: new Date().getFullYear(),
+    consent: "This report contains personal data handled in accordance with our school's data protection policy and applicable laws."
+  };
 
-  let learners = [];
-  let thresholds = DEFAULT_THRESHOLDS;
-  let indexMin = null, indexMax = null;
+  // ====== State ======
+  let current = { learners: [], thresholds: DEFAULT_THRESHOLDS, name: 'Current workbook' };
+  let archives = loadJSON(LS_KEYS.ARCHIVES, []);
+  let presets = loadJSON(LS_KEYS.PRESETS, []);
+  let settings = Object.assign({}, DEFAULT_SCHOOL, loadJSON(LS_KEYS.SETTINGS, {}));
 
-  const getIndex = (row) => {
+  let filtered = []; // learners after filters
+
+  // ====== DOM ======
+  const $ = (sel) => document.querySelector(sel);
+  const $file = $('#file');
+  const $datasetSel = $('#datasetSel');
+  const $saveArchiveBtn = $('#saveArchiveBtn');
+  const $deleteArchiveBtn = $('#deleteArchiveBtn');
+  const $learnerSel = $('#learnerSel');
+  const $printSelectedBtn = $('#printSelectedBtn');
+  const $printFilteredBtn = $('#printFilteredBtn');
+  const $printRangeBtn = $('#printRangeBtn');
+
+  const $fGender = $('#fGender');
+  const $fGrade = $('#fGrade');
+  const $fTagCol = $('#fTagCol');
+  const $fTagVal = $('#fTagVal');
+  const $applyFiltersBtn = $('#applyFiltersBtn');
+  const $clearFiltersBtn = $('#clearFiltersBtn');
+  const $matchCountChip = $('#matchCountChip');
+
+  const $rangeStart = $('#rangeStart');
+  const $rangeEnd = $('#rangeEnd');
+  const $presetSel = $('#presetSel');
+  const $presetName = $('#presetName');
+  const $savePresetBtn = $('#savePresetBtn');
+  const $deletePresetBtn = $('#deletePresetBtn');
+
+  const $sName = $('#sName');
+  const $sAddress = $('#sAddress');
+  const $sTown = $('#sTown');
+  const $sMotto = $('#sMotto');
+  const $sTerm = $('#sTerm');
+  const $sYear = $('#sYear');
+  const $sConsent = $('#sConsent');
+  const $saveSettingsBtn = $('#saveSettingsBtn');
+
+  const $singleSheet = $('#singleSheet');
+  const $batchContainer = $('#batchContainer');
+
+  const $errDlg = $('#errorDlg');
+  const $errDetails = $('#errDetails');
+  const $copyErrBtn = $('#copyErrBtn');
+  const $closeErrBtn = $('#closeErrBtn');
+
+  // ====== Utils ======
+  function loadJSON(k, fallback){ try{ return JSON.parse(localStorage.getItem(k)) ?? fallback; }catch(e){ return fallback; } }
+  function saveJSON(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+
+  function getIndex(row){
     let v = row.Index ?? row['INDEX'] ?? row['index'];
     if (v === undefined || v === null || v === '') return NaN;
     const n = Number(v);
     if (Number.isNaN(n)) return NaN;
-    // Many Excel numeric cells come as floats like 1.0 -> cast to int when possible
     return Number.isInteger(n) ? n : Math.round(n);
-  };
+  }
 
-  function pctGrade(score, outOf){
+  function pctGrade(thr, score, outOf){
     if (outOf <= 0 || score == null || score === "") return { pct: 0, grade:'BE' };
     const pct = Math.max(0, Math.round((Number(score) / Number(outOf)) * 100));
-    const t = thresholds.find(t => pct >= t.min) || { grade:'BE' };
+    const t = thr.find(t => pct >= t.min) || { grade:'BE' };
     return { pct, grade: t.grade };
   }
 
@@ -198,36 +333,19 @@
         .filter(r => (r.Grade || r.grade) && (r.Score !== undefined && r.Score !== ""))
         .map(r => ({ min: Number(r.Score), grade: String(r.Grade || r.grade).trim() }))
         .filter(r => !Number.isNaN(r.min) && ['EE','ME','AE','BE'].includes(r.grade));
-      if(map.length >= 4){
-        map.sort((a,b) => b.min - a.min);
-        return map;
-      }
-    }catch(e){ /* use default below */ }
+      if(map.length >= 4){ map.sort((a,b) => b.min - a.min); return map; }
+    }catch(e){}
     return DEFAULT_THRESHOLDS;
   }
 
-  function termWord(n){
-    const names = {1:'ONE', 2:'TWO', 3:'THREE'};
-    return names[n] || String(n);
-  }
+  function termWord(n){ const names = {1:'ONE', 2:'TWO', 3:'THREE'}; return names[n] || String(n); }
 
-  function buildSheetHTML(row){
-    // Static school header (customise if needed)
-    const school = {
-      name: 'ITIATI JUNIOR SCHOOL',
-      address1: 'P.O. BOX 160-10101',
-      town: 'KARATINA',
-      motto: 'SCHOOL MOTTO: HARDWORK FOR EXCELLENCE'
-    };
-
+  function htmlReport(row, thr){
     const pupilName = row["Pupil's Name"] || row["Pupil's Name "] || row["Pupil Name"] || "";
     const grade = row["Grade"] ?? row["GRADE"] ?? "";
-    const term = Number(row["Term"] ?? 0);
-    const year = row["Year"] ?? "";
     const closingDate = row["Closing_Date"] || row["Closing Date"] || row["Closing"] || "";
     const openingDate = row["Opening_Date"] || row["Opening Date"] || row["Opening"] || "";
 
-    // Comments & names
     const ctComment = row["Class_Teacher_Comment"] || "";
     const ctName = row["Class_Teacher_Name"] || "";
     const ctDate = row["CT_Date"] || "";
@@ -235,7 +353,6 @@
     const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || "";
     const htDate = row["HT_Date"] || "";
 
-    // Build subject rows
     const subRows = SUBJECTS.map(s => {
       const oSc = Number(row[`${s.key}_Opener`]) || 0;
       const oMax = Number(row[`${s.key}_Opener_OutOf`]) || 0;
@@ -243,44 +360,38 @@
       const mMax = Number(row[`${s.key}_Mid_OutOf`]) || 0;
       const eSc = Number(row[`${s.key}_End`]) || 0;
       const eMax = Number(row[`${s.key}_End_OutOf`]) || 0;
-      const oG = pctGrade(oSc, oMax).grade;
-      const mG = pctGrade(mSc, mMax).grade;
-      const eG = pctGrade(eSc, eMax).grade;
+      const oG = pctGrade(thr, oSc, oMax).grade;
+      const mG = pctGrade(thr, mSc, mMax).grade;
+      const eG = pctGrade(thr, eSc, eMax).grade;
       return { label:s.label, oSc,oMax,oG, mSc,mMax,mG, eSc,eMax,eG };
     });
 
-    // Totals
-    const total = subRows.reduce((acc,r) => {
-      acc.oSc += r.oSc; acc.oMax += r.oMax;
-      acc.mSc += r.mSc; acc.mMax += r.mMax;
-      acc.eSc += r.eSc; acc.eMax += r.eMax;
-      return acc;
-    }, {oSc:0,oMax:0,mSc:0,mMax:0,eSc:0,eMax:0});
+    const total = subRows.reduce((acc,r) => { acc.oSc += r.oSc; acc.oMax += r.oMax; acc.mSc += r.mSc; acc.mMax += r.mMax; acc.eSc += r.eSc; acc.eMax += r.eMax; return acc; }, {oSc:0,oMax:0,mSc:0,mMax:0,eSc:0,eMax:0});
 
-    const oG = pctGrade(total.oSc, total.oMax).grade;
-    const mG = pctGrade(total.mSc, total.mMax).grade;
-    const eG = pctGrade(total.eSc, total.eMax).grade;
+    const oG = pctGrade(thr, total.oSc, total.oMax).grade;
+    const mG = pctGrade(thr, total.mSc, total.mMax).grade;
+    const eG = pctGrade(thr, total.eSc, total.eMax).grade;
 
-    const title = `END TERM ${termWord(term)} ASSESSMENT - YEAR ${year}`;
+    const title = `END TERM ${termWord(Number(settings.term))} ASSESSMENT - YEAR ${settings.year}`;
 
     return `
       <div class="sheet" aria-label="Report Form">
         <div style="padding:16mm 14mm; box-sizing:border-box;">
           <div class="school-head">
-            <h1>${school.name}</h1>
-            <div class="addr">${school.address1}</div>
-            <div class="addr">${school.town}</div>
-            <div class="motto">${school.motto}</div>
+            <h1>${escapeHTML(settings.name)}</h1>
+            <div class="addr">${escapeHTML(settings.address)}</div>
+            <div class="addr">${escapeHTML(settings.town)}</div>
+            <div class="motto">${escapeHTML(settings.motto)}</div>
           </div>
 
           <div class="key">KEY: <b>EE</b> – Exceed Expectations, <b>ME</b> – Meet Expectations,
             <b>AE</b> – Approach Expectation, <b>BE</b> – Below Expectation</div>
 
-          <div class="title">${title}</div>
+          <div class="title">${escapeHTML(title)}</div>
 
           <div class="meta">
-            <div><label>PUPIL'S NAME:</label> <div>${pupilName}</div></div>
-            <div><label>GRADE:</label> <div>${grade}</div></div>
+            <div><label>PUPIL'S NAME:</label> <div>${escapeHTML(pupilName)}</div></div>
+            <div><label>GRADE:</label> <div>${escapeHTML(String(grade))}</div></div>
           </div>
 
           <table class="report" aria-label="Learning Areas">
@@ -320,26 +431,28 @@
           <div class="comments">
             <div class="block">
               <label>CLASS TEACHER COMMENT:</label>
-              <div>${ctComment || "&nbsp;"}</div>
+              <div>${escapeHTML(ctComment) || "&nbsp;"}</div>
               <div class="sign-row">
-                <div class="sign"><b>CLASS TEACHER NAME:</b> ${ctName || "&nbsp;"}</div>
-                <div class="sign"><b>DATE:</b> ${ctDate || "&nbsp;"}</div>
+                <div class="sign"><b>CLASS TEACHER NAME:</b> ${escapeHTML(ctName) || "&nbsp;"}</div>
+                <div class="sign"><b>DATE:</b> ${escapeHTML(ctDate) || "&nbsp;"}</div>
               </div>
             </div>
             <div class="block">
               <label>HEAD TEACHER COMMENT:</label>
-              <div>${htComment || "&nbsp;"}</div>
+              <div>${escapeHTML(htComment) || "&nbsp;"}</div>
               <div class="sign-row">
-                <div class="sign"><b>Signature:</b> ${htSign || "&nbsp;"}</div>
-                <div class="sign"><b>Date:</b> ${htDate || "&nbsp;"}</div>
+                <div class="sign"><b>Signature:</b> ${escapeHTML(htSign) || "&nbsp;"}</div>
+                <div class="sign"><b>Date:</b> ${escapeHTML(htDate) || "&nbsp;"}</div>
               </div>
             </div>
           </div>
 
           <div class="foot-dates">
-            <div class="sign"><b>CLOSING DATE:</b> ${closingDate || "&nbsp;"}</div>
-            <div class="sign"><b>OPENING DATE:</b> ${openingDate || "&nbsp;"}</div>
+            <div class="sign"><b>CLOSING DATE:</b> ${escapeHTML(closingDate) || "&nbsp;"}</div>
+            <div class="sign"><b>OPENING DATE:</b> ${escapeHTML(openingDate) || "&nbsp;"}</div>
           </div>
+
+          ${settings.consent ? `<div class="consent">${escapeHTML(settings.consent)}</div>` : ''}
 
           <div class="small" style="margin-top:8px;">Note: Use the browser’s Print dialog to save as PDF (A4 portrait, 100% scale).</div>
         </div>
@@ -347,139 +460,185 @@
     `;
   }
 
+  function escapeHTML(s){ return String(s).replace(/[&<>"']/g, (c)=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+
+  function renderSingleFromFiltered(idx){
+    const row = filtered[idx];
+    $singleSheet.innerHTML = htmlReport(row, current.thresholds);
+  }
+
+  function indicesFromLearners(ls){
+    const vals = ls.map(getIndex).filter(v => !Number.isNaN(v));
+    if (!vals.length) return {min:1, max: ls.length || 1};
+    return {min: Math.min(...vals), max: Math.max(...vals)};
+  }
+
   function hydrateLearnerDropdown(){
-    // Compute min/max Index and prepare dropdown options
-    indexMin = null; indexMax = null;
-    const options = learners.map((r, i) => {
-      const idx = getIndex(r);
-      if (!Number.isNaN(idx)) {
-        indexMin = (indexMin === null) ? idx : Math.min(indexMin, idx);
-        indexMax = (indexMax === null) ? idx : Math.max(indexMax, idx);
-      }
-      const name = r["Pupil's Name"] || `Learner ${i+1}`;
-      const labelIdx = Number.isNaN(idx) ? (i+1) : idx;
-      return `<option value="${i}">${labelIdx}. ${name}</option>`;
-    });
+    $learnerSel.innerHTML = `<option value="">— Select learner —</option>` +
+      filtered.map((r, i) => {
+        const idx = getIndex(r); const labelIdx = Number.isNaN(idx) ? (i+1) : idx; const name = r["Pupil's Name"] || `Learner ${i+1}`; return `<option value="${i}">${labelIdx}. ${escapeHTML(name)}</option>`;
+      }).join('');
+    const has = filtered.length > 0;
+    $learnerSel.disabled = !has; $printSelectedBtn.disabled = !has; $printFilteredBtn.disabled = !has; $printRangeBtn.disabled = !has;
+    $applyFiltersBtn.disabled = !current.learners.length; $clearFiltersBtn.disabled = !current.learners.length;
+    $saveArchiveBtn.disabled = !current.learners.length; $saveSettingsBtn.disabled = false; $savePresetBtn.disabled = false; $deletePresetBtn.disabled = !presets.length;
 
-    $learnerSel.innerHTML = `<option value="">— Select learner —</option>` + options.join('');
-    const has = learners.length > 0;
-    $learnerSel.disabled = !has;
-    $printOne.disabled = !has;
-    $printAll.disabled = !has;
-    $rangeGroup.style.display = has ? 'flex' : 'none';
+    const {min, max} = indicesFromLearners(current.learners);
+    $rangeStart.value = min; $rangeEnd.value = max;
 
-    if (has) {
-      // Fill range inputs using Index min/max if available; else fall back to 1..N
-      const minVal = (indexMin === null) ? 1 : indexMin;
-      const maxVal = (indexMax === null) ? learners.length : indexMax;
-      $rangeStart.value = minVal; $rangeEnd.value = maxVal;
-      $rangeStart.min = minVal; $rangeEnd.min = minVal;
-      $rangeStart.max = maxVal; $rangeEnd.max = maxVal;
-      $printRange.disabled = false;
-    }
+    $matchCountChip.textContent = `${filtered.length} selected`;
   }
 
-  function renderSingle(idx){
-    const row = learners[idx];
-    $singleSheet.innerHTML = buildSheetHTML(row);
+  function distinctValues(arr, key){
+    const s = new Set(); arr.forEach(r => { const v = r[key]; if (v !== undefined && v !== null && String(v).trim() !== '') s.add(String(v).trim()); }); return Array.from(s).sort();
   }
 
-  function normalizeRange(){
-    let s = parseInt($rangeStart.value, 10);
-    let e = parseInt($rangeEnd.value, 10);
-    const minVal = (indexMin === null) ? 1 : indexMin;
-    const maxVal = (indexMax === null) ? learners.length : indexMax;
-
-    if (Number.isNaN(s)) s = minVal;
-    if (Number.isNaN(e)) e = maxVal;
-    if (s > e) { const t = s; s = e; e = t; }
-
-    // clamp to min/max index space
-    s = Math.max(minVal, Math.min(s, maxVal));
-    e = Math.max(minVal, Math.min(e, maxVal));
-    return {start:s, end:e};
+  function detectTagColumns(rows){
+    if (!rows.length) return [];
+    const row = rows[0];
+    const keys = Object.keys(row);
+    // Exclude known subject columns and meta
+    const exclude = new Set(["Index","index","INDEX","Pupil's Name","Gender","Grade","Term","Year","Closing_Date","Closing Date","Opening_Date","Opening Date","Class_Teacher_Comment","Class_Teacher_Name","CT_Date","Head_Teacher_Comment","Head_Teacher_Signature","HT_Date"]);
+    SUBJECTS.forEach(s => ["_Opener","_Opener_OutOf","_Mid","_Mid_OutOf","_End","_End_OutOf"].forEach(suf => exclude.add(s.key + suf)));
+    return keys.filter(k => !exclude.has(k));
   }
 
-  function filterByIndexRange(start, end){
-    return learners
-      .map(r => ({ row:r, idx:getIndex(r) }))
-      .filter(x => !Number.isNaN(x.idx) && x.idx >= start && x.idx <= end)
-      .sort((a,b) => a.idx - b.idx)
-      .map(x => x.row);
-  }
+  function applyFilters(){
+    const g = ($fGender.value || '').trim();
+    const grade = ($fGrade.value || '').trim();
+    const col = ($fTagCol.value || '').trim();
+    const val = ($fTagVal.value || '').trim();
 
-  function renderPagesToBatch(rows){
-    const html = rows.map(buildSheetHTML).join('');
-    $batchContainer.innerHTML = html;
-  }
-
-  function doPrint(){
-    requestAnimationFrame(() => {
-      window.print();
-      setTimeout(() => { $batchContainer.innerHTML = ""; }, 600);
-    });
-  }
-
-  // UI events
-  $learnerSel.addEventListener('change', (e) => {
-    const idx = Number(e.target.value);
-    if (Number.isInteger(idx) && idx >= 0) renderSingle(idx);
-  });
-
-  $printOne.addEventListener('click', () => {
-    // Print the currently selected learner (inject into batch container for consistent print CSS)
-    const idx = Number($learnerSel.value);
-    const chosen = (Number.isInteger(idx) && idx >= 0) ? [learners[idx]] : (learners.length ? [learners[0]] : []);
-    if (!chosen.length) return;
-    renderPagesToBatch(chosen);
-    doPrint();
-  });
-
-  $printAll.addEventListener('click', () => {
-    // Sort all by Index if available
-    const rows = filterByIndexRange(
-      (indexMin === null) ? 1 : indexMin,
-      (indexMax === null) ? learners.length : indexMax
-    );
-    // If none had an Index, fall back to current order
-    const finalRows = rows.length ? rows : learners;
-    renderPagesToBatch(finalRows);
-    doPrint();
-  });
-
-  $printRange.addEventListener('click', () => {
-    const {start, end} = normalizeRange();
-    const rows = filterByIndexRange(start, end);
-    if (!rows.length) return; // nothing in that index span
-    renderPagesToBatch(rows);
-    doPrint();
-  });
-
-  // Workbook loading
-  $file.addEventListener('change', async (ev) => {
-    const f = ev.target.files?.[0];
-    if (!f) return;
-    const data = await f.arrayBuffer();
-    const wb = XLSX.read(data, {type:"array"});
-
-    // 1) Grading thresholds
-    const wsGrading = wb.Sheets["Grading"] || wb.Sheets["grading"] || wb.Sheets["GRADING"];
-    thresholds = wsGrading ? parseGrading(wsGrading) : DEFAULT_THRESHOLDS;
-
-    // 2) Learners
-    const wsLearners = wb.Sheets["Learners"] || wb.Sheets["LEARNERS"] || wb.Sheets[wb.SheetNames[0]];
-    learners = XLSX.utils.sheet_to_json(wsLearners, {defval:""});
+    filtered = current.learners.filter(r => {
+      if (g && String(r.Gender).trim().toUpperCase() !== g.toUpperCase()) return false;
+      if (grade && String(r.Grade).trim() !== grade) return false;
+      if (col && val) { if (String(r[col] ?? '').trim() !== val) return false; }
+      return true;
+    }).sort((a,b) => (getIndex(a) - getIndex(b)) || 0);
 
     hydrateLearnerDropdown();
+    if (filtered.length) { $learnerSel.selectedIndex = 1; renderSingleFromFiltered(0); } else { $singleSheet.innerHTML = `<p>No learners match current filters.</p>`; }
+  }
 
-    // 3) Auto-render first learner
-    if (learners.length > 0) {
-      $learnerSel.selectedIndex = 1; // first option after placeholder
-      renderSingle(0);
-    } else {
-      $singleSheet.innerHTML = `<p>No learner rows were found.</p>`;
+  function clearFilters(){ $fGender.value=''; $fGrade.value=''; $fTagCol.value=''; refreshTagValues(); $fTagVal.value=''; filtered = [...current.learners].sort((a,b)=>getIndex(a)-getIndex(b)); hydrateLearnerDropdown(); if (filtered.length) { $learnerSel.selectedIndex=1; renderSingleFromFiltered(0);} }
+
+  function refreshTagValues(){
+    const col = $fTagCol.value; const vals = col ? distinctValues(current.learners, col) : [];
+    $fTagVal.innerHTML = `<option value="">All</option>` + vals.map(v => `<option>${escapeHTML(v)}</option>`).join('');
+  }
+
+  function buildPages(rows){ return rows.map(r => htmlReport(r, current.thresholds)).join(''); }
+  function printRows(rows){ if (!rows.length) return; $batchContainer.innerHTML = buildPages(rows); requestAnimationFrame(()=>{ window.print(); setTimeout(()=>{ $batchContainer.innerHTML=''; }, 600); }); }
+
+  function filterByIndexRange(start, end){ return current.learners.map(r => ({ row:r, idx:getIndex(r) })).filter(x => !Number.isNaN(x.idx) && x.idx >= start && x.idx <= end).sort((a,b)=>a.idx-b.idx).map(x=>x.row); }
+
+  function hydrateGradesAndTags(){
+    // Distinct grades
+    const grades = distinctValues(current.learners, 'Grade');
+    $fGrade.innerHTML = `<option value="">All</option>` + grades.map(g => `<option>${escapeHTML(String(g))}</option>`).join('');
+    // Tag columns
+    const cols = detectTagColumns(current.learners);
+    $fTagCol.innerHTML = `<option value="">(none)</option>` + cols.map(c => `<option>${escapeHTML(c)}</option>`).join('');
+    refreshTagValues();
+  }
+
+  function populateDatasetSelector(){
+    const opts = [`<option value="current">Current workbook</option>`].concat(archives.map((a,i)=>`<option value="arch:${i}">${escapeHTML(a.name)}</option>`));
+    $datasetSel.innerHTML = opts.join('');
+    $datasetSel.disabled = (opts.length===1);
+    $deleteArchiveBtn.disabled = ($datasetSel.value === 'current');
+  }
+
+  function setDataset(ds){
+    current = ds;
+    filtered = [...current.learners].sort((a,b)=>getIndex(a)-getIndex(b));
+    hydrateGradesAndTags();
+    hydrateLearnerDropdown();
+    if (filtered.length){ $learnerSel.selectedIndex = 1; renderSingleFromFiltered(0); }
+  }
+
+  function loadWorkbook(arrayBuf){
+    const wb = XLSX.read(arrayBuf, {type:'array'});
+    const wsGrading = wb.Sheets['Grading'] || wb.Sheets['grading'] || wb.Sheets['GRADING'];
+    const thresholds = wsGrading ? parseGrading(wsGrading) : DEFAULT_THRESHOLDS;
+    const wsLearners = wb.Sheets['Learners'] || wb.Sheets['LEARNERS'] || wb.Sheets[wb.SheetNames[0]];
+    const learners = XLSX.utils.sheet_to_json(wsLearners, {defval:""});
+
+    // Settings defaults from first row
+    if (learners.length){
+      if (!settings.term) settings.term = Number(learners[0].Term) || settings.term;
+      if (!settings.year) settings.year = Number(learners[0].Year) || settings.year;
     }
-  });
+
+    return { learners, thresholds, name:'Current workbook' };
+  }
+
+  function saveArchive(){
+    const {min, max} = indicesFromLearners(current.learners);
+    const label = `${settings.name} – T${settings.term} ${settings.year} (Index ${min}-${max})`;
+    const snap = { name: label, ts: Date.now(), settings, thresholds: current.thresholds, learners: current.learners };
+    archives.push(snap); saveJSON(LS_KEYS.ARCHIVES, archives); populateDatasetSelector(); $datasetSel.value = `arch:${archives.length-1}`; notify(`Saved archive: ${label}`);
+  }
+
+  function deleteCurrentArchive(){
+    const v = $datasetSel.value; if (!v.startsWith('arch:')) return; const i = Number(v.split(':')[1]);
+    if (Number.isInteger(i) && i>=0 && i<archives.length){ const name = archives[i].name; archives.splice(i,1); saveJSON(LS_KEYS.ARCHIVES, archives); populateDatasetSelector(); $datasetSel.value='current'; setDataset({ learners: current.learners, thresholds: current.thresholds, name:'Current workbook' }); notify(`Deleted archive: ${name}`); }
+  }
+
+  function notify(msg){ console.log(msg); }
+
+  function loadSettingsToForm(){ $sName.value=settings.name; $sAddress.value=settings.address; $sTown.value=settings.town; $sMotto.value=settings.motto; $sTerm.value=settings.term; $sYear.value=settings.year; $sConsent.value=settings.consent; }
+  function saveSettingsFromForm(){ settings = { name:$sName.value.trim(), address:$sAddress.value.trim(), town:$sTown.value.trim(), motto:$sMotto.value.trim(), term:Number($sTerm.value||settings.term), year:Number($sYear.value||settings.year), consent:$sConsent.value.trim() }; saveJSON(LS_KEYS.SETTINGS, settings); notify('Settings saved'); if(filtered.length){ renderSingleFromFiltered(Math.max(0,$learnerSel.selectedIndex-1)); } }
+
+  function hydratePresets(){ $presetSel.innerHTML = `<option value="">— Select preset —</option>` + presets.map((p,i)=>`<option value="${i}">${escapeHTML(p.name)}</option>`).join(''); $deletePresetBtn.disabled = !presets.length; }
+  function currentFilters(){ return { gender:$fGender.value||'', grade:$fGrade.value||'', tagCol:$fTagCol.value||'', tagVal:$fTagVal.value||'', indexRange:{ start:Number($rangeStart.value)||'', end:Number($rangeEnd.value)||'' } }; }
+  function applyPreset(p){ if (!p) return; $fGender.value=p.filters.gender||''; $fGrade.value=p.filters.grade||''; $fTagCol.value=p.filters.tagCol||''; refreshTagValues(); $fTagVal.value=p.filters.tagVal||''; if(p.filters.indexRange){ $rangeStart.value=p.filters.indexRange.start||$rangeStart.value; $rangeEnd.value=p.filters.indexRange.end||$rangeEnd.value; } applyFilters(); }
+
+  function savePreset(){ const name = $presetName.value.trim(); if (!name) return; const p = { name, filters: currentFilters(), savedAt: Date.now() }; presets.push(p); saveJSON(LS_KEYS.PRESETS, presets); hydratePresets(); $presetSel.value = String(presets.length-1); notify(`Preset saved: ${name}`); }
+  function deletePreset(){ const v = $presetSel.value; if (v==='') return; const i = Number(v); const name = presets[i]?.name; presets.splice(i,1); saveJSON(LS_KEYS.PRESETS, presets); hydratePresets(); $presetSel.value=''; notify(`Preset deleted: ${name}`); }
+
+  function withErrorUI(fn){ return async (...args) => { try{ await fn(...args); }catch(err){ console.error(err); showError(err); } } }
+  function showError(err){ const details = [ `Message: ${err?.message||err}`, `\nStack:\n${err?.stack||'(no stack)'}`, `\nContext:`, JSON.stringify({ settings, learners: current.learners?.length, filtered: filtered?.length }, null, 2) ].join('\n'); $errDetails.textContent = details; $errDlg.showModal(); }
+
+  // ====== Event wiring ======
+  $file.addEventListener('change', withErrorUI(async (ev) => {
+    const f = ev.target.files?.[0]; if (!f) return; const data = await f.arrayBuffer(); const ds = loadWorkbook(data); setDataset(ds);
+    // After workbook load, update dataset list to "current" and disable delete
+    populateDatasetSelector(); $datasetSel.value='current'; $deleteArchiveBtn.disabled = true;
+    loadSettingsToForm();
+  }));
+
+  $datasetSel.addEventListener('change', () => { const v = $datasetSel.value; if (v==='current'){ setDataset(current); $deleteArchiveBtn.disabled = true; } else if (v.startsWith('arch:')){ const i = Number(v.split(':')[1]); if (archives[i]){ const snap = archives[i]; // load snapshot dataset & also adopt its settings/thresholds
+      settings = Object.assign({}, settings, snap.settings || {}); saveJSON(LS_KEYS.SETTINGS, settings); loadSettingsToForm(); setDataset({ learners: snap.learners||[], thresholds: snap.thresholds||DEFAULT_THRESHOLDS, name: snap.name }); $deleteArchiveBtn.disabled = false; } } });
+
+  $saveArchiveBtn.addEventListener('click', withErrorUI(saveArchive));
+  $deleteArchiveBtn.addEventListener('click', withErrorUI(deleteCurrentArchive));
+
+  $applyFiltersBtn.addEventListener('click', withErrorUI(applyFilters));
+  $clearFiltersBtn.addEventListener('click', withErrorUI(clearFilters));
+
+  $fTagCol.addEventListener('change', () => { refreshTagValues(); });
+
+  $learnerSel.addEventListener('change', (e) => { const idx = Number(e.target.value); if (Number.isInteger(idx) && idx >= 0) renderSingleFromFiltered(idx); });
+
+  $printSelectedBtn.addEventListener('click', () => { const idx = Number($learnerSel.value); const chosen = (Number.isInteger(idx) && idx >= 0) ? [filtered[idx]] : (filtered.length ? [filtered[0]] : []); if(!chosen.length) return; printRows(chosen); });
+  $printFilteredBtn.addEventListener('click', () => { printRows(filtered); });
+  $printRangeBtn.addEventListener('click', () => { const s = Number($rangeStart.value); const e = Number($rangeEnd.value); const rows = filterByIndexRange(Math.min(s,e), Math.max(s,e)); printRows(rows); });
+
+  $saveSettingsBtn.addEventListener('click', () => { saveSettingsFromForm(); });
+
+  $savePresetBtn.addEventListener('click', () => { savePreset(); });
+  $presetSel.addEventListener('change', () => { const v = $presetSel.value; if (v==='') return; const p = presets[Number(v)]; applyPreset(p); });
+  $deletePresetBtn.addEventListener('click', () => { deletePreset(); });
+
+  $copyErrBtn.addEventListener('click', async () => { try{ await navigator.clipboard.writeText($errDetails.textContent||''); $copyErrBtn.textContent='Copied!'; setTimeout(()=>{ $copyErrBtn.textContent='Copy error details'; }, 1200); }catch(e){ alert('Copy failed. Select and copy manually.'); } });
+  $closeErrBtn.addEventListener('click', () => { $errDlg.close(); });
+
+  window.addEventListener('error', (e) => { showError(e.error || new Error(e.message||'Unknown error')); });
+  window.addEventListener('unhandledrejection', (e) => { showError(e.reason || new Error('Unhandled rejection')); });
+
+  // ====== Init ======
+  (function init(){ loadSettingsToForm(); hydratePresets(); populateDatasetSelector(); $applyFiltersBtn.disabled = true; $clearFiltersBtn.disabled = true; })();
 })();
 </script>
 </body>
