@@ -32,6 +32,8 @@
       --radius-md: 8px;
       --radius-lg: 12px;
       --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      /* ONE-PAGE PRINT: default scale; JS will refine per print */
+      --print-scale: 0.85;
     }
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -201,44 +203,74 @@
       #singleView .sheet { padding: 12px; box-shadow: var(--shadow-md); }
     }
 
-    /* *** MODIFIED PRINT STYLES FOR ONE-PAGE FIT *** */
+    /* *** ONE-PAGE PRINT STYLES (Adjusted) *** */
     @media print {
-      /* Reset margins to maximize printable area */
-      @page { size: A4 portrait; margin: 0.5cm !important; } 
-      
-      html, body { 
-        height: auto !important; background: #fff; 
-        -webkit-print-color-adjust: exact; print-color-adjust: exact; 
+      /* A4 with 0.5cm margins */
+      @page { size: A4 portrait; margin: 0.5cm !important; }
+
+      html, body {
+        height: auto !important; background: #fff;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        font-size: 12px; /* Slightly tighter base for print only */
+        line-height: 1.35;
       }
+
       /* Hide all non-report elements */
       .bar, details, .statusbar, .toasts, #singleView { display: none !important; }
-      
       #batchContainer { display: block !important; }
 
-      /* Apply scaling to force the report sheet onto one page */
-      .sheet { 
-        width: 100%; margin: 0; 
-        padding: 5mm; /* Slightly smaller padding */
-        border: none; border-radius: 0; box-shadow: none; 
-        page-break-after: always; box-sizing: border-box; 
-        overflow: visible; 
-        
-        /* The critical single-page fit rule: adjust 0.9 (90%) if needed */
-        transform: scale(0.85);
+      /* Tighten report typography for print */
+      .sheet .school-head h1 { font-size: 17px; }
+      .sheet .school-head .addr { font-size: 11.5px; }
+      .sheet .school-head .motto { font-size: 10.5px; }
+      .sheet .key { font-size: 9.5px; margin-bottom: 6px; }
+      .sheet .title { font-size: 12px; padding: 3px; border-top-width: 1px; border-bottom-width: 1px; }
+      .sheet .meta { font-size: 11px; margin-bottom: 6px; }
+      table.report { font-size: 9.8px; }
+      table.report th, table.report td { padding: 3px; border-color: #000; }
+      .comments-wrapper { font-size: 10.5px; gap: 8px; }
+      .sheet .sign-row { gap: 12px; margin-top: 6px; font-size: 10.5px; }
+      .sheet .foot-dates { font-size: 10.5px; margin-top: 10px; }
+
+      /* Save vertical space */
+      .mini-chart { display: none !important; }
+      .small { margin-top: 8px; }
+
+      /* ONE-PAGE PRINT: unified scale & compensation */
+      .sheet {
+        width: 100%; margin: 0;
+        padding: 5mm; /* tight padding */
+        border: none; border-radius: 0; box-shadow: none;
+        page-break-after: always; box-sizing: border-box; overflow: visible;
+
+        /* Use variable scale (JS sets it before print) */
+        transform: scale(var(--print-scale));
         transform-origin: top left;
-        
-        /* Compensate for scale effect to prevent blank space/scroll issue */
-        width: 117.6%; /* 1 / 0.85 * 100 */
-        height: 117.6%; /* Ensure full height is scaled */
+        width: calc(100% / var(--print-scale)); /* compensate width */
       }
 
-      table.report { font-size: 10px; }
-      table.report th, table.report td { padding: 3px; border-color: #000; }
-      
-      /* Ensure comments blocks don't try to break across pages */
-      .comments-wrapper * { page-break-inside: avoid !important; }
+      /* Avoid element splits */
+      .comments-wrapper, .comments-wrapper *, .sheet, table, tr, td, th {
+        page-break-inside: avoid !important;
+      }
     }
-    /* *** END MODIFIED PRINT STYLES *** */
+
+    /* ONE-PAGE PRINT: on-screen approximation class for measurement */
+    body.print-approx { background: #fff; }
+    body.print-approx .sheet { padding: 5mm; }
+    body.print-approx .sheet .school-head h1 { font-size: 17px; }
+    body.print-approx .sheet .school-head .addr { font-size: 11.5px; }
+    body.print-approx .sheet .school-head .motto { font-size: 10.5px; }
+    body.print-approx .sheet .key { font-size: 9.5px; margin-bottom: 6px; }
+    body.print-approx .sheet .title { font-size: 12px; padding: 3px; border-top-width: 1px; border-bottom-width: 1px; }
+    body.print-approx .sheet .meta { font-size: 11px; margin-bottom: 6px; }
+    body.print-approx table.report { font-size: 9.8px; }
+    body.print-approx table.report th, body.print-approx table.report td { padding: 3px; }
+    body.print-approx .comments-wrapper { font-size: 10.5px; gap: 8px; }
+    body.print-approx .sheet .sign-row { gap: 12px; margin-top: 6px; font-size: 10.5px; }
+    body.print-approx .sheet .foot-dates { font-size: 10.5px; margin-top: 10px; }
+    body.print-approx .mini-chart { display: none !important; }
+
   </style>
 </head>
 
@@ -395,8 +427,6 @@
   ]);
 
   const DEFAULT_THRESHOLDS = [{min:81,grade:'EE'},{min:50,grade:'ME'},{min:26,grade:'AE'},{min:0,grade:'BE'}];
-  
-  // *** MODIFICATION: Removed the hardcoded AUTO_PASSWORD constant ***
 
   // --- DOM References ---
   const $ = sel => document.querySelector(sel);
@@ -434,7 +464,6 @@
   const $errDetails = $('#errDetails');
   const $confirmDlg = $('#confirmDlg');
   const $confirmMsg = $('#confirmMsg');
-  // MODIFICATION: Removed references to $passwordDlg and $filePasswordInput
 
   // --- State ---
   let learners = [];
@@ -502,10 +531,6 @@
       $('#confirmCancelBtn').addEventListener('click', onCancel, { once: true });
     });
   }
-
-  // *** MODIFICATION: Removed the entire promptForPassword function.
-  // We will now rely on the first XLSX.read call and treat an error as fatal 
-  // without attempting to recover via a password, as requested.
 
   function setButtonLoading(button, isLoading) {
     if (isLoading) {
@@ -784,14 +809,10 @@
     const readOpts = { type: 'array', cellStyles: true, bookSST: true };
 
     try {
-      // MODIFICATION: Attempt to read without password. If it fails due to 
-      // encryption, the error is thrown directly, as requested.
       wb = XLSX.read(data, readOpts);
     } catch (e) {
       const errMsg = String(e?.message || e);
       if (/password|encrypted|unsupported zip method/i.test(errMsg)) {
-        // If the file is encrypted, we halt the process and show a generic error
-        // since we are no longer handling password input.
         setStatus('Encryption error', 'err', 'The file requires a password, but password entry has been disabled.');
         toast('File is password protected. Cannot proceed.', 'error', 5000);
         throw new Error("File is password protected. Password requirements were removed.");
@@ -870,7 +891,6 @@
     renderSelected(Number($learnerSel.value));
     toast(`Saved marks for ${phase} phase ✓`, 'success');
     setStatus('Marks saved', 'ok');
-    // enable download
     $downloadExcelBtn.setAttribute('aria-disabled', 'false');
   }
 
@@ -900,19 +920,76 @@
     $downloadExcelBtn.setAttribute('aria-disabled', 'false');
   }
 
+  // ONE-PAGE PRINT: compute dynamic scale to fit tallest sheet to A4 page area
+  function pxFromMm(mm) {
+    const probe = document.createElement('div');
+    probe.style.position = 'absolute';
+    probe.style.visibility = 'hidden';
+    probe.style.height = mm + 'mm';
+    probe.style.width = '1px';
+    document.body.appendChild(probe);
+    const px = probe.getBoundingClientRect().height;
+    probe.remove();
+    return px;
+  }
+
+  function computeAndSetPrintScale() {
+    // Apply on-screen approximation of print typography to measure realistically
+    document.body.classList.add('print-approx');
+
+    // Ensure current scale is 1 for measuring
+    document.documentElement.style.setProperty('--print-scale', '1');
+
+    // available page height in px (A4 297mm minus 10mm margins top+bottom)
+    const availablePx = pxFromMm(297 - 10);
+
+    let maxH = 0;
+    $batchContainer.querySelectorAll('.sheet').forEach(s => {
+      // Use getBoundingClientRect for sub-pixel accuracy
+      const h = s.getBoundingClientRect().height;
+      if (h > maxH) maxH = h;
+    });
+
+    // Guard against zero height
+    if (maxH <= 0) {
+      document.body.classList.remove('print-approx');
+      return;
+    }
+
+    // Compute scale with small safety margin
+    const rawScale = availablePx / maxH;
+    const scale = Math.max(0.65, Math.min(0.95, rawScale * 0.995));
+
+    document.documentElement.style.setProperty('--print-scale', scale.toFixed(3));
+
+    // Remove approximation class; print CSS will take over during printing
+    document.body.classList.remove('print-approx');
+  }
+
   function printRows(rows) {
     if (!rows || !rows.length) return;
-    // MODIFICATION: Hide the main app UI element during print preparation
-    $mainContent.style.display = 'none'; 
+
+    // Hide the main app UI element during print preparation
+    $mainContent.style.display = 'none';
+
+    // Render the sheets to batch container for measurement and printing
     $batchContainer.innerHTML = rows.map(r => `<div class='sheet'>${htmlReport(r)}</div>`).join('');
-    
-    // Slight delay to ensure DOM is ready before print dialog
+    $batchContainer.style.display = 'block';
+
+    // Next frame: compute dynamic scale, then print
     requestAnimationFrame(() => {
+      try {
+        computeAndSetPrintScale();
+      } catch (e) {
+        console.warn('Scale computation failed; using default', e);
+        // fallback: keep existing --print-scale
+      }
+      // Open print dialog
       window.print();
-      // MODIFICATION: Restore visibility after print dialog is initiated
-      $mainContent.style.display = 'block'; 
+      // Restore visibility after print dialog is initiated
+      $mainContent.style.display = 'block';
     });
-    
+
     toast('Opening print dialog…', 'warn', 1800);
     setStatus('Printing…', 'warn');
   }
@@ -961,7 +1038,11 @@
     });
     $('#closeErrBtn').addEventListener('click', () => $errorDlg.close());
 
-    window.addEventListener('afterprint', () => { $batchContainer.innerHTML = ''; setStatus('Ready', 'ok', 'Idle.'); });
+    window.addEventListener('afterprint', () => {
+      $batchContainer.innerHTML = '';
+      $batchContainer.style.display = 'none';
+      setStatus('Ready', 'ok', 'Idle.');
+    });
 
     window.addEventListener('error', (e) => { withErrorUI(() => { throw e.error || e.message || e; })(); });
     window.addEventListener('unhandledrejection', (e) => { withErrorUI(() => { throw e.reason || e; })(); });
