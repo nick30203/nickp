@@ -156,9 +156,9 @@
         display: flex; 
         align-items: flex-start;
         gap: 15px; 
-        margin: 16px 0 0; 
+        margin: 20px 0; /* Standard margin */
     }
-    /* V11/V13: Styled header for the chart area */
+    /* V13: Styled header for the chart area */
     .performance-label {
         font-weight: 800;
         color: var(--primary-text);
@@ -208,17 +208,23 @@
         text-align: center;
     }
 
-    /* V13: The Actual Bar Fill */
+    /* V13/V15: The Actual Bar Fill with custom colors */
     .chart-bar {
-        /* --bar-height is set dynamically in JS */
+        /* --bar-height and --bar-color are set dynamically in JS */
         height: var(--bar-height); 
         width: 100%;
         min-height: 3px; /* Ensure even a zero score is visible as a dot */
-        background: linear-gradient(to top, #1e40af, #3b82f6); /* Professional Gradient */
+        background: var(--bar-color); /* Use custom color variable */
         border-radius: 4px 4px 0 0; /* Rounded top corners */
-        box-shadow: 0 -2px 4px rgba(30, 64, 175, 0.2); /* Subtle shadow for depth */
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
         transition: height 0.5s ease-out;
     }
+    
+    /* V15: Custom Gradient definitions */
+    .bar-opener { background: linear-gradient(to top, #007bff, #5aa5ff); box-shadow: 0 -2px 4px rgba(0, 123, 255, 0.3); }
+    .bar-mid { background: linear-gradient(to top, #28a745, #5cb85c); box-shadow: 0 -2px 4px rgba(40, 167, 69, 0.3); }
+    .bar-end { background: linear-gradient(to top, #dc3545, #e06e78); box-shadow: 0 -2px 4px rgba(220, 53, 69, 0.3); }
+
 
     /* V13: Score Value Label (Above the bar) */
     .bar-value {
@@ -248,126 +254,78 @@
         font-size: 10px;
         white-space: nowrap;
     }
-    .chart-label.opener { color: #2563eb; }
-    .chart-label.mid { color: #059669; }
-    .chart-label.end { color: #dc2626; }
+    .chart-label.opener { color: #007bff; }
+    .chart-label.mid { color: #28a745; }
+    .chart-label.end { color: #dc3545; }
 
 
-    /* --- Comments & Footer (V7/V8/V9 - Minimized Space) --- */
-    .teacher-comments-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-top: 20px;
-        font-size: 12px;
+    /* --- V13: Footer Structure (Reverted from V14) --- */
+    .comments-row, .sign-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+      font-size: 12px;
     }
     .comments-block {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .comments-block > div:first-child {
-        font-weight: 700;
-        margin-bottom: 2px;
-        color: var(--accent);
-        border-bottom: 1px dashed #e5e7eb;
-        padding-bottom: 4px;
-        font-size: 13px;
-    }
-    .comments-block > div:nth-child(2) { /* The actual comment text */
-        min-height: 25px;
-        line-height: 1.3;
-        color: var(--primary-text);
-    }
-
-    .sign-row {
-        display: grid;
-        /* V9: Adjusted column count for Head Teacher block */
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        margin-top: 4px;
-    }
-    /* Specific adjustment for HT block which now only has a signature */
-    #ht-block .sign-row {
-        grid-template-columns: 1fr; /* Only one column for signature */
-    }
-    /* Specific adjustment for CT block which has name and signature */
-    #ct-block .sign-row {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .sign {
-        border: none;
-        border-bottom: 1px solid #9ca3af; /* A line for signature */
-        padding: 0;
-        border-radius: 0;
-        min-height: 25px;
-        background: transparent;
-        line-height: 1.2;
-        font-size: 11px;
-        display: flex;
-        align-items: flex-end;
-        padding-bottom: 2px;
-    }
-    .sign b {
-        color: #374151;
-        font-weight: 600;
-        margin-right: 4px;
-    }
-
-    /* Parent Comments (V9 - Minimized Space) */
-    .parent-comments {
-        margin-top: 15px;
-        font-size: 12px;
-    }
-    .parent-comments .block {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .parent-comments .block > div:first-child {
-        font-weight: 700;
-        margin-bottom: 2px;
-        color: #9d5a0d;
-        border-bottom: 1px dashed #fcd34d;
-        padding-bottom: 4px;
-        font-size: 13px;
-    }
-    .parent-comments .sign-row {
-        grid-template-columns: 1.2fr 1.8fr 1fr;
-        gap: 10px;
-        margin-top: 4px;
-    }
-    /* Specific styling for parent comment block to ensure proper alignment */
-    .parent-comments .sign-row .sign:nth-child(2) { /* The parent comment field */
-      grid-column: span 1;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      gap: 4px;
+    }
+    .comments-block > div:first-child {
+      font-weight: 700;
+      margin-bottom: 0px; 
+      color: var(--accent);
+      border-bottom: 1px dashed #e5e7eb;
+      padding-bottom: 4px;
+      font-size: 13px;
+    }
+    .comments-block > div:nth-child(2) { /* The actual comment text */
+      min-height: 30px; 
+      line-height: 1.3;
+      color: var(--primary-text);
+    }
+    .sign-row {
+      margin-top: 10px;
+      padding: 5px 0;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .sign-row.foot-dates {
+      margin-top: 10px;
+      padding: 5px 0;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .sign {
+      border: none;
       border-bottom: 1px solid #9ca3af;
+      padding: 0;
+      border-radius: 0;
+      min-height: 25px; 
+      background: transparent;
+      line-height: 1.2;
+      font-size: 11px;
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 2px;
     }
-    .parent-comments .sign-row .sign:nth-child(2) b {
-        white-space: nowrap;
-        margin-bottom: 2px;
+    .sign b {
+      color: #374151;
+      font-weight: 600;
+      margin-right: 4px;
+      white-space: nowrap;
     }
+    .sign-row .right-col {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .sign-row .right-col .sign:last-child {
+        margin-top: auto;
+    }
+    .small { color: var(--muted-text); font-size: 10px; text-align: center; margin-top: 10px; }
 
-
-    /* Foot Dates (V9 - Minimized Space) */
-    .foot-dates {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-top: 15px;
-        font-size: 12px;
-    }
-    .foot-dates .sign {
-        background: transparent;
-        border: none;
-        border-bottom: 1px solid #9ca3af;
-        min-height: 25px;
-    }
-    
-    .small { color: var(--muted-text); font-size: 10px; text-align: center; margin-top: 16px; }
 
     /* --- Toasts & Dialogs --- (Unchanged) */
     .toasts { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
@@ -414,7 +372,7 @@
       table.report { font-size: 10.5px; }
       table.report th, table.report td { padding: 5px 2px; border-color: #000; } /* Adjusted padding for print */
       .meta { font-size: 11px; padding: 6px; }
-      .comments-block, .parent-comments .block { min-height: auto; padding: 0; } /* No min-height or padding in print */
+      .comments-block { min-height: auto; padding: 0; } /* No min-height or padding in print */
       .mini-chart-wrap { height: 75px; } /* Adjusted height for print */
       .mini-chart { height: 60px; padding-bottom: 8px;}
       .chart-bar { min-height: 2px; }
@@ -425,13 +383,6 @@
       .report { table-layout: fixed; word-wrap: break-word; }
       /* Adjust print width to match screen ratio */
       table.report thead th:first-child { width: 18%; }
-      .sign-row { gap: 8px; margin-top: 6px; }
-      .sign { padding: 0; min-height: 20px; border-bottom: 1px solid #000; font-size: 10px; } /* Print signature line */
-      .sign b { margin-right: 2px; }
-      .performance-section { gap: 10px; margin: 10px 0 0;}
-      .performance-label { font-size: 11px; width: 30%; } /* Adjusted for print */
-      .comments-block > div:first-child { font-size: 12px; margin-bottom: 0px; padding-bottom: 2px; }
-      .comments-block > div:nth-child(2) { min-height: 20px; } /* Min height for comment text in print */
     }
   </style>
 </head>
@@ -709,7 +660,7 @@
     return percent; 
   }
 
-  /** Generates the performance bar chart HTML (V13) */
+  /** Generates the performance bar chart HTML (V15: Different Colors) */
   function htmlChartTotals(oSc, mSc, eSc) {
     const totalMax = Math.max(oSc, mSc, eSc, 10); // Use a baseline max of 10 for very low scores
     
@@ -722,15 +673,15 @@
         <div class="mini-chart" role="img" aria-label="Performance bar chart">
             <div class="bar-item">
                 <span class="bar-value">${oSc}</span>
-                <div class="chart-bar" style="--bar-height: ${hOpener}%" title="Opener Total: ${oSc}"></div>
+                <div class="chart-bar bar-opener" style="--bar-height: ${hOpener}%" title="Opener Total: ${oSc}"></div>
             </div>
             <div class="bar-item">
                 <span class="bar-value">${mSc}</span>
-                <div class="chart-bar" style="--bar-height: ${hMid}%" title="Midterm Total: ${mSc}"></div>
+                <div class="chart-bar bar-mid" style="--bar-height: ${hMid}%" title="Midterm Total: ${mSc}"></div>
             </div>
             <div class="bar-item">
                 <span class="bar-value">${eSc}</span>
-                <div class="chart-bar" style="--bar-height: ${hEnd}%" title="End term Total: ${eSc}"></div>
+                <div class="chart-bar bar-end" style="--bar-height: ${hEnd}%" title="End term Total: ${eSc}"></div>
             </div>
         </div>
         <div class="chart-labels">
@@ -741,16 +692,16 @@
     </div>`;
   }
 
-  /** Generates the full HTML for a single report form (V13) */
+  /** Generates the full HTML for a single report form (V13/V15) */
   function htmlReport(row) {
     const school = { name: 'ITIATI JUNIOR SCHOOL', address1: 'P.O. BOX 160-10101', town: 'KARATINA', motto: 'HARDWORK FOR EXCELLENCE' };
     const pupilName = row["Pupil's Name"] || row["Pupil Name"] || ''; const grade = row["Grade"] ?? ''; const term = row["Term"] ?? ''; const year = row["Year"] ?? '';
     
-    // Teacher/Headteacher fields for the two-column comments section
+    // Teacher/Headteacher fields 
     const ctComment = row["Class_Teacher_Comment"] || ''; const ctName = row["Class_Teacher_Name"] || ''; const ctSign = row["Class_Teacher_Signature"] || row["Class_Teacher_Sign"] || ''; 
     const htComment = row["Head_Teacher_Comment"] || ''; const htName = row["Head_Teacher_Name"] || ''; const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || ''; 
     
-    // New fields for Parent/Guardian
+    // Parent/Guardian fields
     const parentComment = row["Parent_Comment"] || ''; const parentName = row["Parent_Name"] || ''; const parentSign = row["Parent_Signature"] || row["Parent_Sign"] || '';
     
     const closingDate = row["Closing_Date"] || row["Closing Date"] || ''; const openingDate = row["Opening_Date"] || row["Opening Date"] || '';
@@ -796,40 +747,45 @@
         ${htmlChartTotals(total.oSc, total.mSc, total.eSc)}
       </div>
       
-      <div class="teacher-comments-row">
-        <div class="comments-block" id="ct-block">
-            <div>CLASS TEACHER</div>
+      <div class="comments-row">
+        <div class="comments-block">
+            <div>CLASS TEACHER'S COMMENT</div>
             <div>${escapeHTML(ctComment) || 'Comment...'}</div>
-            <div class="sign-row">
-                <div class="sign"><b>Name:</b> ${escapeHTML(ctName)}</div>
-                <div class="sign"><b>Signature:</b> ${escapeHTML(ctSign)}</div>
-            </div>
         </div>
-        
-        <div class="comments-block" id="ht-block">
-            <div>HEAD TEACHER</div>
+        <div class="comments-block">
+            <div>HEAD TEACHER'S COMMENT</div>
             <div>${escapeHTML(htComment) || 'Comment...'}</div>
-            <div class="sign-row">
-                <div class="sign"><b>Signature:</b> ${escapeHTML(htSign)}</div>
-            </div>
         </div>
       </div>
       
-      <div class="parent-comments">
-          <div class="block">
-              <div>PARENT/GUARDIAN</div>
-              <div class="sign-row">
-                  <div class="sign"><b>Name:</b> ${escapeHTML(parentName)}</div>
-                  <div class="sign"><b>Comment:</b> ${escapeHTML(parentComment)}</div>
-                  <div class="sign"><b>Signature:</b> ${escapeHTML(parentSign)}</div>
-              </div>
-          </div>
+      <div class="sign-row">
+        <div class="sign"><b>Class Teacher Name:</b> ${escapeHTML(ctName)}</div>
+        <div class="sign"><b>Head Teacher Name:</b> ${escapeHTML(htName)}</div>
       </div>
       
-      <div class="foot-dates">
-          <div class="sign"><b>CLOSING DATE:</b> ${escapeHTML(closingDate)}</div>
-          <div class="sign"><b>OPENING DATE:</b> ${escapeHTML(openingDate)}</div>
+      <div class="sign-row">
+          <div class="sign"><b>CT Signature:</b> ${escapeHTML(ctSign)}</div>
+          <div class="sign"><b>HT Signature:</b> ${escapeHTML(htSign)}</div>
       </div>
+
+      <div class="comments-row" style="margin-top: 20px;">
+        <div class="comments-block">
+            <div>PARENT/GUARDIAN'S FEEDBACK</div>
+            <div>${escapeHTML(parentComment) || 'Comment...'}</div>
+        </div>
+        <div class="comments-block">
+            <div style="border-bottom: none; padding-bottom: 0; font-size: 12px; color: var(--primary-text);">
+                <div class="sign" style="min-height: 25px;"><b>Parent Name:</b> ${escapeHTML(parentName)}</div>
+                <div class="sign" style="min-height: 25px; margin-top: 10px;"><b>Parent Signature:</b> ${escapeHTML(parentSign)}</div>
+            </div>
+        </div>
+      </div>
+
+      <div class="sign-row foot-dates">
+        <div class="sign"><b>Closing Date:</b> ${escapeHTML(closingDate)}</div>
+        <div class="sign"><b>Opening Date:</b> ${escapeHTML(openingDate)}</div>
+      </div>
+      
       <div class="small">This report is designed to fit on a single A4 page when printed at 100% scale.</div>`;
   }
 
