@@ -80,7 +80,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .chip { display: inline-flex; align-items: center; gap: 6px; background: #e0f2fe; color: var(--accent); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; border: 1px solid rgba(30, 64, 175, 0.1); }
 
-    /* --- [NEW] Navigation Drawer & Hamburger --- */
+    /* --- Navigation Drawer & Hamburger --- */
     .hamburger-btn {
         background: transparent;
         border: none;
@@ -120,6 +120,9 @@
     .nav-header {
         padding: 16px 20px;
         border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     .nav-header h3 {
         margin: 0;
@@ -131,6 +134,7 @@
         padding: 16px 0;
         margin: 0;
         flex-grow: 1;
+        overflow-y: auto;
     }
     .nav-links li a {
         display: flex;
@@ -147,6 +151,14 @@
     .nav-links li a:hover {
         background-color: #f9fafb;
         border-left-color: var(--accent);
+    }
+    /* [NEW] Style for reset link */
+    .nav-links li a.danger-link {
+        color: var(--danger);
+    }
+    .nav-links li a.danger-link:hover {
+        background-color: #fef2f2;
+        border-left-color: var(--danger);
     }
     .nav-links .separator {
         height: 1px;
@@ -169,7 +181,6 @@
         opacity: 1;
         visibility: visible;
     }
-    /* --- [END NEW] --- */
 
     /* File Drop Zone */
     #drop_zone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
@@ -231,23 +242,20 @@
     table.report th, table.report td { border: 1px solid #d1d5db; padding: 7px 4px; text-align: center; word-break: break-word; }
     table.report th { background-color: var(--header-bg); font-weight: 700; color: var(--primary-text); }
     
-    /* Fixed Width for Learning Area */
     table.report thead th:first-child { 
-        width: 18%; /* Set Learning Area to 18% width */
-        min-width: 18%; /* Ensure it holds the width */
+        width: 18%; 
+        min-width: 18%;
     } 
-    /* Increased row padding for better readability */
     table.report tbody td { padding: 9px 4px; } 
-
     table.report tbody tr:nth-child(even) { background-color: #f9fafb; }
     table.report td.label { text-align: left; padding-left: 10px; font-weight: 600; color: #374151; }
 
-    /* --- Mini Chart & Label (V15 - Professional Bar Graph with Colors) --- */
+    /* --- Mini Chart & Label --- */
     .performance-section {
         display: flex; 
         align-items: flex-start;
         gap: 15px; 
-        margin: 15px 0; /* Reduced margin to save vertical space */
+        margin: 15px 0;
     }
     .performance-label {
         font-weight: 800;
@@ -268,7 +276,7 @@
         border-left: 1px solid var(--border-color); 
         padding-left: 15px;
         position: relative;
-        height: 90px; /* Reduced height slightly to save space */
+        height: 90px;
     }
 
     .mini-chart { 
@@ -276,9 +284,9 @@
         justify-content: space-around;
         align-items: flex-end; 
         position: relative;
-        height: 65px; /* Height of the actual plotting area */
+        height: 65px;
         width: 100%;
-        border-bottom: 1px solid #ccc; /* X-axis baseline */
+        border-bottom: 1px solid #ccc;
         margin-top: 5px; 
         padding-bottom: 10px; 
         box-sizing: content-box;
@@ -304,11 +312,9 @@
         transition: height 0.5s ease-out;
     }
     
-    /* V15: Custom Gradient definitions */
     .bar-opener { background: linear-gradient(to top, #007bff, #5aa5ff); box-shadow: 0 -2px 4px rgba(0, 123, 255, 0.3); }
     .bar-mid { background: linear-gradient(to top, #28a745, #5cb85c); box-shadow: 0 -2px 4px rgba(40, 167, 69, 0.3); }
     .bar-end { background: linear-gradient(to top, #dc3545, #e06e78); box-shadow: 0 -2px 4px rgba(220, 53, 69, 0.3); }
-
 
     .bar-value {
         font-size: 10px;
@@ -340,8 +346,7 @@
     .chart-label.mid { color: #28a745; }
     .chart-label.end { color: #dc3545; }
 
-
-    /* --- V13: Compact Footer Structure (Reverted from V14) --- */
+    /* --- Footer Structure --- */
     .comments-row, .sign-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -362,8 +367,8 @@
       padding-bottom: 4px;
       font-size: 13px;
     }
-    .comments-block > div:nth-child(2) { /* The actual comment text */
-      min-height: 30px; /* Reduced min-height */
+    .comments-block > div:nth-child(2) {
+      min-height: 30px;
       line-height: 1.3;
       color: var(--primary-text);
     }
@@ -384,7 +389,7 @@
       border-bottom: 1px solid #9ca3af;
       padding: 0;
       border-radius: 0;
-      min-height: 20px; /* Reduced sign line height */
+      min-height: 20px;
       background: transparent;
       line-height: 1.2;
       font-size: 11px;
@@ -408,8 +413,7 @@
     }
     .small { color: var(--muted-text); font-size: 10px; text-align: center; margin-top: 10px; }
 
-
-    /* --- Toasts & Dialogs --- (Unchanged) */
+    /* --- Toasts & Dialogs --- */
     .toasts { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
     .toast {
       background: #27272a; color: white; padding: 12px 16px; border-radius: 8px;
@@ -432,7 +436,7 @@
     #confirmDlg .dlg-hd { background: #fffbeb; color: #854d0e; }
     pre.err { background: #f9fafb; border: 1px solid var(--border-color); padding: 12px; max-height: 240px; overflow: auto; border-radius: 6px; font-size: 13px; }
 
-    /* --- [NEW] Details Dialog --- */
+    /* --- Details Dialog --- */
     .details-form { display: grid; grid-template-columns: 1fr; gap: 16px; }
     .details-form .input-group { display: flex; flex-direction: column; gap: 6px; }
     .details-form label { font-weight: 600; font-size: 13px; color: var(--primary-text); }
@@ -449,7 +453,7 @@
     @media print {
       @page { size: A4 portrait; margin: 8mm; } 
       html, body { height: auto !important; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .bar, .panel, .statusbar, .toasts, #singleView, .nav-drawer, .nav-backdrop { display: none !important; } /* [MODIFIED] */
+      .bar, .panel, .statusbar, .toasts, #singleView, .nav-drawer, .nav-backdrop { display: none !important; }
       #batchContainer { display: block !important; }
       .sheet {
         width: 100%; margin: 0; padding: 6mm; border: none; border-radius: 0; box-shadow: none;
@@ -461,9 +465,9 @@
       table.report th, table.report td { padding: 5px 2px; border-color: #000; } 
       .meta { font-size: 11px; padding: 6px; }
       .comments-block { min-height: auto; padding: 0; } 
-      .comments-block > div:nth-child(2) { min-height: 20px; } /* Even smaller min-height for print comment area */
+      .comments-block > div:nth-child(2) { min-height: 20px; }
       .mini-chart-wrap { height: 75px; }
-      .mini-chart { height: 50px; padding-bottom: 8px;} /* Reduced chart size for print */
+      .mini-chart { height: 50px; padding-bottom: 8px;}
       .chart-bar { min-height: 2px; }
       .bar-value { font-size: 9px; margin-bottom: 1px;}
       .chart-labels { font-size: 9px; padding-left: 15px; }
@@ -471,8 +475,6 @@
       .small { font-size: 9px; margin-top: 10px; }
       .report { table-layout: fixed; word-wrap: break-word; }
       table.report thead th:first-child { width: 18%; }
-      
-      /* Print-specific footer adjustments for single page */
       .comments-row, .sign-row { margin-top: 8px; gap: 10px; }
       .sign { min-height: 15px; }
       .sign-row.foot-dates { margin-top: 8px; }
@@ -480,7 +482,7 @@
   </style>
 </head>
 <body>
-<!-- [NEW] Navigation Drawer -->
+
 <div class="nav-backdrop" id="navBackdrop"></div>
 <aside class="nav-drawer" id="navDrawer">
     <div class="nav-header">
@@ -489,7 +491,7 @@
     <ul class="nav-links">
         <li><a href="#" id="navLoadWorkbook">
             <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
-            Load Workbook
+            Load New Workbook
         </a></li>
         <li><a href="#" id="navDetails">
             <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>
@@ -517,17 +519,20 @@
             <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6 3.75m10.56 0L18 3.75m0 0a45.093 45.093 0 00-3.72-.321M3 3h18M3 7.5h18M3 12h18m-9 3.75h.008v.008H12v-.008z" /></svg>
             Print Current Report
         </a></li>
+        <!-- [NEW] Clear Session Link -->
+        <li class="separator"></li>
+        <li><a href="#" id="navClearSession" class="danger-link">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75L14.25 12m0 0l2.25 2.25M14.25 12L12 14.25m-2.58 4.92l-6.375-6.375a1.125 1.125 0 010-1.59L9 4.5l4.5 4.5L18 4.5l2.25 2.25l-6.375 6.375a1.125 1.125 0 01-1.59 0z" /></svg>
+            Clear & Reset Session
+        </a></li>
     </ul>
 </aside>
-<!-- [END NEW] -->
 
 <div class="app">
   <div class="bar" role="toolbar" aria-label="Main toolbar">
-    <!-- [NEW] Hamburger Button -->
     <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu">
         <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
     </button>
-    <!-- [END NEW] -->
     <div class="group" style="flex: 1;">
       <div id="drop_zone">
         <input type="file" id="file" accept=".xlsx,.xls" hidden />
@@ -619,7 +624,6 @@
   </div>
 </dialog>
 
-<!-- [NEW] Details Dialog -->
 <dialog id="detailsDlg">
   <div class="dlg-hd">Report & School Details</div>
   <div class="dlg-bd">
@@ -651,35 +655,24 @@
 
   // --- Configuration ---
   const SUBJECTS = [
-    { key:'ENG',     label:'ENGLISH' },
-    { key:'COMP',    label:'COMPOSITION' },
-    { key:'KISW',    label:'KISWAHILI' },
-    { key:'INSHA',   label:'INSHA' },
-    { key:'MATH',    label:'MATHEMATICS' },
-    { key:'SCIE',    label:'INTER/SCIE' },
-    { key:'SST',     label:'S/S' },
-    { key:'CRE',     label:'CRE' },
-    { key:'AGRI',    label:'AGRI/NUT' },
-    { key:'CA',      label:'C/ART' },
+    { key:'ENG',     label:'ENGLISH' }, { key:'COMP',    label:'COMPOSITION' },
+    { key:'KISW',    label:'KISWAHILI' }, { key:'INSHA',   label:'INSHA' },
+    { key:'MATH',    label:'MATHEMATICS' }, { key:'SCIE',    label:'INTER/SCIE' },
+    { key:'SST',     label:'S/S' }, { key:'CRE',     label:'CRE' },
+    { key:'AGRI',    label:'AGRI/NUT' }, { key:'CA',      label:'C/ART' },
     { key:'PRETECH', label:'PRE-TECH' },
   ];
-  const MARK_KEYS = SUBJECTS.flatMap(s => [
-    `${s.key}_Opener`, `${s.key}_Opener_OutOf`,
-    `${s.key}_Mid`,    `${s.key}_Mid_OutOf`,
-    `${s.key}_End`,    `${s.key}_End_OutOf`
-  ]);
+  const MARK_KEYS = SUBJECTS.flatMap(s => [`${s.key}_Opener`, `${s.key}_Opener_OutOf`, `${s.key}_Mid`, `${s.key}_Mid_OutOf`, `${s.key}_End`, `${s.key}_End_OutOf`]);
   const DEFAULT_THRESHOLDS = [{min:81,grade:'EE'},{min:50,grade:'ME'},{min:26,grade:'AE'},{min:0,grade:'BE'}];
+  const STORAGE_KEY = 'cbcReportFormData'; // [NEW] Key for localStorage
 
-  // --- [MODIFIED] DOM References ---
+  // --- DOM References ---
   const $ = sel => document.querySelector(sel);
   const $$ = sel => document.querySelectorAll(sel);
   
-  // Navigation
   const $hamburgerBtn = $('#hamburgerBtn');
   const $navDrawer = $('#navDrawer');
   const $navBackdrop = $('#navBackdrop');
-
-  // Toolbar & File
   const $dropZone = $('#drop_zone');
   const $fileInput = $('#file');
   const $filename = $('#filename');
@@ -687,14 +680,10 @@
   const $printFilteredBtn = $('#printFilteredBtn');
   const $downloadExcelLink = $('#downloadExcelLink');
   const $unsavedChip = $('#unsavedChip');
-
-  // Main UI
   const $statusBar = $('#statusBar');
   const $statusLeft = $('#statusBar .left');
   const $statusDetails = $('#statusBar .right');
   const $mainContent = $('#mainContent');
-
-  // Filters
   const $filtersPanel = $('#filtersPanel');
   const $learnerSel = $('#learnerSel');
   const $fGender = $('#fGender');
@@ -702,8 +691,6 @@
   const $applyFiltersBtn = $('#applyFiltersBtn');
   const $clearFiltersBtn = $('#clearFiltersBtn');
   const $matchCountChip = $('#matchCountChip');
-
-  // Editor
   const $editorPanel = $('#editorPanel');
   const $phaseSel = $('#phaseSel');
   const $marksBody = $('#marksBody');
@@ -711,635 +698,191 @@
   const $applyOutOfAllBtn = $('#applyOutOfAllBtn');
   const $singleSheet = $('#singleSheet');
   const $batchContainer = $('#batchContainer');
-
-  // Dialogs & Toasts
   const $toasts = $('#toasts');
   const $errorDlg = $('#errorDlg');
   const $errDetails = $('#errDetails');
   const $confirmDlg = $('#confirmDlg');
   const $confirmMsg = $('#confirmMsg');
-  const $detailsDlg = $('#detailsDlg'); // [NEW]
+  const $detailsDlg = $('#detailsDlg');
 
   // --- Application State ---
   let learners = [];
   let originalLearnersSnapshot = [];
   let thresholds = DEFAULT_THRESHOLDS;
   let filteredLearners = [];
-  let originalWb = null;
+  let originalWb = null; // Note: This cannot be persisted in localStorage
   let headerIndexMap = {};
   let unsavedChanges = false;
-  // [NEW] Report Metadata State
   let reportDetails = {
-    schoolName: 'ITIATI JUNIOR SCHOOL',
-    address1: 'P.O. BOX 160-10101',
-    town: 'KARATINA',
-    motto: 'HARDWORK FOR EXCELLENCE',
+    schoolName: 'ITIATI JUNIOR SCHOOL', address1: 'P.O. BOX 160-10101',
+    town: 'KARATINA', motto: 'HARDWORK FOR EXCELLENCE',
     titleTemplate: 'END TERM {term} ASSESSMENT - YEAR {year}',
     headteacherName: ''
   };
 
   // Persisted sheet visual properties for high-fidelity saving
   let learnersSheetName = null;
-  let learnersSheetCols = null;
-  let learnersSheetRows = null;
-  let learnersSheetMerges = null;
-  let originalWorkbookViews = null;
-  let originalWorkbookProps = null;
-  let sheetSavedViews = null;
+  let learnersSheetCols = null; let learnersSheetRows = null; let learnersSheetMerges = null;
+  let originalWorkbookViews = null; let originalWorkbookProps = null; let sheetSavedViews = null;
+
+  // --- [NEW] Persistence Logic ---
+
+  /**
+   * Saves the entire application state to localStorage for persistence.
+   * This is triggered after any significant data change.
+   */
+  function saveStateToLocalStorage() {
+    // Do not save if no data is loaded.
+    if (!learners || learners.length === 0) return;
+
+    // A-ssemble the state object with all data that can be stringified.
+    const stateToSave = {
+        learners,
+        originalLearnersSnapshot,
+        reportDetails,
+        thresholds,
+        learnersSheetName,
+        headerIndexMap,
+        fileName: $filename.textContent
+    };
+
+    try {
+        // Convert the state to a JSON string and save it.
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    } catch (e) {
+        console.error("Failed to save state to localStorage:", e);
+        toast("Could not save session data. Storage might be full.", "error");
+    }
+  }
+  
+  /**
+   * Loads and restores the application state from localStorage on page load.
+   */
+  function loadStateFromLocalStorage() {
+    try {
+        const savedStateJSON = localStorage.getItem(STORAGE_KEY);
+        if (!savedStateJSON) return; // No saved state found.
+
+        const savedState = JSON.parse(savedStateJSON);
+
+        // Restore all state variables from the saved object.
+        learners = savedState.learners;
+        originalLearnersSnapshot = savedState.originalLearnersSnapshot;
+        reportDetails = savedState.reportDetails;
+        thresholds = savedState.thresholds;
+        learnersSheetName = savedState.learnersSheetName;
+        headerIndexMap = savedState.headerIndexMap;
+        
+        // --- Hydrate the UI with restored data ---
+        $mainContent.style.display = 'block';
+        $dropZone.querySelector('p').style.display = 'none';
+        $filename.textContent = savedState.fileName;
+
+        hydrateGrades();
+        clearFilters(); // This will populate dropdowns and render the first learner.
+        
+        // Mark the session as having "unsaved" changes since it's loaded from storage, not a file.
+        showUnsaved(true);
+
+        // Inform the user that the session was restored and explain the download limitation.
+        setStatus('Session Restored', 'warn', `Re-upload '${savedState.fileName}' to enable Excel download.`);
+        toast('Restored your previous session.', 'success');
+
+    } catch (e) {
+        console.error("Failed to load state from localStorage:", e);
+        toast("Could not restore session data. It may be corrupt.", "error");
+        // Clear corrupt data to prevent reload loops.
+        localStorage.removeItem(STORAGE_KEY);
+    }
+  }
 
   // --- UI & Utility Helpers ---
   
-  /** Shows a status message in the status bar */
-  function setStatus(msg, type = 'ok', details = '') {
-    $statusBar.style.display = 'flex';
-    $statusBar.className = `statusbar ${type}`;
-    $statusLeft.textContent = msg;
-    $statusDetails.textContent = details;
-  }
-  
-  /** Displays a toast notification */
-  function toast(msg, type = 'success', timeout = 2500) {
-    const el = document.createElement('div');
-    el.className = `toast ${type}`;
-    el.textContent = msg;
-    $toasts.appendChild(el);
-    setTimeout(() => {
-      el.classList.add('exiting');
-      el.addEventListener('animationend', () => el.remove());
-    }, timeout);
-  }
-
-  /** Wraps a function in robust error handling UI */
-  function withErrorUI(fn) {
-    return async (...args) => {
-      try {
-        return await fn(...args);
-      } catch (err) {
-        console.error(err);
-        const details = `Message: ${err?.message || err}\n\nStack:\n${err?.stack || '(no stack)'}`;
-        $errDetails.textContent = details;
-        $errorDlg.showModal();
-        setStatus('Action failed', 'err', err.message);
-        toast('Something went wrong', 'error');
-      }
-    };
-  }
-  
-  /** Shows a confirmation dialog */
-  function confirmAction(message) {
-    return new Promise(resolve => {
-      $confirmMsg.textContent = message;
-      $confirmDlg.showModal();
-      const onConfirm = () => { cleanup(); resolve(true); };
-      const onCancel = () => { cleanup(); resolve(false); };
-      const cleanup = () => {
-        $('#confirmOkBtn').removeEventListener('click', onConfirm);
-        $('#confirmCancelBtn').removeEventListener('click', onCancel);
-        $confirmDlg.close();
-      };
-      $('#confirmOkBtn').addEventListener('click', onConfirm, { once: true });
-      $('#confirmCancelBtn').addEventListener('click', onCancel, { once: true });
-      // Dialog close with Escape key or backdrop click also cancels
-      $confirmDlg.onclose = onCancel;
-    });
-  }
-
-  /** Toggles the loading state of a button */
-  function setButtonLoading(button, isLoading) {
-    if (isLoading) {
-      button.disabled = true;
-      button.dataset.originalText = button.innerHTML;
-      button.innerHTML = `<span class="spinner"></span> Loading...`;
-    } else {
-      button.disabled = false;
-      button.innerHTML = button.dataset.originalText || 'Action';
-    }
-  }
-
-  /** Updates the unsaved changes indicator */
-  function showUnsaved(flag) {
-    unsavedChanges = flag;
-    $unsavedChip.style.display = flag ? 'inline-flex' : 'none';
-    $downloadExcelLink.setAttribute('aria-disabled', !flag);
-  }
+  function setStatus(msg, type = 'ok', details = '') { $statusBar.style.display = 'flex'; $statusBar.className = `statusbar ${type}`; $statusLeft.textContent = msg; $statusDetails.textContent = details; }
+  function toast(msg, type = 'success', timeout = 2500) { const el = document.createElement('div'); el.className = `toast ${type}`; el.textContent = msg; $toasts.appendChild(el); setTimeout(() => { el.classList.add('exiting'); el.addEventListener('animationend', () => el.remove()); }, timeout); }
+  function withErrorUI(fn) { return async (...args) => { try { return await fn(...args); } catch (err) { console.error(err); const details = `Message: ${err?.message || err}\n\nStack:\n${err?.stack || '(no stack)'}`; $errDetails.textContent = details; $errorDlg.showModal(); setStatus('Action failed', 'err', err.message); toast('Something went wrong', 'error'); } }; }
+  function confirmAction(message) { return new Promise(resolve => { $confirmMsg.textContent = message; $confirmDlg.showModal(); const onConfirm = () => { cleanup(); resolve(true); }; const onCancel = () => { cleanup(); resolve(false); }; const cleanup = () => { $('#confirmOkBtn').removeEventListener('click', onConfirm); $('#confirmCancelBtn').removeEventListener('click', onCancel); $confirmDlg.close(); }; $('#confirmOkBtn').addEventListener('click', onConfirm, { once: true }); $('#confirmCancelBtn').addEventListener('click', onCancel, { once: true }); $confirmDlg.onclose = onCancel; }); }
+  function setButtonLoading(button, isLoading) { if (isLoading) { button.disabled = true; button.dataset.originalText = button.innerHTML; button.innerHTML = `<span class="spinner"></span> Loading...`; } else { button.disabled = false; button.innerHTML = button.dataset.originalText || 'Action'; } }
+  function showUnsaved(flag) { unsavedChanges = flag; $unsavedChip.style.display = flag ? 'inline-flex' : 'none'; $downloadExcelLink.setAttribute('aria-disabled', !flag); }
   
   // --- Core Logic Helpers ---
   const getIndex = (row) => Number(row.Index ?? row.index ?? row.INDEX);
-  const pctGrade = (score, outOf) => {
-    if (outOf <= 0 || score === null || score === '') return { pct: 0, grade: 'BE' };
-    const pct = Math.max(0, Math.round((Number(score) / Number(outOf)) * 100));
-    const t = thresholds.find(t => pct >= t.min) || { grade: 'BE' };
-    return { pct, grade: t.grade };
-  };
+  const pctGrade = (score, outOf) => { if (outOf <= 0 || score === null || score === '') return { pct: 0, grade: 'BE' }; const pct = Math.max(0, Math.round((Number(score) / Number(outOf)) * 100)); const t = thresholds.find(t => pct >= t.min) || { grade: 'BE' }; return { pct, grade: t.grade }; };
   const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&quot;", "'": "&#39;" }[c]));
   const termWord = (n) => ({ 1: 'ONE', 2: 'TWO', 3: 'THREE' }[n] || String(n));
+  function calcGraphHeight(score, maxVal) { if (maxVal === 0 || score === 0) return 0; const percent = Math.min(100, (score / maxVal) * 100); return percent; }
+  function htmlChartTotals(oSc, mSc, eSc) { const totalMax = Math.max(oSc, mSc, eSc, 10); const hOpener = calcGraphHeight(oSc, totalMax); const hMid = calcGraphHeight(mSc, totalMax); const hEnd = calcGraphHeight(eSc, totalMax); return `<div class="mini-chart-wrap" aria-hidden="true"><div class="mini-chart" role="img" aria-label="Performance bar chart"><div class="bar-item"><span class="bar-value">${oSc}</span><div class="chart-bar bar-opener" style="--bar-height: ${hOpener}%" title="Opener Total: ${oSc}"></div></div><div class="bar-item"><span class="bar-value">${mSc}</span><div class="chart-bar bar-mid" style="--bar-height: ${hMid}%" title="Midterm Total: ${mSc}"></div></div><div class="bar-item"><span class="bar-value">${eSc}</span><div class="chart-bar bar-end" style="--bar-height: ${hEnd}%" title="End term Total: ${eSc}"></div></div></div><div class="chart-labels"><span class="chart-label opener">Opener</span><span class="chart-label mid">Midterm</span><span class="chart-label end">Endterm</span></div></div>`; }
+  function htmlReport(row) { const pupilName = row["Pupil's Name"] || row["Pupil Name"] || ''; const grade = row["Grade"] ?? ''; const term = row["Term"] ?? ''; const year = row["Year"] ?? ''; const ctComment = row["Class_Teacher_Comment"] || ''; const ctName = row["Class_Teacher_Name"] || ''; const ctSign = row["Class_Teacher_Signature"] || row["Class_Teacher_Sign"] || ''; const htComment = row["Head_Teacher_Comment"] || ''; const htName = row["Head_Teacher_Name"] || reportDetails.headteacherName || ''; const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || ''; const parentComment = row["Parent_Comment"] || ''; const parentName = row["Parent_Name"] || ''; const parentSign = row["Parent_Signature"] || row["Parent_Sign"] || ''; const closingDate = row["Closing_Date"] || row["Closing Date"] || ''; const openingDate = row["Opening_Date"] || row["Opening Date"] || ''; const subRows = SUBJECTS.map(s => { const oSc = Number(row[`${s.key}_Opener`]) || 0, oMax = Number(row[`${s.key}_Opener_OutOf`]) || 0; const mSc = Number(row[`${s.key}_Mid`]) || 0, mMax = Number(row[`${s.key}_Mid_OutOf`]) || 0; const eSc = Number(row[`${s.key}_End`]) || 0, eMax = Number(row[`${s.key}_End_OutOf`]) || 0; const oG = pctGrade(oSc, oMax).grade, mG = pctGrade(mSc, mMax).grade, eG = pctGrade(eSc, eMax).grade; return { label: s.label, oSc, oMax, oG, mSc, mMax, mG, eSc, eMax, eG }; }); const total = subRows.reduce((a, r) => { a.oSc += r.oSc; a.oMax += r.oMax; a.mSc += r.mSc; a.mMax += r.mMax; a.eSc += r.eSc; a.eMax += r.eMax; return a; }, { oSc: 0, oMax: 0, mSc: 0, mMax: 0, eSc: 0, eMax: 0 }); const title = reportDetails.titleTemplate.replace('{term}', termWord(Number(term))).replace('{year}', year); return `<div class="school-head"><h1 id="repSchoolName">${escapeHTML(reportDetails.schoolName)}</h1><div class="addr">${escapeHTML(reportDetails.address1)} • ${escapeHTML(reportDetails.town)}</div><div class="motto">${escapeHTML(reportDetails.motto)}</div></div><div class="key">KEY: <b>EE</b>–Exceeding Expectations, <b>ME</b>–Meeting Expectations, <b>AE</b>–Approaching Expectations, <b>BE</b>–Below Expectations</div><div class="title" id="repTitle">${escapeHTML(title)}</div><div class="meta"><div><label>PUPIL'S NAME:</label><div>${escapeHTML(pupilName)}</div></div><div><label>GRADE:</label><div>${escapeHTML(String(grade))}</div></div></div><table class="report" role="table" aria-label="Learner report"><thead><tr><th rowspan="2">LEARNING AREA</th><th colspan="3">OPENER</th><th colspan="3">MIDTERM</th><th colspan="3">END TERM</th></tr><tr><th>SCORE</th><th>OUTOF</th><th>GRADE</th><th>SCORE</th><th>OUTOF</th><th>GRADE</th><th>SCORE</th><th>OUTOF</th><th>GRADE</th></tr></thead><tbody>${subRows.map(r => `<tr><td class="label">${r.label}</td><td>${r.oSc}</td><td>${r.oMax}</td><td>${r.oG}</td><td>${r.mSc}</td><td>${r.mMax}</td><td>${r.mG}</td><td>${r.eSc}</td><td>${r.eMax}</td><td>${r.eG}</td></tr>`).join('')}</tbody></table><div class="performance-section"><div class="performance-label"><span class="label-style-1">Graphical</span> <span class="label-style-2">representation</span> of <span class="label-style-3">learner performance</span> this term</div>${htmlChartTotals(total.oSc, total.mSc, total.eSc)}</div><div class="comments-row"><div class="comments-block"><div>CLASS TEACHER'S COMMENT</div><div>${escapeHTML(ctComment) || 'Comment...'}</div></div><div class="comments-block"><div>HEAD TEACHER'S COMMENT</div><div>${escapeHTML(htComment) || 'Comment...'}</div></div></div><div class="sign-row"><div class="sign"><b>Class Teacher Name:</b> ${escapeHTML(ctName)}</div><div class="sign" id="repHeadteacherName"><b>Head Teacher Name:</b> ${escapeHTML(htName)}</div></div><div class="sign-row"><div class="sign"><b>CT Signature:</b> ${escapeHTML(ctSign)}</div><div class="sign"><b>HT Signature:</b> ${escapeHTML(htSign)}</div></div><div class="comments-row" style="margin-top: 20px;"><div class="comments-block"><div>PARENT/GUARDIAN'S FEEDBACK</div><div>${escapeHTML(parentComment) || 'Comment...'}</div></div><div class="comments-block"><div style="border-bottom: none; padding-bottom: 0; font-size: 12px; color: var(--primary-text);"><div class="sign" style="min-height: 20px;"><b>Parent Name:</b> ${escapeHTML(parentName)}</div><div class="sign" style="min-height: 20px; margin-top: 10px;"><b>Parent Signature:</b> ${escapeHTML(parentSign)}</div></div></div></div><div class="sign-row foot-dates"><div class="sign"><b>Closing Date:</b> ${escapeHTML(closingDate)}</div><div class="sign"><b>Opening Date:</b> ${escapeHTML(openingDate)}</div></div><div class="small">This report is designed to fit on a single A4 page when printed at 100% scale.</div>`; }
 
-  /** Calculates the height for a bar graph point (V13/V15) */
-  function calcGraphHeight(score, maxVal) {
-    if (maxVal === 0 || score === 0) return 0; 
-    // Calculate percentage height of the score relative to the max score
-    const percent = Math.min(100, (score / maxVal) * 100);
-    return percent; 
-  }
-
-  /** Generates the performance bar chart HTML (V15: Different Colors) */
-  function htmlChartTotals(oSc, mSc, eSc) {
-    const totalMax = Math.max(oSc, mSc, eSc, 10); // Use a baseline max of 10 for very low scores
-    
-    // Calculate heights as a percentage of the total max score
-    const hOpener = calcGraphHeight(oSc, totalMax);
-    const hMid = calcGraphHeight(mSc, totalMax);
-    const hEnd = calcGraphHeight(eSc, totalMax);
-
-    return `<div class="mini-chart-wrap" aria-hidden="true">
-        <div class="mini-chart" role="img" aria-label="Performance bar chart">
-            <div class="bar-item">
-                <span class="bar-value">${oSc}</span>
-                <div class="chart-bar bar-opener" style="--bar-height: ${hOpener}%" title="Opener Total: ${oSc}"></div>
-            </div>
-            <div class="bar-item">
-                <span class="bar-value">${mSc}</span>
-                <div class="chart-bar bar-mid" style="--bar-height: ${hMid}%" title="Midterm Total: ${mSc}"></div>
-            </div>
-            <div class="bar-item">
-                <span class="bar-value">${eSc}</span>
-                <div class="chart-bar bar-end" style="--bar-height: ${hEnd}%" title="End term Total: ${eSc}"></div>
-            </div>
-        </div>
-        <div class="chart-labels">
-            <span class="chart-label opener">Opener</span>
-            <span class="chart-label mid">Midterm</span>
-            <span class="chart-label end">Endterm</span>
-        </div>
-    </div>`;
-  }
-
-  /** [MODIFIED] Generates the full HTML for a single report form */
-  function htmlReport(row) {
-    // const school = { name: 'ITIATI JUNIOR SCHOOL', address1: 'P.O. BOX 160-10101', town: 'KARATINA', motto: 'HARDWORK FOR EXCELLENCE' };
-    const pupilName = row["Pupil's Name"] || row["Pupil Name"] || ''; const grade = row["Grade"] ?? ''; const term = row["Term"] ?? ''; const year = row["Year"] ?? '';
-    
-    // Teacher/Headteacher fields
-    const ctComment = row["Class_Teacher_Comment"] || ''; const ctName = row["Class_Teacher_Name"] || ''; const ctSign = row["Class_Teacher_Signature"] || row["Class_Teacher_Sign"] || ''; 
-    const htComment = row["Head_Teacher_Comment"] || ''; const htName = row["Head_Teacher_Name"] || reportDetails.headteacherName || ''; // Use state for HT name
-    const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || ''; 
-    
-    // Parent/Guardian fields
-    const parentComment = row["Parent_Comment"] || ''; const parentName = row["Parent_Name"] || ''; const parentSign = row["Parent_Signature"] || row["Parent_Sign"] || '';
-    
-    const closingDate = row["Closing_Date"] || row["Closing Date"] || ''; const openingDate = row["Opening_Date"] || row["Opening Date"] || '';
-    
-    const subRows = SUBJECTS.map(s => {
-      const oSc = Number(row[`${s.key}_Opener`]) || 0, oMax = Number(row[`${s.key}_Opener_OutOf`]) || 0;
-      const mSc = Number(row[`${s.key}_Mid`]) || 0, mMax = Number(row[`${s.key}_Mid_OutOf`]) || 0;
-      const eSc = Number(row[`${s.key}_End`]) || 0, eMax = Number(row[`${s.key}_End_OutOf`]) || 0;
-      const oG = pctGrade(oSc, oMax).grade, mG = pctGrade(mSc, mMax).grade, eG = pctGrade(eSc, eMax).grade;
-      return { label: s.label, oSc, oMax, oG, mSc, mMax, mG, eSc, eMax, eG };
-    });
-    // Calculate totals for the chart
-    const total = subRows.reduce((a, r) => { a.oSc += r.oSc; a.oMax += r.oMax; a.mSc += r.mSc; a.mMax += r.mMax; a.eSc += r.eSc; a.eMax += r.eMax; return a; }, { oSc: 0, oMax: 0, mSc: 0, mMax: 0, eSc: 0, eMax: 0 });
-    
-    const title = reportDetails.titleTemplate
-        .replace('{term}', termWord(Number(term)))
-        .replace('{year}', year);
-
-    return `<div class="school-head">
-        <h1 id="repSchoolName">${escapeHTML(reportDetails.schoolName)}</h1>
-        <div class="addr">${escapeHTML(reportDetails.address1)} • ${escapeHTML(reportDetails.town)}</div>
-        <div class="motto">${escapeHTML(reportDetails.motto)}</div>
-      </div>
-      <div class="key">KEY: <b>EE</b>–Exceeding Expectations, <b>ME</b>–Meeting Expectations, <b>AE</b>–Approaching Expectations, <b>BE</b>–Below Expectations</div>
-      <div class="title" id="repTitle">${escapeHTML(title)}</div>
-      <div class="meta">
-        <div><label>PUPIL'S NAME:</label><div>${escapeHTML(pupilName)}</div></div>
-        <div><label>GRADE:</label><div>${escapeHTML(String(grade))}</div></div>
-      </div>
-      <table class="report" role="table" aria-label="Learner report">
-        <thead>
-          <tr><th rowspan="2">LEARNING AREA</th><th colspan="3">OPENER</th><th colspan="3">MIDTERM</th><th colspan="3">END TERM</th></tr>
-          <tr><th>SCORE</th><th>OUTOF</th><th>GRADE</th><th>SCORE</th><th>OUTOF</th><th>GRADE</th><th>SCORE</th><th>OUTOF</th><th>GRADE</th></tr>
-        </thead>
-        <tbody>
-          ${subRows.map(r => `<tr><td class="label">${r.label}</td><td>${r.oSc}</td><td>${r.oMax}</td><td>${r.oG}</td><td>${r.mSc}</td><td>${r.mMax}</td><td>${r.mG}</td><td>${r.eSc}</td><td>${r.eMax}</td><td>${r.eG}</td></tr>`).join('')}
-        </tbody>
-      </table>
-      <div class="performance-section">
-        <div class="performance-label">
-            <span class="label-style-1">Graphical</span> 
-            <span class="label-style-2">representation</span> 
-            of <span class="label-style-3">learner performance</span> 
-            this term
-        </div>
-        ${htmlChartTotals(total.oSc, total.mSc, total.eSc)}
-      </div>
-      
-      <div class="comments-row">
-        <div class="comments-block">
-            <div>CLASS TEACHER'S COMMENT</div>
-            <div>${escapeHTML(ctComment) || 'Comment...'}</div>
-        </div>
-        <div class="comments-block">
-            <div>HEAD TEACHER'S COMMENT</div>
-            <div>${escapeHTML(htComment) || 'Comment...'}</div>
-        </div>
-      </div>
-      
-      <div class="sign-row">
-        <div class="sign"><b>Class Teacher Name:</b> ${escapeHTML(ctName)}</div>
-        <div class="sign" id="repHeadteacherName"><b>Head Teacher Name:</b> ${escapeHTML(htName)}</div>
-      </div>
-      
-      <div class="sign-row">
-          <div class="sign"><b>CT Signature:</b> ${escapeHTML(ctSign)}</div>
-          <div class="sign"><b>HT Signature:</b> ${escapeHTML(htSign)}</div>
-      </div>
-
-      <div class="comments-row" style="margin-top: 20px;">
-        <div class="comments-block">
-            <div>PARENT/GUARDIAN'S FEEDBACK</div>
-            <div>${escapeHTML(parentComment) || 'Comment...'}</div>
-        </div>
-        <div class="comments-block">
-            <div style="border-bottom: none; padding-bottom: 0; font-size: 12px; color: var(--primary-text);">
-                <div class="sign" style="min-height: 20px;"><b>Parent Name:</b> ${escapeHTML(parentName)}</div>
-                <div class="sign" style="min-height: 20px; margin-top: 10px;"><b>Parent Signature:</b> ${escapeHTML(parentSign)}</div>
-            </div>
-        </div>
-      </div>
-
-      <div class="sign-row foot-dates">
-        <div class="sign"><b>Closing Date:</b> ${escapeHTML(closingDate)}</div>
-        <div class="sign"><b>Opening Date:</b> ${escapeHTML(openingDate)}</div>
-      </div>
-      
-      <div class="small">This report is designed to fit on a single A4 page when printed at 100% scale.</div>`;
-  }
-
-  // --- Data Manipulation & Actions --- (Retained for functionality)
+  // --- Data Manipulation & Actions ---
   
-  function resetUI() {
-    $mainContent.style.display = 'none';
-    $statusBar.style.display = 'none';
-    $filename.textContent = '';
-    learners = [];
-    originalLearnersSnapshot = [];
-    filteredLearners = [];
-    originalWb = null;
-    showUnsaved(false);
-    $$('button, a.btn, select').forEach(el => el.disabled = true);
-    $dropZone.querySelector('p').style.display = 'block';
-    $fileInput.value = '';
-  }
-
-  function hydrateGrades() {
-    const grades = [...new Set(learners.map(r => String(r.Grade || '').trim()).filter(Boolean))].sort();
-    $fGrade.innerHTML = '<option value="">All</option>' + grades.map(g => `<option>${g}</option>`).join('');
-  }
+  function resetUI() { $mainContent.style.display = 'none'; $statusBar.style.display = 'none'; $filename.textContent = ''; learners = []; originalLearnersSnapshot = []; filteredLearners = []; originalWb = null; showUnsaved(false); $$('button, a.btn, select').forEach(el => el.disabled = true); $dropZone.querySelector('p').style.display = 'block'; $fileInput.value = ''; }
+  function hydrateGrades() { const grades = [...new Set(learners.map(r => String(r.Grade || '').trim()).filter(Boolean))].sort(); $fGrade.innerHTML = '<option value="">All</option>' + grades.map(g => `<option>${g}</option>`).join(''); }
+  function applyFilters() { const gender = ($fGender.value || '').trim().toUpperCase(); const grade = ($fGrade.value || '').trim(); filteredLearners = learners.filter(r => { if (gender && String(r.Gender || '').trim().toUpperCase() !== gender) return false; if (grade && String(r.Grade || '').trim() !== grade) return false; return true; }).sort((a, b) => getIndex(a) - getIndex(b)); hydrateLearnerDropdown(); if (filteredLearners.length) { $learnerSel.selectedIndex = 1; renderSelected(0); } else { $singleSheet.innerHTML = '<p style="text-align:center;padding:2rem;">No learners match the selected filters.</p>'; $marksBody.innerHTML = ''; } }
+  function clearFilters() { $fGender.value = ''; $fGrade.value = ''; applyFilters(); }
+  function hydrateLearnerDropdown() { $learnerSel.innerHTML = '<option value="">— Select a learner to view or edit —</option>' + filteredLearners.map((r, i) => { const idx = getIndex(r); const labelIdx = Number.isNaN(idx) ? `(${i + 1})` : idx; const name = r["Pupil's Name"] || `Learner ${i + 1}`; return `<option value="${i}">${labelIdx}. ${escapeHTML(name)}</option>`; }).join(''); const hasLearners = learners.length > 0; $$('button, a.btn, select').forEach(el => { if(el.id !== 'file' && !el.closest('.nav-drawer')) el.disabled = !hasLearners }); showUnsaved(unsavedChanges); $matchCountChip.textContent = `${filteredLearners.length} selected`; }
+  function renderSelected(index) { const row = filteredLearners[index]; if (!row) return; $singleSheet.innerHTML = `<div class="sheet">${htmlReport(row)}</div>`; buildMarksGrid(row); }
+  function buildMarksGrid(row) { const phase = $phaseSel.value; $marksBody.innerHTML = SUBJECTS.map(s => { const score = row[`${s.key}_${phase}`] ?? ''; const outOf = row[`${s.key}_${phase}_OutOf`] ?? ''; return `<tr data-key="${s.key}"><td>${s.label}</td><td><input type="number" step="0.01" class="score" value="${score}"></td><td><input type="number" step="0.01" class="outof" value="${outOf}"></td></tr>`; }).join(''); }
+  const currentSelectedRow = () => { const idx = Number($learnerSel.value); return (Number.isInteger(idx) && idx >= 0) ? filteredLearners[idx] : null; }
+  function savePhaseToLearner() { const row = currentSelectedRow(); if (!row) return; const phase = $phaseSel.value; $marksBody.querySelectorAll('tr').forEach(tr => { const key = tr.dataset.key; row[`${key}_${phase}`] = Number(tr.querySelector('input.score').value || 0); row[`${key}_${phase}_OutOf`] = Number(tr.querySelector('input.outof').value || 0); }); showUnsaved(true); renderSelected(Number($learnerSel.value)); toast(`Saved marks for ${phase} phase ✓`, 'success'); setStatus('Marks saved', 'ok'); saveStateToLocalStorage(); /* [AUTOSAVE] */ }
+  async function applyOutOfToAllLearners() { const confirmed = await confirmAction("This will apply the 'Out Of' values from the currently displayed learner to ALL learners in the workbook for this phase. This action cannot be undone. Are you sure you want to proceed?"); if (!confirmed) return; const phase = $phaseSel.value; const template = {}; $marksBody.querySelectorAll('tr').forEach(tr => { const key = tr.dataset.key; const outOf = tr.querySelector('input.outof').value; if (outOf !== '' && !Number.isNaN(Number(outOf))) template[key] = Number(outOf); }); if (!Object.keys(template).length) return; learners.forEach(r => { for (const k in template) { r[`${k}_${phase}_OutOf`] = template[k]; } }); showUnsaved(true); if (currentSelectedRow()) renderSelected(Number($learnerSel.value)); toast("'Out Of' values applied to ALL learners ✓", 'success'); setStatus("Applied 'Out Of' to all", 'ok'); saveStateToLocalStorage(); /* [AUTOSAVE] */ }
+  function printRows(rows) { if (!rows || !rows.length) return; $batchContainer.innerHTML = rows.map(r => `<div class='sheet'>${htmlReport(r)}</div>`).join(''); requestAnimationFrame(() => { window.print(); }); toast('Opening print dialog…', 'warn', 1800); setStatus('Printing…', 'warn'); }
+  function updateMarksInPlace() { const ws = originalWb.Sheets[learnersSheetName]; if (!ws) throw new Error(`Could not find the worksheet named '${learnersSheetName}'.`); const getRowNumByIndex = (index) => { const learner = originalLearnersSnapshot.find(l => getIndex(l) == index); return learner ? learner._rowNumber : -1; }
+    learners.forEach(currentLearner => { const learnerIndex = getIndex(currentLearner); const rowNum = getRowNumByIndex(learnerIndex); if (rowNum === -1) return; MARK_KEYS.forEach(key => { const c = headerIndexMap[key]; if (c === undefined) return; const originalValue = originalLearnersSnapshot.find(l => getIndex(l) === learnerIndex)?.[key]; const currentValue = currentLearner[key]; if (currentValue === originalValue) return; const addr = XLSX.utils.encode_cell({ r: rowNum, c }); const val = currentValue ?? ''; if (ws[addr]) { ws[addr].v = val; ws[addr].t = (typeof val === 'number') ? 'n' : 's'; } else { const headerAddr = XLSX.utils.encode_cell({r: 0, c}); const headerCell = ws[headerAddr]; ws[addr] = { v: val, t: (typeof val === 'number') ? 'n' : 's' }; if(headerCell && headerCell.s) { ws[addr].s = JSON.parse(JSON.stringify(headerCell.s)); } } }); }); }
+  function downloadUpdatedWorkbook() { if (!originalWb) { toast('Please re-upload the original Excel file to download updates.', 'warn'); setStatus('Download failed', 'err', 'Original workbook not in memory.'); return; } setStatus('Generating Excel file...', 'warn'); updateMarksInPlace(); const ws = originalWb.Sheets[learnersSheetName]; if (!ws) throw new Error('Learners worksheet missing at write time.'); if (learnersSheetCols) ws['!cols'] = JSON.parse(JSON.stringify(learnersSheetCols)); if (learnersSheetRows) ws['!rows'] = JSON.parse(JSON.stringify(learnersSheetRows)); if (learnersSheetMerges) ws['!merges'] = JSON.parse(JSON.stringify(learnersSheetMerges)); if (sheetSavedViews) ws['!views'] = JSON.parse(JSON.stringify(sheetSavedViews)); if (originalWorkbookViews) { originalWb.Workbook = originalWb.Workbook || {}; originalWb.Workbook.Views = JSON.parse(JSON.stringify(originalWorkbookViews)); } if (originalWorkbookProps) { originalWb.Props = JSON.parse(JSON.stringify(originalWorkbookProps)); }
+    const writeOpts = { bookType: 'xlsx', type: 'array', bookSST: true, cellStyles: true }; const wbout = XLSX.write(originalWb, writeOpts); const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }); const filename = `REPORT_FORM_updated_${new Date().toISOString().slice(0, 10)}.xlsx`; const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500); showUnsaved(false); toast('Downloaded updated Excel file', 'success'); setStatus('Download complete ✓', 'ok'); }
   
-  function applyFilters() {
-    const gender = ($fGender.value || '').trim().toUpperCase();
-    const grade = ($fGrade.value || '').trim();
-    filteredLearners = learners.filter(r => {
-      if (gender && String(r.Gender || '').trim().toUpperCase() !== gender) return false;
-      if (grade && String(r.Grade || '').trim() !== grade) return false;
-      return true;
-    }).sort((a, b) => getIndex(a) - getIndex(b));
-    hydrateLearnerDropdown();
-    if (filteredLearners.length) {
-      $learnerSel.selectedIndex = 1; // Select first learner
-      renderSelected(0);
-    } else {
-      $singleSheet.innerHTML = '<p style="text-align:center;padding:2rem;">No learners match the selected filters.</p>';
-      $marksBody.innerHTML = '';
-    }
-  }
-
-  function clearFilters() {
-    $fGender.value = '';
-    $fGrade.value = '';
-    applyFilters();
-  }
-  
-  function hydrateLearnerDropdown() {
-    $learnerSel.innerHTML = '<option value="">— Select a learner to view or edit —</option>' + filteredLearners.map((r, i) => {
-      const idx = getIndex(r);
-      const labelIdx = Number.isNaN(idx) ? `(${i + 1})` : idx;
-      const name = r["Pupil's Name"] || `Learner ${i + 1}`;
-      return `<option value="${i}">${labelIdx}. ${escapeHTML(name)}</option>`;
-    }).join('');
-    const hasLearners = learners.length > 0;
-    $$('button, a.btn, select').forEach(el => { if(el.id !== 'file' && !el.closest('.nav-drawer')) el.disabled = !hasLearners }); // [MODIFIED]
-    showUnsaved(unsavedChanges); // Re-apply disabled state to download link
-    $matchCountChip.textContent = `${filteredLearners.length} selected`;
-  }
-
-  function renderSelected(index) {
-    const row = filteredLearners[index];
-    if (!row) return;
-    $singleSheet.innerHTML = `<div class="sheet">${htmlReport(row)}</div>`;
-    buildMarksGrid(row);
-  }
-
-  function buildMarksGrid(row) {
-    const phase = $phaseSel.value;
-    $marksBody.innerHTML = SUBJECTS.map(s => {
-      const score = row[`${s.key}_${phase}`] ?? '';
-      const outOf = row[`${s.key}_${phase}_OutOf`] ?? '';
-      return `<tr data-key="${s.key}"><td>${s.label}</td><td><input type="number" step="0.01" class="score" value="${score}"></td><td><input type="number" step="0.01" class="outof" value="${outOf}"></td></tr>`;
-    }).join('');
-  }
-  
-  const currentSelectedRow = () => {
-    const idx = Number($learnerSel.value);
-    return (Number.isInteger(idx) && idx >= 0) ? filteredLearners[idx] : null;
-  }
-  
-  function savePhaseToLearner() {
-    const row = currentSelectedRow();
-    if (!row) return;
-    const phase = $phaseSel.value;
-    $marksBody.querySelectorAll('tr').forEach(tr => {
-      const key = tr.dataset.key;
-      row[`${key}_${phase}`] = Number(tr.querySelector('input.score').value || 0);
-      row[`${key}_${phase}_OutOf`] = Number(tr.querySelector('input.outof').value || 0);
-    });
-    showUnsaved(true);
-    renderSelected(Number($learnerSel.value));
-    toast(`Saved marks for ${phase} phase ✓`, 'success');
-    setStatus('Marks saved', 'ok');
-  }
-
-  async function applyOutOfToAllLearners() {
-      const confirmed = await confirmAction("This will apply the 'Out Of' values from the currently displayed learner to ALL learners in the workbook for this phase. This action cannot be undone. Are you sure you want to proceed?");
-      if (!confirmed) return;
-
-      const phase = $phaseSel.value;
-      const template = {};
-      $marksBody.querySelectorAll('tr').forEach(tr => {
-        const key = tr.dataset.key;
-        const outOf = tr.querySelector('input.outof').value;
-        if (outOf !== '' && !Number.isNaN(Number(outOf))) template[key] = Number(outOf);
-      });
-      if (!Object.keys(template).length) return;
-      learners.forEach(r => {
-        for (const k in template) { r[`${k}_${phase}_OutOf`] = template[k]; }
-      });
-      showUnsaved(true);
-      if (currentSelectedRow()) renderSelected(Number($learnerSel.value));
-      toast("'Out Of' values applied to ALL learners ✓", 'success');
-      setStatus("Applied 'Out Of' to all", 'ok');
-  }
-
-  function printRows(rows) {
-    if (!rows || !rows.length) return;
-    $batchContainer.innerHTML = rows.map(r => `<div class='sheet'>${htmlReport(r)}</div>`).join('');
-    // Use requestAnimationFrame to ensure the DOM is updated before printing
-    requestAnimationFrame(() => {
-      window.print();
-    });
-    toast('Opening print dialog…', 'warn', 1800);
-    setStatus('Printing…', 'warn');
-  }
-  
-  function updateMarksInPlace() {
-    const ws = originalWb.Sheets[learnersSheetName];
-    if (!ws) throw new Error(`Could not find the worksheet named '${learnersSheetName}'.`);
-    
-    const getRowNumByIndex = (index) => {
-        const learner = originalLearnersSnapshot.find(l => getIndex(l) == index);
-        return learner ? learner._rowNumber : -1;
-    }
-
-    learners.forEach(currentLearner => {
-      const learnerIndex = getIndex(currentLearner);
-      const rowNum = getRowNumByIndex(learnerIndex);
-      if (rowNum === -1) return; 
-
-      MARK_KEYS.forEach(key => {
-        const c = headerIndexMap[key];
-        if (c === undefined) return;
-
-        const originalValue = originalLearnersSnapshot.find(l => getIndex(l) === learnerIndex)?.[key];
-        const currentValue = currentLearner[key];
-
-        if (currentValue === originalValue) return;
-
-        const addr = XLSX.utils.encode_cell({ r: rowNum, c });
-        const val = currentValue ?? '';
-
-        if (ws[addr]) {
-            ws[addr].v = val;
-            ws[addr].t = (typeof val === 'number') ? 'n' : 's';
-        } else {
-            const headerAddr = XLSX.utils.encode_cell({r: 0, c});
-            const headerCell = ws[headerAddr];
-            ws[addr] = { v: val, t: (typeof val === 'number') ? 'n' : 's' };
-            if(headerCell && headerCell.s) {
-                ws[addr].s = JSON.parse(JSON.stringify(headerCell.s));
-            }
-        }
-      });
-    });
-  }
-
-  function downloadUpdatedWorkbook() {
-    if (!originalWb) return;
-    setStatus('Generating Excel file...', 'warn');
-
-    updateMarksInPlace();
-
-    const ws = originalWb.Sheets[learnersSheetName];
-    if (!ws) throw new Error('Learners worksheet missing at write time.');
-
-    // --- FIDELITY PRESERVATION ---
-    if (learnersSheetCols) ws['!cols'] = JSON.parse(JSON.stringify(learnersSheetCols));
-    if (learnersSheetRows) ws['!rows'] = JSON.parse(JSON.stringify(learnersSheetRows));
-    if (learnersSheetMerges) ws['!merges'] = JSON.parse(JSON.stringify(learnersSheetMerges));
-    if (sheetSavedViews) ws['!views'] = JSON.parse(JSON.stringify(sheetSavedViews));
-
-    if (originalWorkbookViews) {
-      originalWb.Workbook = originalWb.Workbook || {};
-      originalWb.Workbook.Views = JSON.parse(JSON.stringify(originalWorkbookViews));
-    }
-    if (originalWorkbookProps) {
-      originalWb.Props = JSON.parse(JSON.stringify(originalWorkbookProps));
-    }
-    // --- END FIDELITY PRESERVATION ---
-
-    const writeOpts = { bookType: 'xlsx', type: 'array', bookSST: true, cellStyles: true };
-    const wbout = XLSX.write(originalWb, writeOpts);
-    const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const filename = `REPORT_FORM_updated_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click();
-    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
-
-    showUnsaved(false);
-    toast('Downloaded updated Excel file', 'success');
-    setStatus('Download complete ✓', 'ok');
-  }
-  
-  const processFile = withErrorUI(async (file) => {
-    if (!file) return;
-    resetUI();
-    setStatus('Reading file...', 'warn', file.name);
-
-    const data = await file.arrayBuffer();
-
-    const wb = XLSX.read(data, { type: 'array', cellStyles: true, bookSST: true });
-    originalWb = wb;
-
-    // --- CAPTURE VISUAL METADATA FOR FIDELITY ---
-    originalWorkbookViews = wb.Workbook?.Views ? JSON.parse(JSON.stringify(wb.Workbook.Views)) : null;
-    originalWorkbookProps = wb.Props ? JSON.parse(JSON.stringify(wb.Props)) : null;
-
-    learnersSheetName = wb.SheetNames.find(n => n.toLowerCase() === 'learners') || wb.SheetNames[0];
-    const wsLearners = wb.Sheets[learnersSheetName];
-    if (!wsLearners) throw new Error("A worksheet named 'Learners' was not found.");
-
-    learnersSheetCols = wsLearners['!cols'] ? JSON.parse(JSON.stringify(wsLearners['!cols'])) : null;
-    learnersSheetRows = wsLearners['!rows'] ? JSON.parse(JSON.stringify(wsLearners['!rows'])) : null;
-    learnersSheetMerges = wsLearners['!merges'] ? JSON.parse(JSON.stringify(wsLearners['!merges'])) : null;
-    sheetSavedViews = wsLearners['!views'] ? JSON.parse(JSON.stringify(wsLearners['!views'])) : null;
-    // --- END METADATA CAPTURE ---
-
-    const headerRows = XLSX.utils.sheet_to_json(wsLearners, { header: 1, defval: '' });
-    const learnerHeaders = headerRows?.[0] || [];
-    headerIndexMap = {};
-    learnerHeaders.forEach((h, i) => { headerIndexMap[String(h)] = i; });
-
-    learners = XLSX.utils.sheet_to_json(wsLearners, { defval: '' });
-    
-    learners.forEach((learner, index) => { learner._rowNumber = index + 1; }); 
-    originalLearnersSnapshot = learners.map(o => ({...o}));
-
-    const wsGrading = wb.Sheets['Grading'] || wb.Sheets['grading'];
-    if (wsGrading) {
-        try {
-            const gradingRows = XLSX.utils.sheet_to_json(wsGrading, { defval: '' });
-            const mappedThresholds = gradingRows
-                .map(r => ({ min: Number(r.Score), grade: String(r.Grade || r.grade || '').trim() }))
-                .filter(r => !Number.isNaN(r.min) && r.grade);
-            if (mappedThresholds.length >= 2) {
-                thresholds = mappedThresholds.sort((a, b) => b.min - a.min);
-            }
-        } catch (e) {
-            console.warn("Could not parse 'Grading' sheet, using defaults.", e);
-            thresholds = DEFAULT_THRESHOLDS;
-        }
-    } else {
-        thresholds = DEFAULT_THRESHOLDS;
-    }
-
-    $mainContent.style.display = 'block';
-    $dropZone.querySelector('p').style.display = 'none';
-    $filename.textContent = file.name;
-
-    hydrateGrades();
-    clearFilters(); 
-    showUnsaved(false);
-
-    toast('Workbook loaded successfully', 'success');
-    setStatus(`Loaded ${learners.length} learners ✓`, 'Ready to edit or print.');
+  const processFile = withErrorUI(async (file) => { if (!file) return; resetUI(); setStatus('Reading file...', 'warn', file.name); const data = await file.arrayBuffer(); const wb = XLSX.read(data, { type: 'array', cellStyles: true, bookSST: true }); originalWb = wb; originalWorkbookViews = wb.Workbook?.Views ? JSON.parse(JSON.stringify(wb.Workbook.Views)) : null; originalWorkbookProps = wb.Props ? JSON.parse(JSON.stringify(wb.Props)) : null; learnersSheetName = wb.SheetNames.find(n => n.toLowerCase() === 'learners') || wb.SheetNames[0]; const wsLearners = wb.Sheets[learnersSheetName]; if (!wsLearners) throw new Error("A worksheet named 'Learners' was not found."); learnersSheetCols = wsLearners['!cols'] ? JSON.parse(JSON.stringify(wsLearners['!cols'])) : null; learnersSheetRows = wsLearners['!rows'] ? JSON.parse(JSON.stringify(wsLearners['!rows'])) : null; learnersSheetMerges = wsLearners['!merges'] ? JSON.parse(JSON.stringify(wsLearners['!merges'])) : null; sheetSavedViews = wsLearners['!views'] ? JSON.parse(JSON.stringify(wsLearners['!views'])) : null; const headerRows = XLSX.utils.sheet_to_json(wsLearners, { header: 1, defval: '' }); const learnerHeaders = headerRows?.[0] || []; headerIndexMap = {}; learnerHeaders.forEach((h, i) => { headerIndexMap[String(h)] = i; }); learners = XLSX.utils.sheet_to_json(wsLearners, { defval: '' }); learners.forEach((learner, index) => { learner._rowNumber = index + 1; }); originalLearnersSnapshot = learners.map(o => ({...o})); const wsGrading = wb.Sheets['Grading'] || wb.Sheets['grading']; if (wsGrading) { try { const gradingRows = XLSX.utils.sheet_to_json(wsGrading, { defval: '' }); const mappedThresholds = gradingRows.map(r => ({ min: Number(r.Score), grade: String(r.Grade || r.grade || '').trim() })).filter(r => !Number.isNaN(r.min) && r.grade); if (mappedThresholds.length >= 2) { thresholds = mappedThresholds.sort((a, b) => b.min - a.min); } } catch (e) { console.warn("Could not parse 'Grading' sheet, using defaults.", e); thresholds = DEFAULT_THRESHOLDS; } } else { thresholds = DEFAULT_THRESHOLDS; }
+    $mainContent.style.display = 'block'; $dropZone.querySelector('p').style.display = 'none'; $filename.textContent = file.name; hydrateGrades(); clearFilters(); showUnsaved(false); toast('Workbook loaded successfully', 'success'); setStatus(`Loaded ${learners.length} learners ✓`, 'Ready to edit or print.'); saveStateToLocalStorage(); /* [AUTOSAVE] - Initial save */
   });
-
-  // --- [NEW] Navigation Drawer Logic ---
-  function toggleNavDrawer(open) {
-      if (open) {
-          $navDrawer.classList.add('open');
-          $navBackdrop.classList.add('open');
-      } else {
-          $navDrawer.classList.remove('open');
-          $navBackdrop.classList.remove('open');
-      }
-  }
-
-  function handleNavLink(e, targetEl, options = { focus: false, click: false }) {
-    e.preventDefault();
-    if (targetEl) {
-        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        if (options.focus) targetEl.focus();
-        if (options.click) targetEl.click();
-    }
-    toggleNavDrawer(false);
-  }
-
+  
+  // --- Navigation Drawer Logic ---
+  function toggleNavDrawer(open) { if (open) { $navDrawer.classList.add('open'); $navBackdrop.classList.add('open'); } else { $navDrawer.classList.remove('open'); $navBackdrop.classList.remove('open'); } }
+  function handleNavLink(e, targetEl, options = { focus: false, click: false }) { e.preventDefault(); if (targetEl) { targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); if (options.focus) targetEl.focus(); if (options.click) targetEl.click(); } toggleNavDrawer(false); }
   
   // --- Event Wiring ---
   function setupEventListeners() {
-    // [NEW] Navigation Drawer
     $hamburgerBtn.addEventListener('click', () => toggleNavDrawer(true));
     $navBackdrop.addEventListener('click', () => toggleNavDrawer(false));
     
-    // [NEW] Drawer Links
     $('#navLoadWorkbook').addEventListener('click', e => handleNavLink(e, $dropZone, { click: true }));
-    $('#navDetails').addEventListener('click', e => {
-      e.preventDefault();
-      $('#schoolNameInp').value = reportDetails.schoolName;
-      $('#assessmentTitleInp').value = reportDetails.titleTemplate;
-      $('#headteacherNameInp').value = reportDetails.headteacherName;
-      $detailsDlg.showModal();
-      toggleNavDrawer(false);
-    });
+    $('#navDetails').addEventListener('click', e => { e.preventDefault(); $('#schoolNameInp').value = reportDetails.schoolName; $('#assessmentTitleInp').value = reportDetails.titleTemplate; $('#headteacherNameInp').value = reportDetails.headteacherName; $detailsDlg.showModal(); toggleNavDrawer(false); });
     $('#navFilter').addEventListener('click', e => handleNavLink(e, $filtersPanel));
     $('#navEdit').addEventListener('click', e => handleNavLink(e, $editorPanel));
     $('#navDownload').addEventListener('click', e => handleNavLink(e, $downloadExcelLink, { click: true }));
     $('#navBatchPrint').addEventListener('click', e => handleNavLink(e, $printFilteredBtn, { click: true }));
-    $('#navPrintCurrent').addEventListener('click', e => {
+    $('#navPrintCurrent').addEventListener('click', e => { e.preventDefault(); const row = currentSelectedRow(); if (row) { printRows([row]); } else { toast('Please select a learner first', 'warn'); } toggleNavDrawer(false); });
+    
+    // [NEW] Event listener for clearing the session.
+    $('#navClearSession').addEventListener('click', async (e) => {
         e.preventDefault();
-        const row = currentSelectedRow();
-        if (row) {
-            printRows([row]);
-        } else {
-            toast('Please select a learner first', 'warn');
-        }
         toggleNavDrawer(false);
+        const confirmed = await confirmAction("Are you sure you want to clear all saved data and reset the application? This cannot be undone.");
+        if (confirmed) {
+            localStorage.removeItem(STORAGE_KEY);
+            toast('Session cleared. The application will now reload.', 'success');
+            setTimeout(() => location.reload(), 1500);
+        }
     });
 
-    // File Drop Zone
     $dropZone.addEventListener('click', () => $fileInput.click());
     $fileInput.addEventListener('change', (e) => processFile(e.target.files?.[0]));
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      $dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); });
-    });
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { $dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }); });
     $dropZone.addEventListener('dragenter', () => $dropZone.classList.add('dragover'));
     $dropZone.addEventListener('dragover', () => $dropZone.classList.add('dragover'));
     $dropZone.addEventListener('dragleave', () => $dropZone.classList.remove('dragover'));
-    $dropZone.addEventListener('drop', (e) => {
-      $dropZone.classList.remove('dragover');
-      processFile(e.dataTransfer.files?.[0]);
-    });
-
-    // Main Actions
+    $dropZone.addEventListener('drop', (e) => { $dropZone.classList.remove('dragover'); processFile(e.dataTransfer.files?.[0]); });
     $learnerSel.addEventListener('change', e => renderSelected(Number(e.target.value)));
     $phaseSel.addEventListener('change', () => { if (currentSelectedRow()) buildMarksGrid(currentSelectedRow()); });
     $savePhaseBtn.addEventListener('click', withErrorUI(savePhaseToLearner));
     $applyOutOfAllBtn.addEventListener('click', withErrorUI(applyOutOfToAllLearners));
-    
-    // Printing & Downloading
     $printSelectedBtn.addEventListener('click', () => { const row = currentSelectedRow(); if (row) printRows([row]); });
     $printFilteredBtn.addEventListener('click', () => printRows(filteredLearners));
-    $downloadExcelLink.addEventListener('click', e => {
-      if ($downloadExcelLink.getAttribute('aria-disabled') === 'true') {
-        e.preventDefault();
-        toast('No unsaved changes to download', 'warn');
-      } else {
-        withErrorUI(downloadUpdatedWorkbook)();
-      }
-    });
-
-    // Filters
+    $downloadExcelLink.addEventListener('click', e => { if ($downloadExcelLink.getAttribute('aria-disabled') === 'true') { e.preventDefault(); toast('No unsaved changes to download', 'warn'); } else { withErrorUI(downloadUpdatedWorkbook)(); } });
     $applyFiltersBtn.addEventListener('click', withErrorUI(applyFilters));
     $clearFiltersBtn.addEventListener('click', withErrorUI(clearFilters));
-    
-    // Dialogs
-    $('#copyErrBtn').addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText($errDetails.textContent || ''); toast('Copied!', 'success', 1000); } catch (e) { alert('Copy failed.'); }
-    });
+    $('#copyErrBtn').addEventListener('click', async () => { try { await navigator.clipboard.writeText($errDetails.textContent || ''); toast('Copied!', 'success', 1000); } catch (e) { alert('Copy failed.'); } });
     $('#closeErrBtn').addEventListener('click', () => $errorDlg.close());
-
-    // [NEW] Details Dialog buttons
     $('#detailsCancelBtn').addEventListener('click', () => $detailsDlg.close());
     $('#detailsSaveBtn').addEventListener('click', () => {
         reportDetails.schoolName = $('#schoolNameInp').value;
@@ -1347,20 +890,17 @@
         reportDetails.headteacherName = $('#headteacherNameInp').value;
         toast('Details saved. The current report preview is updated.', 'success');
         $detailsDlg.close();
-        // Re-render the current report to reflect changes
-        if(currentSelectedRow()) {
-            renderSelected(Number($learnerSel.value));
-        }
+        if(currentSelectedRow()) { renderSelected(Number($learnerSel.value)); }
+        saveStateToLocalStorage(); /* [AUTOSAVE] */
     });
-
-    // Window Listeners
     window.addEventListener('afterprint', () => { $batchContainer.innerHTML = ''; setStatus('Ready', 'Idle.'); });
     window.addEventListener('error', (e) => withErrorUI(() => { throw e.error; })());
     window.addEventListener('unhandledrejection', (e) => withErrorUI(() => { throw e.reason; })());
   }
 
-  // Initialize the application
+  // --- Initialize the application ---
   setupEventListeners();
+  loadStateFromLocalStorage(); // [AUTOSAVE] Attempt to restore session on page load.
 })();
 </script>
 </body>
