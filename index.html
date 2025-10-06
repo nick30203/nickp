@@ -10,7 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- xlsx (browser) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 
   <style>
@@ -105,7 +104,13 @@
       cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;
     }
     .panel-drawer summary::-webkit-details-marker { display: none; }
-    .panel-drawer.summary-icon { width: 20px; height: 20px; color: var(--color-text-muted); transition: var(--transition-base); }
+    .panel-drawer summary .icon {
+      width: 20px; height: 20px; color: var(--color-text-muted);
+      transition: transform 0.2s ease-in-out;
+    }
+    .panel-drawer[open] > summary .icon {
+      transform: rotate(180deg);
+    }
 
     .panel-drawer-content { padding: 0 20px 20px; border-top: 1px solid var(--color-border); }
 
@@ -128,6 +133,36 @@
       width: 100%; min-height: 420px; background: #fff; padding: 20px; border-radius: var(--radius-md);
       border: 1px solid var(--color-border); box-shadow: var(--shadow-lg); overflow: hidden;
     }
+
+    /* --- Report Form Styles --- */
+    .sheet { font-family: 'Times New Roman', Times, serif; color: #000; }
+    .sheet .school-head { text-align:center; line-height:1.1; margin-bottom:8px; }
+    .sheet .school-head h1 { font-size: 20px; font-weight: 700; margin: 0 0 2px; text-transform: uppercase; }
+    .sheet .school-head .addr { font-size: 13px; font-weight: 600; }
+    .sheet .school-head .motto { font-size: 12px; font-style: italic; font-weight: 600; }
+
+    .sheet .key { text-align: center; font-size: 10px; margin-bottom: 8px; }
+    .sheet .title {
+      text-align: center; font-weight: 700; font-size: 13px; margin: 8px 0;
+      padding: 4px; border-top: 2px solid #000; border-bottom: 2px solid #000;
+      background: #e2e8f0;
+    }
+    .sheet .meta {
+      display: flex; justify-content: space-between; margin-bottom: 8px;
+      font-weight: 600; padding: 0 4px; font-size: 12px;
+    }
+    .sheet .meta div { display: flex; gap: 8px; align-items: baseline; }
+    .sheet .meta label { font-weight: 400; }
+    .sheet .chart-labels { display: flex; justify-content: space-around; font-size: 10px; font-weight: 600; color: #475569; padding: 0 10px; }
+
+    .comments-grid .block .comment-title,
+    .parent-comment-block .comment-title { font-weight: 700; margin-bottom: 6px; font-size: 11px; }
+
+    .sheet .sign-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; font-size: 11px; }
+    .sheet .sign { border-top: 1px dotted #64748b; padding-top: 2px; }
+    .sheet .sign.no-border { border-top: 0; }
+    .sheet .foot-dates { display: flex; justify-content: space-between; margin-top: 16px; font-size: 11px; font-weight: 600; }
+    .sheet .small { text-align: center; font-size: 9px; color: #64748b; margin-top: 16px; }
 
     table.report { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
     table.report th, table.report td { border: 1px solid #333; padding: 6px; text-align: center; word-break: break-word; }
@@ -166,15 +201,44 @@
       #singleView .sheet { padding: 12px; box-shadow: var(--shadow-md); }
     }
 
+    /* *** MODIFIED PRINT STYLES FOR ONE-PAGE FIT *** */
     @media print {
-      @page { size: A4 portrait; margin: 10mm; }
-      html, body { height: auto !important; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      /* Reset margins to maximize printable area */
+      @page { size: A4 portrait; margin: 0.5cm !important; } 
+      
+      html, body { 
+        height: auto !important; background: #fff; 
+        -webkit-print-color-adjust: exact; print-color-adjust: exact; 
+      }
+      /* Hide all non-report elements */
       .bar, details, .statusbar, .toasts, #singleView { display: none !important; }
+      
       #batchContainer { display: block !important; }
-      .sheet { width: 100%; margin: 0; padding: 8mm; border: none; border-radius: 0; box-shadow: none; page-break-after: always; box-sizing: border-box; overflow: visible; }
+
+      /* Apply scaling to force the report sheet onto one page */
+      .sheet { 
+        width: 100%; margin: 0; 
+        padding: 5mm; /* Slightly smaller padding */
+        border: none; border-radius: 0; box-shadow: none; 
+        page-break-after: always; box-sizing: border-box; 
+        overflow: visible; 
+        
+        /* The critical single-page fit rule: adjust 0.9 (90%) if needed */
+        transform: scale(0.85);
+        transform-origin: top left;
+        
+        /* Compensate for scale effect to prevent blank space/scroll issue */
+        width: 117.6%; /* 1 / 0.85 * 100 */
+        height: 117.6%; /* Ensure full height is scaled */
+      }
+
       table.report { font-size: 10px; }
-      table.report th, table.report td { padding: 4px; border-color: #000; }
+      table.report th, table.report td { padding: 3px; border-color: #000; }
+      
+      /* Ensure comments blocks don't try to break across pages */
+      .comments-wrapper * { page-break-inside: avoid !important; }
     }
+    /* *** END MODIFIED PRINT STYLES *** */
   </style>
 </head>
 
@@ -222,7 +286,7 @@
     <details class="panel-drawer" id="filtersPanel" open>
       <summary>
         <span>Filters & Learner Selection</span>
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
       </summary>
       <div class="panel-drawer-content">
         <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center; padding-top:16px;">
@@ -241,7 +305,7 @@
     <details class="panel-drawer" id="editorPanel" open>
       <summary>
         <span>Marks Editor & Preview</span>
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg>
       </summary>
 
       <div class="panel-drawer-content">
@@ -305,18 +369,6 @@
   </div>
 </dialog>
 
-<dialog id="passwordDlg">
-  <div class="dlg-hd">Password Required</div>
-  <div class="dlg-bd">
-    <p>This Excel file is protected. Please enter the password to open it.</p>
-    <input type="password" id="filePassword" style="width: 100%;" placeholder="Enter workbook password" aria-label="Workbook password">
-  </div>
-  <div class="dlg-ft">
-    <button id="passwordCancelBtn" class="secondary">Cancel</button>
-    <button id="passwordOkBtn">Submit</button>
-  </div>
-</dialog>
-
 <script>
 (function() {
   "use strict";
@@ -343,6 +395,8 @@
   ]);
 
   const DEFAULT_THRESHOLDS = [{min:81,grade:'EE'},{min:50,grade:'ME'},{min:26,grade:'AE'},{min:0,grade:'BE'}];
+  
+  // *** MODIFICATION: Removed the hardcoded AUTO_PASSWORD constant ***
 
   // --- DOM References ---
   const $ = sel => document.querySelector(sel);
@@ -380,8 +434,7 @@
   const $errDetails = $('#errDetails');
   const $confirmDlg = $('#confirmDlg');
   const $confirmMsg = $('#confirmMsg');
-  const $passwordDlg = $('#passwordDlg');
-  const $filePasswordInput = $('#filePassword');
+  // MODIFICATION: Removed references to $passwordDlg and $filePasswordInput
 
   // --- State ---
   let learners = [];
@@ -450,34 +503,9 @@
     });
   }
 
-  function promptForPassword() {
-    return new Promise(resolve => {
-      $filePasswordInput.value = '';
-      $passwordDlg.showModal();
-      $filePasswordInput.focus();
-
-      const onConfirm = () => { cleanup(); resolve($filePasswordInput.value); };
-      const onCancel = () => { cleanup(); resolve(null); };
-
-      const cleanup = () => {
-        $('#passwordOkBtn').removeEventListener('click', onConfirm);
-        $('#passwordCancelBtn').removeEventListener('click', onCancel);
-        $filePasswordInput.removeEventListener('keydown', onKeydown);
-        $passwordDlg.close();
-      };
-
-      const onKeydown = (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          onConfirm();
-        }
-      };
-
-      $('#passwordOkBtn').addEventListener('click', onConfirm, { once: true });
-      $('#passwordCancelBtn').addEventListener('click', onCancel, { once: true });
-      $filePasswordInput.addEventListener('keydown', onKeydown);
-    });
-  }
+  // *** MODIFICATION: Removed the entire promptForPassword function.
+  // We will now rely on the first XLSX.read call and treat an error as fatal 
+  // without attempting to recover via a password, as requested.
 
   function setButtonLoading(button, isLoading) {
     if (isLoading) {
@@ -551,12 +579,12 @@
     const oG = pctGrade(total.oSc, total.oMax).grade, mG = pctGrade(total.mSc, total.mMax).grade, eG = pctGrade(total.eSc, total.eMax).grade;
     const title = `END TERM ${termWord(Number(term))} ASSESSMENT - YEAR ${year}`;
 
-    return `<div class="school-head" style="text-align:center;line-height:1.1;margin-bottom:8px;">
+    return `<div class="school-head">
         <h1>${escapeHTML(school.name)}</h1>
         <div class="addr">${escapeHTML(school.address1)} • ${escapeHTML(school.town)}</div>
         <div class="motto">${escapeHTML(school.motto)}</div>
       </div>
-      <div class="key">KEY: <b>EE</b>–Exceed, <b>ME</b>–Meet, <b>AE</b>–Approach, <b>BE</b>–Below Expectation</div>
+      <div class="key">KEY: <b>EE</b>–Exceeds Expectations, <b>ME</b>–Meets Expectations, <b>AE</b>–Approaching Expectations, <b>BE</b>–Below Expectations</div>
       <div class="title">${escapeHTML(title)}</div>
       <div class="meta">
         <div><label>PUPIL'S NAME:</label><div>${escapeHTML(pupilName)}</div></div>
@@ -573,20 +601,20 @@
       ${htmlChartTotals(total.oSc, total.mSc, total.eSc)}
       <div class="comments-wrapper">
         <div class="comments-grid">
-          <div class="block"><div style="font-weight:700;margin-bottom:6px">CLASS TEACHER</div><div>${escapeHTML(ctComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Name:</b> ${escapeHTML(ctName) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(ctDate) || '&nbsp;'}</div></div></div>
-          <div class="block"><div style="font-weight:700;margin-bottom:6px">HEAD TEACHER</div><div>${escapeHTML(htComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Signature:</b> ${escapeHTML(htSign) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(htDate) || '&nbsp;'}</div></div></div>
+          <div class="block"><div class="comment-title">CLASS TEACHER'S REMARKS</div><div>${escapeHTML(ctComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Name:</b> ${escapeHTML(ctName) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(ctDate) || '&nbsp;'}</div></div></div>
+          <div class="block"><div class="comment-title">HEAD TEACHER'S REMARKS</div><div>${escapeHTML(htComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Signature:</b> ${escapeHTML(htSign) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(htDate) || '&nbsp;'}</div></div></div>
         </div>
         <div class="parent-comment-block">
-          <div style="font-weight:700;margin-bottom:6px">PARENT'S / GUARDIAN'S REMARKS</div>
-          <div style="min-height:24px;border-bottom:1px dotted #94a3b8;margin-bottom:8px;"></div>
+          <div class="comment-title">PARENT'S / GUARDIAN'S REMARKS</div>
+          <div style="min-height:24px;border-bottom:1px dotted #64748b;margin-bottom:8px;"></div>
           <div class="sign-row" style="grid-template-columns:1fr 120px;">
-            <div class="sign" style="border:0;padding:0;"><b>Signature:</b> ....................................</div>
-            <div class="sign" style="border:0;padding:0;"><b>Date:</b> .......................</div>
+            <div class="sign no-border"><b>Signature:</b></div>
+            <div class="sign no-border"><b>Date:</b></div>
           </div>
         </div>
       </div>
-      <div class="foot-dates"><div class="sign"><b>CLOSING DATE:</b> ${escapeHTML(closingDate) || '&nbsp;'}</div><div class="sign"><b>OPENING DATE:</b> ${escapeHTML(openingDate) || '&nbsp;'}</div></div>
-      <div class="small">This report is designed to fit on a single A4 page when printed at 100% scale.</div>`;
+      <div class="foot-dates"><div><b>CLOSING DATE:</b> ${escapeHTML(closingDate) || '&nbsp;'}</div><div><b>OPENING DATE:</b> ${escapeHTML(openingDate) || '&nbsp;'}</div></div>
+      <div class="small">This report is generated for printing on a single A4 page.</div>`;
   }
 
   // --- UI helpers ---
@@ -756,31 +784,17 @@
     const readOpts = { type: 'array', cellStyles: true, bookSST: true };
 
     try {
+      // MODIFICATION: Attempt to read without password. If it fails due to 
+      // encryption, the error is thrown directly, as requested.
       wb = XLSX.read(data, readOpts);
     } catch (e) {
-      // xlsx library often throws a password message containing word "Password"
       const errMsg = String(e?.message || e);
-      if (errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('encrypted')) {
-        setStatus('Password required', 'warn', 'Please enter the workbook password.');
-        while (!wb) {
-          const password = await promptForPassword();
-          if (password === null) {
-            setStatus('Load cancelled', 'warn', 'File not loaded.');
-            toast('File loading cancelled.', 'warn');
-            return;
-          }
-          try {
-            readOpts.password = password;
-            wb = XLSX.read(data, readOpts);
-          } catch (err_pass) {
-            const msg = String(err_pass?.message || err_pass);
-            if (msg.toLowerCase().includes('password') || msg.toLowerCase().includes('encrypted')) {
-              toast('Incorrect password. Please try again.', 'error', 1800);
-            } else {
-              throw err_pass;
-            }
-          }
-        }
+      if (/password|encrypted|unsupported zip method/i.test(errMsg)) {
+        // If the file is encrypted, we halt the process and show a generic error
+        // since we are no longer handling password input.
+        setStatus('Encryption error', 'err', 'The file requires a password, but password entry has been disabled.');
+        toast('File is password protected. Cannot proceed.', 'error', 5000);
+        throw new Error("File is password protected. Password requirements were removed.");
       } else {
         throw e;
       }
@@ -888,10 +902,17 @@
 
   function printRows(rows) {
     if (!rows || !rows.length) return;
+    // MODIFICATION: Hide the main app UI element during print preparation
+    $mainContent.style.display = 'none'; 
     $batchContainer.innerHTML = rows.map(r => `<div class='sheet'>${htmlReport(r)}</div>`).join('');
+    
+    // Slight delay to ensure DOM is ready before print dialog
     requestAnimationFrame(() => {
       window.print();
+      // MODIFICATION: Restore visibility after print dialog is initiated
+      $mainContent.style.display = 'block'; 
     });
+    
     toast('Opening print dialog…', 'warn', 1800);
     setStatus('Printing…', 'warn');
   }
