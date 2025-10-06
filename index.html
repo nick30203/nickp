@@ -140,25 +140,24 @@
     table.report th, table.report td { border: 1px solid #d1d5db; padding: 7px 4px; text-align: center; word-break: break-word; }
     table.report th { background-color: var(--header-bg); font-weight: 700; color: var(--primary-text); }
     
-    /* V5 Fixed Width for Learning Area */
+    /* Fixed Width for Learning Area */
     table.report thead th:first-child { 
         width: 18%; /* Set Learning Area to 18% width */
         min-width: 18%; /* Ensure it holds the width */
     } 
-    /* V7: Increased row padding for better readability */
+    /* Increased row padding for better readability */
     table.report tbody td { padding: 9px 4px; } 
 
     table.report tbody tr:nth-child(even) { background-color: #f9fafb; }
     table.report td.label { text-align: left; padding-left: 10px; font-weight: 600; color: #374151; }
 
-    /* --- Mini Chart & Label (V13 - Professional Bar Graph) --- */
+    /* --- Mini Chart & Label (V15 - Professional Bar Graph with Colors) --- */
     .performance-section {
         display: flex; 
         align-items: flex-start;
         gap: 15px; 
-        margin: 20px 0; /* Standard margin */
+        margin: 15px 0; /* Reduced margin to save vertical space */
     }
-    /* V13: Styled header for the chart area */
     .performance-label {
         font-weight: 800;
         color: var(--primary-text);
@@ -178,45 +177,39 @@
         border-left: 1px solid var(--border-color); 
         padding-left: 15px;
         position: relative;
-        height: 100px; /* Increased height for bar chart and labels */
+        height: 90px; /* Reduced height slightly to save space */
     }
 
-    /* V13: Bar Chart Container (Flexbox) */
     .mini-chart { 
         display: flex;
         justify-content: space-around;
-        align-items: flex-end; /* Bars start at the bottom */
+        align-items: flex-end; 
         position: relative;
-        height: 75px; /* Height of the actual plotting area */
+        height: 65px; /* Height of the actual plotting area */
         width: 100%;
         border-bottom: 1px solid #ccc; /* X-axis baseline */
         margin-top: 5px; 
-        padding-bottom: 10px; /* Space for the bottom labels */
+        padding-bottom: 10px; 
         box-sizing: content-box;
     }
 
-    /* V13: Individual Bar Item */
     .bar-item {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: flex-end; 
         position: relative;
-        height: 100%; /* Allows flexbox to manage alignment */
-        width: 25%; /* Space out the three bars */
+        height: 100%; 
+        width: 25%; 
         margin: 0 5%;
         text-align: center;
     }
 
-    /* V13/V15: The Actual Bar Fill with custom colors */
     .chart-bar {
-        /* --bar-height and --bar-color are set dynamically in JS */
         height: var(--bar-height); 
         width: 100%;
-        min-height: 3px; /* Ensure even a zero score is visible as a dot */
-        background: var(--bar-color); /* Use custom color variable */
-        border-radius: 4px 4px 0 0; /* Rounded top corners */
-        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        min-height: 3px; 
+        border-radius: 4px 4px 0 0; 
         transition: height 0.5s ease-out;
     }
     
@@ -226,7 +219,6 @@
     .bar-end { background: linear-gradient(to top, #dc3545, #e06e78); box-shadow: 0 -2px 4px rgba(220, 53, 69, 0.3); }
 
 
-    /* V13: Score Value Label (Above the bar) */
     .bar-value {
         font-size: 10px;
         font-weight: 700;
@@ -236,7 +228,6 @@
         text-shadow: 0 0 2px white;
     }
     
-    /* V13: Phase Label (Below the chart) */
     .chart-labels { 
         display: flex;
         justify-content: space-around;
@@ -244,10 +235,10 @@
         position: absolute;
         bottom: 0;
         left: 0;
-        padding-left: 15px; /* Aligns with the bar chart area */
+        padding-left: 15px; 
     }
     .chart-label {
-        width: 30%; /* Gives enough space for text */
+        width: 30%; 
         text-align: center;
         font-weight: 600;
         line-height: 1.1;
@@ -259,7 +250,7 @@
     .chart-label.end { color: #dc3545; }
 
 
-    /* --- V13: Footer Structure (Reverted from V14) --- */
+    /* --- V13: Compact Footer Structure (Reverted from V14) --- */
     .comments-row, .sign-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -281,7 +272,7 @@
       font-size: 13px;
     }
     .comments-block > div:nth-child(2) { /* The actual comment text */
-      min-height: 30px; 
+      min-height: 30px; /* Reduced min-height */
       line-height: 1.3;
       color: var(--primary-text);
     }
@@ -302,7 +293,7 @@
       border-bottom: 1px solid #9ca3af;
       padding: 0;
       border-radius: 0;
-      min-height: 25px; 
+      min-height: 20px; /* Reduced sign line height */
       background: transparent;
       line-height: 1.2;
       font-size: 11px;
@@ -370,19 +361,24 @@
       .school-head h1 { font-size: 20px; }
       .title { font-size: 14px; }
       table.report { font-size: 10.5px; }
-      table.report th, table.report td { padding: 5px 2px; border-color: #000; } /* Adjusted padding for print */
+      table.report th, table.report td { padding: 5px 2px; border-color: #000; } 
       .meta { font-size: 11px; padding: 6px; }
-      .comments-block { min-height: auto; padding: 0; } /* No min-height or padding in print */
-      .mini-chart-wrap { height: 75px; } /* Adjusted height for print */
-      .mini-chart { height: 60px; padding-bottom: 8px;}
+      .comments-block { min-height: auto; padding: 0; } 
+      .comments-block > div:nth-child(2) { min-height: 20px; } /* Even smaller min-height for print comment area */
+      .mini-chart-wrap { height: 75px; }
+      .mini-chart { height: 50px; padding-bottom: 8px;} /* Reduced chart size for print */
       .chart-bar { min-height: 2px; }
       .bar-value { font-size: 9px; margin-bottom: 1px;}
       .chart-labels { font-size: 9px; padding-left: 15px; }
       .chart-label { font-size: 9px; }
       .small { font-size: 9px; margin-top: 10px; }
       .report { table-layout: fixed; word-wrap: break-word; }
-      /* Adjust print width to match screen ratio */
       table.report thead th:first-child { width: 18%; }
+      
+      /* Print-specific footer adjustments for single page */
+      .comments-row, .sign-row { margin-top: 8px; gap: 10px; }
+      .sign { min-height: 15px; }
+      .sign-row.foot-dates { margin-top: 8px; }
     }
   </style>
 </head>
@@ -652,7 +648,7 @@
   const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&quot;", "'": "&#39;" }[c]));
   const termWord = (n) => ({ 1: 'ONE', 2: 'TWO', 3: 'THREE' }[n] || String(n));
 
-  /** Calculates the height for a bar graph point (V13) */
+  /** Calculates the height for a bar graph point (V13/V15) */
   function calcGraphHeight(score, maxVal) {
     if (maxVal === 0 || score === 0) return 0; 
     // Calculate percentage height of the score relative to the max score
@@ -775,8 +771,8 @@
         </div>
         <div class="comments-block">
             <div style="border-bottom: none; padding-bottom: 0; font-size: 12px; color: var(--primary-text);">
-                <div class="sign" style="min-height: 25px;"><b>Parent Name:</b> ${escapeHTML(parentName)}</div>
-                <div class="sign" style="min-height: 25px; margin-top: 10px;"><b>Parent Signature:</b> ${escapeHTML(parentSign)}</div>
+                <div class="sign" style="min-height: 20px;"><b>Parent Name:</b> ${escapeHTML(parentName)}</div>
+                <div class="sign" style="min-height: 20px; margin-top: 10px;"><b>Parent Signature:</b> ${escapeHTML(parentSign)}</div>
             </div>
         </div>
       </div>
