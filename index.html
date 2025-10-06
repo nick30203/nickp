@@ -1,20 +1,20 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#2563eb" />
   <title>CBC Report Form – Professional UI (Marks Editor • One‑Page Print • Save to Excel)</title>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+
+  <!-- xlsx (browser) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 
   <style>
     :root {
-      /* Professional Design System */
       --color-primary: #2563eb;
       --color-primary-hover: #1d4ed8;
       --color-text-primary: #1e293b;
@@ -35,14 +35,12 @@
       --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Keyframe animations */
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUpIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes toastIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes toastOut { to { opacity: 0; transform: translateY(15px); } }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* --- Base & Reset --- */
     html, body {
       height: 100%; margin: 0; background-color: var(--color-bg);
       font-family: var(--font-sans); color: var(--color-text-primary); font-size: 14px; line-height: 1.5;
@@ -51,13 +49,11 @@
     .app { max-width: 1280px; margin: 32px auto; padding: 0 24px; animation: fadeIn 0.5s ease-out; }
     * { box-sizing: border-box; }
 
-    /* --- Toolbar & Controls --- */
     .bar {
       display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-      background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px);
+      background: rgba(255,255,255,0.8); backdrop-filter: blur(8px);
       padding: 12px 16px; border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-md); border: 1px solid var(--color-border);
       position: sticky; top: 16px; z-index: 100;
     }
     .group { display: flex; gap: 10px; align-items: center; }
@@ -68,6 +64,7 @@
       font-size: 14px; transition: var(--transition-base);
     }
     select:focus, input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
     button, a.btn {
       padding: 9px 16px; background-color: var(--color-primary); color: white;
       border: none; border-radius: var(--radius-md); cursor: pointer; text-decoration: none;
@@ -75,7 +72,6 @@
       transition: var(--transition-base);
     }
     button:hover, a.btn:hover { background-color: var(--color-primary-hover); box-shadow: var(--shadow-sm); }
-    button:active, a.btn:active { transform: translateY(1px); }
     button.secondary, a.btn.secondary { background-color: #f8fafc; color: #334155; border: 1px solid var(--color-border); }
     button.secondary:hover, a.btn.secondary:hover { background-color: #f1f5f9; }
     button.ghost { background: transparent; color: var(--color-primary); border: 1px solid #a5b4fc; }
@@ -83,46 +79,41 @@
     button:disabled, a.btn[aria-disabled="true"] { background-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
     button .icon { width: 16px; height: 16px; }
     button .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+
     .chip { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; color: var(--color-primary); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; border: 1px solid rgba(37, 99, 235, 0.1); }
 
-    /* --- File Drop Zone --- */
     #drop_zone {
       border: 2px dashed var(--color-border); border-radius: var(--radius-lg); padding: 24px;
       text-align: center; cursor: pointer; transition: var(--transition-base);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       background-color: var(--color-card-bg);
+      min-width: 360px;
     }
     #drop_zone:hover { border-color: var(--color-primary); }
     #drop_zone.dragover { background-color: #eef2ff; border-color: var(--color-primary); border-style: solid; }
     #drop_zone .icon { width: 32px; height: 32px; color: var(--color-primary); margin-bottom: 8px; }
     #drop_zone p { margin: 0; color: var(--color-text-secondary); font-weight: 500; }
     #drop_zone p small { display: block; font-size: 12px; margin-top: 4px; color: var(--color-text-muted); }
-    #filename { font-weight: 600; color: var(--color-primary); margin-top: 8px; font-size: 13px; }
+    #filename { font-weight: 600; color: var(--color-primary); margin-top: 8px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 420px; }
 
-    /* --- Panels, Drawers & Layout --- */
     .panel-drawer {
       background: var(--color-card-bg); border-radius: var(--radius-lg); margin-top: 24px;
-      border: 1px solid var(--color-border);
-      box-shadow: var(--shadow-md);
-      animation: slideUpIn 0.5s ease-out forwards;
-      overflow: hidden;
+      border: 1px solid var(--color-border); box-shadow: var(--shadow-md); animation: slideUpIn 0.5s ease-out forwards; overflow: hidden;
     }
     .panel-drawer summary {
       padding: 16px 20px; font-size: 16px; font-weight: 600; color: var(--color-text-primary);
       cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;
     }
     .panel-drawer summary::-webkit-details-marker { display: none; }
-    .panel-drawer summary .icon { width: 20px; height: 20px; color: var(--color-text-muted); transition: var(--transition-base); }
-    .panel-drawer[open] > summary .icon { transform: rotate(90deg); }
+    .panel-drawer.summary-icon { width: 20px; height: 20px; color: var(--color-text-muted); transition: var(--transition-base); }
+
     .panel-drawer-content { padding: 0 20px 20px; border-top: 1px solid var(--color-border); }
 
     .two-col { display: grid; grid-template-columns: 1fr 400px; gap: 24px; }
     .editor-grid { width: 100%; border-collapse: collapse; font-size: 14px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid #eef2f7; }
     .editor-grid th, .editor-grid td { border-bottom: 1px solid #eef2f7; padding: 10px 12px; text-align: left; }
     .editor-grid th { background: #f8fafc; font-weight: 600; color: var(--color-text-secondary); }
-    .editor-grid tr:hover td { background-color: #f8fafc; }
 
-    /* --- Status Bar --- */
     .statusbar {
       position: sticky; top: 96px; z-index: 50; background: var(--color-card-bg); border-radius: var(--radius-md);
       padding: 8px 16px; border: 1px solid var(--color-border); font-size: 13px; margin: 20px 0;
@@ -133,50 +124,28 @@
     .statusbar.warn { background: #fffbeb; border-color: #fde68a; color: #854d0e; }
     .statusbar.err { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
 
-    /* --- Report Preview --- */
     #singleView .sheet {
       width: 100%; min-height: 420px; background: #fff; padding: 20px; border-radius: var(--radius-md);
-      border: 1px solid var(--color-border);
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
+      border: 1px solid var(--color-border); box-shadow: var(--shadow-lg); overflow: hidden;
     }
-    .school-head h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: .5px; }
-    .school-head .addr { font-size: 12px; color: var(--color-text-secondary); }
-    .school-head .motto { margin-top: 4px; font-weight: 700; color: var(--color-primary); font-size: 13px; }
-    .key { font-size: 11px; color: var(--color-text-secondary); text-align: center; margin: 8px 0; }
-    .title { text-align: center; font-weight: 700; margin: 8px 0 14px; font-size: 14px; text-transform: uppercase; }
-    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; border: 1px solid var(--color-border); padding: 10px; border-radius: var(--radius-md); font-size: 12px; margin-bottom: 12px; }
-    .meta label { font-weight: 700; min-width: 110px; color: var(--color-text-primary); }
 
-    /* --- Report Table & Chart --- */
     table.report { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
     table.report th, table.report td { border: 1px solid #333; padding: 6px; text-align: center; word-break: break-word; }
     table.report th { background-color: #f1f5f9; font-weight: 700; }
     table.report td.label { text-align: left; padding-left: 8px; font-weight: 600; }
+
     .mini-chart { height: 50px; display: flex; gap: 8px; align-items: flex-end; justify-content: center; margin-top: 12px; }
     .chart-bar { width: 12px; border-radius: 4px; display: inline-block; transition: height 0.3s ease-out; }
     .chart-bar.opener { background: linear-gradient(to top, #4285f4, #6aa2f8); border: 1px solid #4285f4; }
     .chart-bar.mid { background: linear-gradient(to top, #0f9d58, #34a853); border: 1px solid #0f9d58; }
     .chart-bar.end { background: linear-gradient(to top, #db4437, #ea6a5f); border: 1px solid #db4437; }
-    .chart-labels { display: flex; gap: 8px; justify-content: center; margin-top: 6px; font-size: 11px; color: var(--color-text-muted); }
 
-    /* --- Comments & Footer --- */
     .comments-wrapper { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 12px; }
     .comments-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .comments-grid .block, .parent-comment-block { border: 1px solid var(--color-border); padding: 8px; border-radius: var(--radius-md); min-height: 64px; background: #fff; }
-    .sign-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-    .sign { border: 1px solid var(--color-border); padding: 8px; border-radius: var(--radius-md); min-height: 40px; background: #fff; }
-    .foot-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 12px; }
-    .small { color: var(--color-text-muted); font-size: 11px; margin-top: 8px; }
 
-    /* --- Toasts & Dialogs --- */
     .toasts { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
-    .toast {
-      background: #27272a; color: white; padding: 12px 16px; border-radius: var(--radius-md);
-      box-shadow: var(--shadow-lg);
-      font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 500;
-      animation: toastIn 0.4s ease-out;
-    }
+    .toast { background: #27272a; color: white; padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 500; animation: toastIn 0.4s ease-out; }
     .toast.exiting { animation: toastOut 0.4s ease-in forwards; }
     .toast.success { background-color: var(--color-success); }
     .toast.error { background-color: var(--color-danger); }
@@ -185,15 +154,10 @@
     dialog { border-radius: var(--radius-lg); padding: 0; border: 1px solid var(--color-border); box-shadow: var(--shadow-lg); max-width: 740px; width: 90%; }
     dialog::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
     dialog[open] { animation: slideUpIn 0.4s ease-out; }
-    .dlg-hd { padding: 16px 20px; font-weight: 700; font-size: 16px; border-bottom: 1px solid var(--color-border); }
+    .dlg-hd { padding: 16px 20px; font-weight: 700; font-size: 16px; border-bottom: 1px solid var(--Color-border); }
     .dlg-bd { padding: 20px; line-height: 1.6; }
     .dlg-ft { padding: 12px 20px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--color-border); background: #f8fafc; }
-    #errorDlg .dlg-hd { background: #fef2f2; color: var(--color-danger); }
-    #confirmDlg .dlg-hd { background: #fffbeb; color: #854d0e; }
-    #passwordDlg .dlg-hd { background: #eef2ff; color: var(--color-primary); }
-    pre.err { background: #f8fafc; border: 1px solid var(--color-border); padding: 12px; max-height: 240px; overflow: auto; border-radius: 6px; font-size: 13px; }
 
-    /* --- Responsive & Print --- */
     @media (max-width: 960px) {
       .app { padding: 0 16px; margin: 16px auto; }
       .two-col { grid-template-columns: 1fr; }
@@ -201,52 +165,50 @@
       .statusbar { top: 180px; }
       #singleView .sheet { padding: 12px; box-shadow: var(--shadow-md); }
     }
+
     @media print {
       @page { size: A4 portrait; margin: 10mm; }
       html, body { height: auto !important; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .bar, details, .statusbar, .toasts, #singleView { display: none !important; }
       #batchContainer { display: block !important; }
-      .sheet {
-        width: 100%; margin: 0; padding: 8mm; border: none; border-radius: 0; box-shadow: none;
-        page-break-after: always; box-sizing: border-box; overflow: visible;
-      }
-      .school-head h1 { font-size: 18px; }
-      .title { font-size: 13px; }
+      .sheet { width: 100%; margin: 0; padding: 8mm; border: none; border-radius: 0; box-shadow: none; page-break-after: always; box-sizing: border-box; overflow: visible; }
       table.report { font-size: 10px; }
       table.report th, table.report td { padding: 4px; border-color: #000; }
-      .meta { font-size: 11px; padding: 6px; }
-      .comments-grid .block, .parent-comment-block { min-height: 48px; padding: 6px; }
-      .small { font-size: 10px; }
     }
   </style>
 </head>
+
 <body>
-<div class="app">
+<div class="app" id="app">
   <div class="bar" role="toolbar" aria-label="Main toolbar">
     <div class="group" style="flex: 1;">
-      <div id="drop_zone">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
-        <input type="file" id="file" accept=".xlsx,.xls" hidden />
+      <div id="drop_zone" role="button" tabindex="0" aria-label="Drop or select an Excel file" title="Drop or click to upload">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
+        <input type="file" id="file" accept=".xlsx,.xls" aria-label="Choose an Excel workbook" hidden />
         <p>Drop your Excel workbook here or click to browse</p>
         <p><small>All processing is done locally in your browser.</small></p>
-        <div id="filename"></div>
+        <div id="filename" aria-live="polite"></div>
       </div>
     </div>
+
     <div class="group">
-      <button id="printSelectedBtn" disabled class="ghost">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a8.25 8.25 0 018.25-8.25H12M12 21a8.25 8.25 0 00-8.25-8.25M12 21V11.25m0 9.75a8.25 8.25 0 01-8.25-8.25M12 21a8.25 8.25 0 008.25-8.25M12 3c-4.556 0-8.25 3.694-8.25 8.25m8.25-8.25V3m0 9.75H3.75M21 12a9 9 0 00-9-9M3.75 12H21" /></svg>
+      <button id="printSelectedBtn" disabled class="ghost" title="Print the currently selected learner">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a8.25 8.25 0 018.25-8.25H12M12 21a8.25 8.25 0 00-8.25-8.25M12 21V11.25m0 9.75a8.25 8.25 0 01-8.25-8.25M12 21a8.25 8.25 0 008.25-8.25M12 3c-4.556 0-8.25 3.694-8.25 8.25m8.25-8.25V3m0 9.75H3.75M21 12a9 9 0 00-9-9M3.75 12H21" /></svg>
         Print Selected
       </button>
-      <button id="printFilteredBtn" disabled class="ghost">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a8.25 8.25 0 018.25-8.25H12M12 21a8.25 8.25 0 00-8.25-8.25M12 21V11.25m0 9.75a8.25 8.25 0 01-8.25-8.25M12 21a8.25 8.25 0 008.25-8.25M12 3c-4.556 0-8.25 3.694-8.25 8.25m8.25-8.25V3m0 9.75H3.75M21 12a9 9 0 00-9-9M3.75 12H21" /></svg>
+
+      <button id="printFilteredBtn" disabled class="ghost" title="Print all learners currently matching filters">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a8.25 8.25 0 018.25-8.25H12M12 21a8.25 8.25 0 00-8.25-8.25M12 21V11.25m0 9.75a8.25 8.25 0 01-8.25-8.25M12 21a8.25 8.25 0 008.25-8.25M12 3c-4.556 0-8.25 3.694-8.25 8.25m8.25-8.25V3m0 9.75H3.75M21 12a9 9 0 00-9-9M3.75 12H21" /></svg>
         Batch Print
       </button>
     </div>
+
     <div class="group">
-      <a id="downloadExcelLink" class="btn secondary" aria-disabled="true">
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+      <button id="downloadExcelBtn" class="btn secondary" aria-disabled="true" title="Download workbook with saved changes">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
         Download Excel
-      </a>
+      </button>
+
       <span class="chip" id="unsavedChip" style="display:none">Unsaved</span>
     </div>
   </div>
@@ -260,19 +222,16 @@
     <details class="panel-drawer" id="filtersPanel" open>
       <summary>
         <span>Filters & Learner Selection</span>
-        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
       </summary>
       <div class="panel-drawer-content">
         <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center; padding-top:16px;">
-          <div class="group"><label for="learnerSel">Learner:</label><select id="learnerSel"></select></div>
-          <div class="group"><label for="fGender">Gender:</label><select id="fGender"><option value="">All</option><option>M</option><option>F</option></select></div>
-          <div class="group"><label for="fGrade">Grade:</label><select id="fGrade"><option value="">All</option></select></div>
+          <div class="group"><label for="learnerSel">Learner:</label><select id="learnerSel" aria-label="Selected learner"></select></div>
+          <div class="group"><label for="fGender">Gender:</label><select id="fGender" aria-label="Filter by gender"><option value="">All</option><option>M</option><option>F</option></select></div>
+          <div class="group"><label for="fGrade">Grade:</label><select id="fGrade" aria-label="Filter by grade"><option value="">All</option></select></div>
           <div class="group">
-            <button id="applyFiltersBtn" class="secondary">
-                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.572a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" /></svg>
-                Apply
-            </button>
-            <button id="clearFiltersBtn" class="secondary">Clear</button>
+            <button id="applyFiltersBtn" class="secondary" title="Apply filters">Apply</button>
+            <button id="clearFiltersBtn" class="secondary" title="Clear filters">Clear</button>
             <span class="muted" id="matchCountChip">0 selected</span>
           </div>
         </div>
@@ -280,39 +239,43 @@
     </details>
 
     <details class="panel-drawer" id="editorPanel" open>
-        <summary>
-            <span>Marks Editor & Preview</span>
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-        </summary>
-        <div class="panel-drawer-content">
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding-top:16px;">
-                <div class="group"><label for="phaseSel">Phase:</label>
-                <select id="phaseSel"><option value="Opener">Opener</option><option value="Mid">Midterm</option><option value="End">End term</option></select>
-                </div>
-                <div class="group">
-                <button id="savePhaseBtn">
-                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9" /></svg>
-                    Save to Learner
-                </button>
-                <button id="applyOutOfAllBtn" class="secondary">Apply 'Out Of' to ALL</button>
-                </div>
-            </div>
+      <summary>
+        <span>Marks Editor & Preview</span>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+      </summary>
 
-            <div class="two-col">
-                <div>
-                  <h4 style="margin:0 0 8px; font-size:15px; font-weight:600; color: var(--color-text-primary);">Edit Marks</h4>
-                  <p style="margin:-4px 0 12px; font-size:13px; color: var(--color-text-muted);">Changes here are written back to the 'Learners' sheet.</p>
-                  <table class="editor-grid" id="marksGrid" aria-label="Marks editor">
-                      <thead><tr><th>Learning Area</th><th style="width:140px">Score</th><th style="width:140px">Out Of</th></tr></thead>
-                      <tbody id="marksBody"></tbody>
-                  </table>
-                </div>
-                <div>
-                  <h4 style="margin:0 0 8px; font-size:15px; font-weight:600; color: var(--color-text-primary);">Live Preview</h4>
-                  <div id="singleView"><div class="sheet" id="singleSheet" aria-label="Report Form Preview"></div></div>
-                </div>
-            </div>
+      <div class="panel-drawer-content">
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding-top:16px;">
+          <div class="group"><label for="phaseSel">Phase:</label>
+            <select id="phaseSel" aria-label="Phase selection"><option value="Opener">Opener</option><option value="Mid">Midterm</option><option value="End">End term</option></select>
+          </div>
+
+          <div class="group">
+            <button id="savePhaseBtn" title="Save the marks for this learner">
+              <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9" /></svg>
+              Save to Learner
+            </button>
+
+            <button id="applyOutOfAllBtn" class="secondary" title="Copy Out Of values to all learners">Apply 'Out Of' to ALL</button>
+          </div>
         </div>
+
+        <div class="two-col">
+          <div>
+            <h4 style="margin:0 0 8px; font-size:15px; font-weight:600; color: var(--color-text-primary);">Edit Marks</h4>
+            <p style="margin:-4px 0 12px; font-size:13px; color: var(--color-text-muted);">Changes here are written back to the 'Learners' sheet in the workbook.</p>
+            <table class="editor-grid" id="marksGrid" aria-label="Marks editor">
+              <thead><tr><th>Learning Area</th><th style="width:140px">Score</th><th style="width:140px">Out Of</th></tr></thead>
+              <tbody id="marksBody"></tbody>
+            </table>
+          </div>
+
+          <div>
+            <h4 style="margin:0 0 8px; font-size:15px; font-weight:600; color: var(--color-text-primary);">Live Preview</h4>
+            <div id="singleView"><div class="sheet" id="singleSheet" aria-label="Report Form Preview"></div></div>
+          </div>
+        </div>
+      </div>
     </details>
   </div>
 
@@ -346,7 +309,7 @@
   <div class="dlg-hd">Password Required</div>
   <div class="dlg-bd">
     <p>This Excel file is protected. Please enter the password to open it.</p>
-    <input type="password" id="filePassword" style="width: 100%;" placeholder="Enter workbook password">
+    <input type="password" id="filePassword" style="width: 100%;" placeholder="Enter workbook password" aria-label="Workbook password">
   </div>
   <div class="dlg-ft">
     <button id="passwordCancelBtn" class="secondary">Cancel</button>
@@ -370,35 +333,34 @@
     { key:'CRE',     label:'CRE' },
     { key:'AGRI',    label:'AGRI/NUT' },
     { key:'CA',      label:'C/ART' },
-    { key:'PRETECH', label:'PRE-TECH' },
+    { key:'PRETECH', label:'PRE-TECH' }
   ];
+
   const MARK_KEYS = SUBJECTS.flatMap(s => [
     `${s.key}_Opener`, `${s.key}_Opener_OutOf`,
     `${s.key}_Mid`,    `${s.key}_Mid_OutOf`,
     `${s.key}_End`,    `${s.key}_End_OutOf`
   ]);
+
   const DEFAULT_THRESHOLDS = [{min:81,grade:'EE'},{min:50,grade:'ME'},{min:26,grade:'AE'},{min:0,grade:'BE'}];
 
   // --- DOM References ---
   const $ = sel => document.querySelector(sel);
   const $$ = sel => document.querySelectorAll(sel);
-  
-  // Toolbar & File
+
   const $dropZone = $('#drop_zone');
   const $fileInput = $('#file');
   const $filename = $('#filename');
   const $printSelectedBtn = $('#printSelectedBtn');
   const $printFilteredBtn = $('#printFilteredBtn');
-  const $downloadExcelLink = $('#downloadExcelLink');
+  const $downloadExcelBtn = $('#downloadExcelBtn');
   const $unsavedChip = $('#unsavedChip');
 
-  // Main UI
   const $statusBar = $('#statusBar');
   const $statusLeft = $('#statusBar .left');
   const $statusDetails = $('#statusBar .right');
   const $mainContent = $('#mainContent');
 
-  // Filters
   const $learnerSel = $('#learnerSel');
   const $fGender = $('#fGender');
   const $fGrade = $('#fGrade');
@@ -406,7 +368,6 @@
   const $clearFiltersBtn = $('#clearFiltersBtn');
   const $matchCountChip = $('#matchCountChip');
 
-  // Editor
   const $phaseSel = $('#phaseSel');
   const $marksBody = $('#marksBody');
   const $savePhaseBtn = $('#savePhaseBtn');
@@ -414,7 +375,6 @@
   const $singleSheet = $('#singleSheet');
   const $batchContainer = $('#batchContainer');
 
-  // Dialogs & Toasts
   const $toasts = $('#toasts');
   const $errorDlg = $('#errorDlg');
   const $errDetails = $('#errDetails');
@@ -423,7 +383,7 @@
   const $passwordDlg = $('#passwordDlg');
   const $filePasswordInput = $('#filePassword');
 
-  // --- Application State ---
+  // --- State ---
   let learners = [];
   let originalLearnersSnapshot = [];
   let thresholds = DEFAULT_THRESHOLDS;
@@ -432,7 +392,6 @@
   let headerIndexMap = {};
   let unsavedChanges = false;
 
-  // Persisted sheet visual properties for high-fidelity saving
   let learnersSheetName = null;
   let learnersSheetCols = null;
   let learnersSheetRows = null;
@@ -441,15 +400,14 @@
   let originalWorkbookProps = null;
   let sheetSavedViews = null;
 
-  // --- UI & Utility Helpers ---
-  
+  // --- Helpers ---
   function setStatus(msg, type = 'ok', details = '') {
     $statusBar.style.display = 'flex';
     $statusBar.className = `statusbar ${type}`;
     $statusLeft.textContent = msg;
     $statusDetails.textContent = details;
   }
-  
+
   function toast(msg, type = 'success', timeout = 2500) {
     const el = document.createElement('div');
     el.className = `toast ${type}`;
@@ -470,12 +428,12 @@
         const details = `Message: ${err?.message || err}\n\nStack:\n${err?.stack || '(no stack)'}`;
         $errDetails.textContent = details;
         $errorDlg.showModal();
-        setStatus('Action failed', 'err', err.message);
+        setStatus('Action failed', 'err', err.message || String(err));
         toast('Something went wrong', 'error');
       }
     };
   }
-  
+
   function confirmAction(message) {
     return new Promise(resolve => {
       $confirmMsg.textContent = message;
@@ -507,7 +465,7 @@
         $filePasswordInput.removeEventListener('keydown', onKeydown);
         $passwordDlg.close();
       };
-      
+
       const onKeydown = (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -528,18 +486,17 @@
       button.innerHTML = `<span class="spinner"></span> Loading...`;
     } else {
       button.disabled = false;
-      button.innerHTML = button.dataset.originalText || 'Action';
+      button.innerHTML = button.dataset.originalText || button.innerHTML;
     }
   }
 
   function showUnsaved(flag) {
     unsavedChanges = flag;
     $unsavedChip.style.display = flag ? 'inline-flex' : 'none';
-    $downloadExcelLink.setAttribute('aria-disabled', !flag);
+    $downloadExcelBtn.setAttribute('aria-disabled', flag ? 'false' : 'true');
   }
-  
-  // --- Core Logic Helpers ---
-  const getIndex = (row) => Number(row.Index ?? row.index ?? row.INDEX);
+
+  const getIndex = (row) => Number(row.Index ?? row.index ?? row.INDEX ?? row['Index'] ?? row['index']);
   const pctGrade = (score, outOf) => {
     if (outOf <= 0 || score === null || score === '') return { pct: 0, grade: 'BE' };
     const pct = Math.max(0, Math.round((Number(score) / Number(outOf)) * 100));
@@ -565,11 +522,19 @@
 
   function htmlReport(row) {
     const school = { name: 'ITIATI JUNIOR SCHOOL', address1: 'P.O. BOX 160-10101', town: 'KARATINA', motto: 'HARDWORK FOR EXCELLENCE' };
-    const pupilName = row["Pupil's Name"] || row["Pupil Name"] || ''; const grade = row["Grade"] ?? ''; const term = row["Term"] ?? ''; const year = row["Year"] ?? '';
-    const ctComment = row["Class_Teacher_Comment"] || ''; const ctName = row["Class_Teacher_Name"] || ''; const ctDate = row["CT_Date"] || '';
-    const htComment = row["Head_Teacher_Comment"] || ''; const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || ''; const htDate = row["HT_Date"] || '';
-    const closingDate = row["Closing_Date"] || row["Closing Date"] || ''; const openingDate = row["Opening_Date"] || row["Opening Date"] || '';
-    
+    const pupilName = row["Pupil's Name"] || row["Pupil Name"] || '';
+    const grade = row["Grade"] ?? '';
+    const term = row["Term"] ?? '';
+    const year = row["Year"] ?? '';
+    const ctComment = row["Class_Teacher_Comment"] || '';
+    const ctName = row["Class_Teacher_Name"] || '';
+    const ctDate = row["CT_Date"] || '';
+    const htComment = row["Head_Teacher_Comment"] || '';
+    const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || '';
+    const htDate = row["HT_Date"] || '';
+    const closingDate = row["Closing_Date"] || row["Closing Date"] || '';
+    const openingDate = row["Opening_Date"] || row["Opening Date"] || '';
+
     const subRows = SUBJECTS.map(s => {
       const oSc = Number(row[`${s.key}_Opener`]) || 0, oMax = Number(row[`${s.key}_Opener_OutOf`]) || 0;
       const mSc = Number(row[`${s.key}_Mid`]) || 0, mMax = Number(row[`${s.key}_Mid_OutOf`]) || 0;
@@ -577,11 +542,16 @@
       const oG = pctGrade(oSc, oMax).grade, mG = pctGrade(mSc, mMax).grade, eG = pctGrade(eSc, eMax).grade;
       return { label: s.label, oSc, oMax, oG, mSc, mMax, mG, eSc, eMax, eG };
     });
-    const total = subRows.reduce((a, r) => { a.oSc += r.oSc; a.oMax += r.oMax; a.mSc += r.mSc; a.mMax += r.mMax; a.eSc += r.eSc; a.eMax += r.eMax; return a; }, { oSc: 0, oMax: 0, mSc: 0, mMax: 0, eSc: 0, eMax: 0 });
+
+    const total = subRows.reduce((a, r) => {
+      a.oSc += r.oSc; a.oMax += r.oMax; a.mSc += r.mSc; a.mMax += r.mMax; a.eSc += r.eSc; a.eMax += r.eMax;
+      return a;
+    }, { oSc: 0, oMax: 0, mSc: 0, mMax: 0, eSc: 0, eMax: 0 });
+
     const oG = pctGrade(total.oSc, total.oMax).grade, mG = pctGrade(total.mSc, total.mMax).grade, eG = pctGrade(total.eSc, total.eMax).grade;
     const title = `END TERM ${termWord(Number(term))} ASSESSMENT - YEAR ${year}`;
 
-    return `<div class="school-head" style="text-align: center; line-height: 1.1; margin-bottom: 8px;">
+    return `<div class="school-head" style="text-align:center;line-height:1.1;margin-bottom:8px;">
         <h1>${escapeHTML(school.name)}</h1>
         <div class="addr">${escapeHTML(school.address1)} • ${escapeHTML(school.town)}</div>
         <div class="motto">${escapeHTML(school.motto)}</div>
@@ -603,24 +573,23 @@
       ${htmlChartTotals(total.oSc, total.mSc, total.eSc)}
       <div class="comments-wrapper">
         <div class="comments-grid">
-            <div class="block"><div style="font-weight:700;margin-bottom:6px">CLASS TEACHER</div><div>${escapeHTML(ctComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Name:</b> ${escapeHTML(ctName) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(ctDate) || '&nbsp;'}</div></div></div>
-            <div class="block"><div style="font-weight:700;margin-bottom:6px">HEAD TEACHER</div><div>${escapeHTML(htComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Signature:</b> ${escapeHTML(htSign) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(htDate) || '&nbsp;'}</div></div></div>
+          <div class="block"><div style="font-weight:700;margin-bottom:6px">CLASS TEACHER</div><div>${escapeHTML(ctComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Name:</b> ${escapeHTML(ctName) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(ctDate) || '&nbsp;'}</div></div></div>
+          <div class="block"><div style="font-weight:700;margin-bottom:6px">HEAD TEACHER</div><div>${escapeHTML(htComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Signature:</b> ${escapeHTML(htSign) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(htDate) || '&nbsp;'}</div></div></div>
         </div>
         <div class="parent-comment-block">
-            <div style="font-weight:700;margin-bottom:6px">PARENT'S / GUARDIAN'S REMARKS</div>
-            <div style="min-height: 24px; border-bottom: 1px dotted #94a3b8; margin-bottom:8px;"></div>
-            <div class="sign-row" style="grid-template-columns: 1fr 120px;">
-                <div class="sign" style="border:0; padding:0;"><b>Signature:</b> ....................................</div>
-                <div class="sign" style="border:0; padding:0;"><b>Date:</b> .......................</div>
-            </div>
+          <div style="font-weight:700;margin-bottom:6px">PARENT'S / GUARDIAN'S REMARKS</div>
+          <div style="min-height:24px;border-bottom:1px dotted #94a3b8;margin-bottom:8px;"></div>
+          <div class="sign-row" style="grid-template-columns:1fr 120px;">
+            <div class="sign" style="border:0;padding:0;"><b>Signature:</b> ....................................</div>
+            <div class="sign" style="border:0;padding:0;"><b>Date:</b> .......................</div>
+          </div>
         </div>
       </div>
       <div class="foot-dates"><div class="sign"><b>CLOSING DATE:</b> ${escapeHTML(closingDate) || '&nbsp;'}</div><div class="sign"><b>OPENING DATE:</b> ${escapeHTML(openingDate) || '&nbsp;'}</div></div>
       <div class="small">This report is designed to fit on a single A4 page when printed at 100% scale.</div>`;
   }
 
-  // --- UI Update Functions ---
-  
+  // --- UI helpers ---
   function resetUI() {
     $mainContent.style.display = 'none';
     $statusBar.style.display = 'none';
@@ -629,17 +598,18 @@
     originalLearnersSnapshot = [];
     filteredLearners = [];
     originalWb = null;
+    headerIndexMap = {};
     showUnsaved(false);
     $$('button, a.btn, select').forEach(el => el.disabled = true);
-    $dropZone.querySelectorAll('p, .icon').forEach(el => el.style.display = 'block');
     $fileInput.value = '';
+    $dropZone.querySelectorAll('p, .icon').forEach(el => el.style.display = 'block');
   }
 
   function hydrateGrades() {
     const grades = [...new Set(learners.map(r => String(r.Grade || '').trim()).filter(Boolean))].sort();
     $fGrade.innerHTML = '<option value="">All</option>' + grades.map(g => `<option>${g}</option>`).join('');
   }
-  
+
   function applyFilters() {
     const gender = ($fGender.value || '').trim().toUpperCase();
     const grade = ($fGrade.value || '').trim();
@@ -647,7 +617,7 @@
       if (gender && String(r.Gender || '').trim().toUpperCase() !== gender) return false;
       if (grade && String(r.Grade || '').trim() !== grade) return false;
       return true;
-    }).sort((a, b) => getIndex(a) - getIndex(b));
+    }).sort((a, b) => (getIndex(a) || 0) - (getIndex(b) || 0));
     hydrateLearnerDropdown();
     if (filteredLearners.length) {
       $learnerSel.selectedIndex = 0;
@@ -663,7 +633,7 @@
     $fGrade.value = '';
     applyFilters();
   }
-  
+
   function hydrateLearnerDropdown() {
     $learnerSel.innerHTML = filteredLearners.map((r, i) => {
       const idx = getIndex(r);
@@ -672,7 +642,7 @@
       return `<option value="${i}">${labelIdx}. ${escapeHTML(name)}</option>`;
     }).join('');
     const hasLearners = learners.length > 0;
-    $$('button, a.btn, select').forEach(el => { if(el.id !== 'file') el.disabled = !hasLearners });
+    $$('button, a.btn, select').forEach(el => { if(el.id !== 'file') el.disabled = !hasLearners; });
     showUnsaved(unsavedChanges);
     $matchCountChip.textContent = `${filteredLearners.length} selected`;
   }
@@ -692,14 +662,187 @@
       return `<tr data-key="${s.key}"><td>${s.label}</td><td><input type="number" step="0.01" class="score" value="${score}"></td><td><input type="number" step="0.01" class="outof" value="${outOf}"></td></tr>`;
     }).join('');
   }
-  
+
   const currentSelectedRow = () => {
     const idx = Number($learnerSel.value);
     return (Number.isInteger(idx) && idx >= 0) ? filteredLearners[idx] : null;
-  }
-  
-  // --- Data Manipulation & Actions ---
+  };
 
+  // --- Update workbook helpers ---
+  function updateMarksInPlace() {
+    const ws = originalWb.Sheets[learnersSheetName];
+    if (!ws) throw new Error(`Could not find the worksheet named '${learnersSheetName}'.`);
+
+    const getRowNumByIndex = (index) => {
+      const learner = originalLearnersSnapshot.find(l => getIndex(l) == index);
+      return learner ? learner._rowNumber : -1;
+    };
+
+    learners.forEach(currentLearner => {
+      const learnerIndex = getIndex(currentLearner);
+      const rowNum = getRowNumByIndex(learnerIndex);
+      if (rowNum === -1) return;
+
+      MARK_KEYS.forEach(key => {
+        const c = headerIndexMap[key];
+        if (c === undefined) return;
+        const originalValue = originalLearnersSnapshot.find(l => getIndex(l) === learnerIndex)?.[key];
+        const currentValue = currentLearner[key];
+
+        if (currentValue === originalValue) return;
+
+        const addr = XLSX.utils.encode_cell({ r: rowNum, c });
+        const val = currentValue ?? '';
+
+        if (ws[addr]) {
+          ws[addr].v = val;
+          ws[addr].t = (typeof val === 'number') ? 'n' : 's';
+        } else {
+          ws[addr] = { v: val, t: (typeof val === 'number') ? 'n' : 's' };
+        }
+      });
+    });
+  }
+
+  function downloadUpdatedWorkbook() {
+    if (!originalWb) return;
+    try {
+      setStatus('Generating Excel file...', 'warn');
+      updateMarksInPlace();
+
+      const ws = originalWb.Sheets[learnersSheetName];
+      if (!ws) throw new Error('Learners worksheet missing at write time.');
+
+      // preserve sheet metadata if present
+      if (learnersSheetCols) ws['!cols'] = JSON.parse(JSON.stringify(learnersSheetCols));
+      if (learnersSheetRows) ws['!rows'] = JSON.parse(JSON.stringify(learnersSheetRows));
+      if (learnersSheetMerges) ws['!merges'] = JSON.parse(JSON.stringify(learnersSheetMerges));
+      if (sheetSavedViews) ws['!views'] = JSON.parse(JSON.stringify(sheetSavedViews));
+      if (originalWorkbookViews) {
+        originalWb.Workbook = originalWb.Workbook || {};
+        originalWb.Workbook.Views = JSON.parse(JSON.stringify(originalWorkbookViews));
+      }
+      if (originalWorkbookProps) {
+        originalWb.Props = JSON.parse(JSON.stringify(originalWorkbookProps));
+      }
+
+      const writeOpts = { bookType: 'xlsx', type: 'array', bookSST: true, cellStyles: true };
+      const wbout = XLSX.write(originalWb, writeOpts);
+      const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const filename = `REPORT_FORM_updated_${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click();
+      setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
+
+      showUnsaved(false);
+      toast('Downloaded updated Excel file', 'success');
+      setStatus('Download complete ✓', 'ok');
+    } catch (err) {
+      console.error(err);
+      setStatus('Download failed', 'err', err.message || String(err));
+      toast('Failed to generate file', 'error');
+      throw err;
+    }
+  }
+
+  // --- File processing ---
+  const processFile = withErrorUI(async (file) => {
+    if (!file) return;
+    resetUI();
+    setStatus('Reading file...', 'warn', file.name);
+    const data = await file.arrayBuffer();
+    let wb;
+    const readOpts = { type: 'array', cellStyles: true, bookSST: true };
+
+    try {
+      wb = XLSX.read(data, readOpts);
+    } catch (e) {
+      // xlsx library often throws a password message containing word "Password"
+      const errMsg = String(e?.message || e);
+      if (errMsg.toLowerCase().includes('password') || errMsg.toLowerCase().includes('encrypted')) {
+        setStatus('Password required', 'warn', 'Please enter the workbook password.');
+        while (!wb) {
+          const password = await promptForPassword();
+          if (password === null) {
+            setStatus('Load cancelled', 'warn', 'File not loaded.');
+            toast('File loading cancelled.', 'warn');
+            return;
+          }
+          try {
+            readOpts.password = password;
+            wb = XLSX.read(data, readOpts);
+          } catch (err_pass) {
+            const msg = String(err_pass?.message || err_pass);
+            if (msg.toLowerCase().includes('password') || msg.toLowerCase().includes('encrypted')) {
+              toast('Incorrect password. Please try again.', 'error', 1800);
+            } else {
+              throw err_pass;
+            }
+          }
+        }
+      } else {
+        throw e;
+      }
+    }
+
+    originalWb = wb;
+
+    // Capture metadata that we want to preserve
+    originalWorkbookViews = wb.Workbook?.Views ? JSON.parse(JSON.stringify(wb.Workbook.Views)) : null;
+    originalWorkbookProps = wb.Props ? JSON.parse(JSON.stringify(wb.Props)) : null;
+    learnersSheetName = wb.SheetNames.find(n => n.toLowerCase() === 'learners') || wb.SheetNames[0];
+    const wsLearners = wb.Sheets[learnersSheetName];
+    if (!wsLearners) throw new Error("A worksheet named 'Learners' was not found.");
+    learnersSheetCols = wsLearners['!cols'] ? JSON.parse(JSON.stringify(wsLearners['!cols'])) : null;
+    learnersSheetRows = wsLearners['!rows'] ? JSON.parse(JSON.stringify(wsLearners['!rows'])) : null;
+    learnersSheetMerges = wsLearners['!merges'] ? JSON.parse(JSON.stringify(wsLearners['!merges'])) : null;
+    sheetSavedViews = wsLearners['!views'] ? JSON.parse(JSON.stringify(wsLearners['!views'])) : null;
+
+    // Build header index map and data rows
+    const headerRows = XLSX.utils.sheet_to_json(wsLearners, { header: 1, defval: '' });
+    const learnerHeaders = headerRows?.[0] || [];
+    headerIndexMap = {};
+    learnerHeaders.forEach((h, i) => { headerIndexMap[String(h)] = i; });
+
+    learners = XLSX.utils.sheet_to_json(wsLearners, { defval: '' });
+    learners.forEach((learner, index) => { learner._rowNumber = index + 1; });
+    originalLearnersSnapshot = learners.map(o => ({...o}));
+
+    // If there's a Grading sheet, map thresholds
+    const wsGrading = wb.Sheets['Grading'] || wb.Sheets['grading'];
+    if (wsGrading) {
+      try {
+        const gradingRows = XLSX.utils.sheet_to_json(wsGrading, { defval: '' });
+        const mappedThresholds = gradingRows
+          .map(r => ({ min: Number(r.Score), grade: String(r.Grade || r.grade || '').trim() }))
+          .filter(r => !Number.isNaN(r.min) && r.grade);
+        if (mappedThresholds.length >= 2) {
+          thresholds = mappedThresholds.sort((a, b) => b.min - a.min);
+        }
+      } catch (e) {
+        console.warn("Could not parse 'Grading' sheet, using defaults.", e);
+      }
+    }
+
+    // Update UI
+    $mainContent.style.display = 'block';
+    $dropZone.querySelectorAll('p, .icon').forEach(el => el.style.display = 'none');
+    $filename.textContent = file.name;
+
+    hydrateGrades();
+    clearFilters();
+    showUnsaved(false);
+
+    // enable UI
+    $$('button, a.btn, select').forEach(el => { if (el.id !== 'file') el.disabled = false; });
+    $downloadExcelBtn.setAttribute('aria-disabled', 'true');
+
+    toast('Workbook loaded successfully', 'success');
+    setStatus(`Loaded ${learners.length} learners ✓`, 'ok', 'Ready to edit or print.');
+  });
+
+  // --- Actions ---
   function savePhaseToLearner() {
     const row = currentSelectedRow();
     if (!row) return;
@@ -713,30 +856,36 @@
     renderSelected(Number($learnerSel.value));
     toast(`Saved marks for ${phase} phase ✓`, 'success');
     setStatus('Marks saved', 'ok');
+    // enable download
+    $downloadExcelBtn.setAttribute('aria-disabled', 'false');
   }
 
   async function applyOutOfToAllLearners() {
-      const confirmed = await confirmAction("This will apply the 'Out Of' values from the currently displayed learner to ALL learners in the workbook for this phase. This action cannot be undone. Are you sure you want to proceed?");
-      if (!confirmed) return;
+    const confirmed = await confirmAction("This will apply the 'Out Of' values from the currently displayed learner to ALL learners in the workbook for this phase. This action cannot be undone. Are you sure you want to proceed?");
+    if (!confirmed) return;
 
-      const phase = $phaseSel.value;
-      const template = {};
-      $marksBody.querySelectorAll('tr').forEach(tr => {
-        const key = tr.dataset.key;
-        const outOf = tr.querySelector('input.outof').value;
-        if (outOf !== '' && !Number.isNaN(Number(outOf))) template[key] = Number(outOf);
-      });
-      if (!Object.keys(template).length) return;
-      learners.forEach(r => {
-        for (const k in template) { r[`${k}_${phase}_OutOf`] = template[k]; }
-      });
-      showUnsaved(true);
-      if (currentSelectedRow()) renderSelected(Number($learnerSel.value));
-      toast("'Out Of' values applied to ALL learners ✓", 'success');
-      setStatus("Applied 'Out Of' to all", 'ok');
+    const phase = $phaseSel.value;
+    const template = {};
+    $marksBody.querySelectorAll('tr').forEach(tr => {
+      const key = tr.dataset.key;
+      const outOf = tr.querySelector('input.outof').value;
+      if (outOf !== '' && !Number.isNaN(Number(outOf))) template[key] = Number(outOf);
+    });
+    if (!Object.keys(template).length) {
+      toast("No 'Out Of' values found to apply.", 'warn');
+      return;
+    }
+
+    learners.forEach(r => {
+      for (const k in template) { r[`${k}_${phase}_OutOf`] = template[k]; }
+    });
+    showUnsaved(true);
+    if (currentSelectedRow()) renderSelected(Number($learnerSel.value));
+    toast("'Out Of' values applied to ALL learners ✓", 'success');
+    setStatus("Applied 'Out Of' to all", 'ok');
+    $downloadExcelBtn.setAttribute('aria-disabled', 'false');
   }
 
-  // --- Printing ---
   function printRows(rows) {
     if (!rows || !rows.length) return;
     $batchContainer.innerHTML = rows.map(r => `<div class='sheet'>${htmlReport(r)}</div>`).join('');
@@ -746,172 +895,15 @@
     toast('Opening print dialog…', 'warn', 1800);
     setStatus('Printing…', 'warn');
   }
-  
-  // --- Excel File Handling ---
-  function updateMarksInPlace() {
-    const ws = originalWb.Sheets[learnersSheetName];
-    if (!ws) throw new Error(`Could not find the worksheet named '${learnersSheetName}'.`);
-    
-    const getRowNumByIndex = (index) => {
-        const learner = originalLearnersSnapshot.find(l => getIndex(l) == index);
-        return learner ? learner._rowNumber : -1;
-    }
 
-    learners.forEach(currentLearner => {
-      const learnerIndex = getIndex(currentLearner);
-      const rowNum = getRowNumByIndex(learnerIndex);
-      if (rowNum === -1) return;
-
-      MARK_KEYS.forEach(key => {
-        const c = headerIndexMap[key];
-        if (c === undefined) return;
-
-        const originalValue = originalLearnersSnapshot.find(l => getIndex(l) === learnerIndex)?.[key];
-        const currentValue = currentLearner[key];
-
-        if (currentValue === originalValue) return;
-
-        const addr = XLSX.utils.encode_cell({ r: rowNum, c });
-        const val = currentValue ?? '';
-
-        if (ws[addr]) {
-            ws[addr].v = val;
-            ws[addr].t = (typeof val === 'number') ? 'n' : 's';
-        } else {
-            const headerAddr = XLSX.utils.encode_cell({r: 0, c});
-            const headerCell = ws[headerAddr];
-            ws[addr] = { v: val, t: (typeof val === 'number') ? 'n' : 's' };
-            if(headerCell && headerCell.s) {
-                ws[addr].s = JSON.parse(JSON.stringify(headerCell.s));
-            }
-        }
-      });
-    });
-  }
-
-  function downloadUpdatedWorkbook() {
-    if (!originalWb) return;
-    setStatus('Generating Excel file...', 'warn');
-
-    updateMarksInPlace();
-
-    const ws = originalWb.Sheets[learnersSheetName];
-    if (!ws) throw new Error('Learners worksheet missing at write time.');
-
-    // --- Fidelity Preservation ---
-    if (learnersSheetCols) ws['!cols'] = JSON.parse(JSON.stringify(learnersSheetCols));
-    if (learnersSheetRows) ws['!rows'] = JSON.parse(JSON.stringify(learnersSheetRows));
-    if (learnersSheetMerges) ws['!merges'] = JSON.parse(JSON.stringify(learnersSheetMerges));
-    if (sheetSavedViews) ws['!views'] = JSON.parse(JSON.stringify(sheetSavedViews));
-    if (originalWorkbookViews) {
-      originalWb.Workbook = originalWb.Workbook || {};
-      originalWb.Workbook.Views = JSON.parse(JSON.stringify(originalWorkbookViews));
-    }
-    if (originalWorkbookProps) {
-      originalWb.Props = JSON.parse(JSON.stringify(originalWorkbookProps));
-    }
-    // --- End Fidelity ---
-
-    const writeOpts = { bookType: 'xlsx', type: 'array', bookSST: true, cellStyles: true };
-    const wbout = XLSX.write(originalWb, writeOpts);
-    const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const filename = `REPORT_FORM_updated_${new Date().toISOString().slice(0, 10)}.xlsx`;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click();
-    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
-
-    showUnsaved(false);
-    toast('Downloaded updated Excel file', 'success');
-    setStatus('Download complete ✓', 'ok');
-  }
-  
-  // --- File Loading & Initialization ---
-  const processFile = withErrorUI(async (file) => {
-    if (!file) return;
-    resetUI();
-    setStatus('Reading file...', 'warn', file.name);
-    const data = await file.arrayBuffer();
-    let wb;
-    const readOpts = { type: 'array', cellStyles: true, bookSST: true };
-
-    try {
-      wb = XLSX.read(data, readOpts);
-    } catch (e) {
-      if (e.message.includes('Password')) {
-        setStatus('Password required', 'warn', 'Please enter the workbook password.');
-        while (!wb) {
-          const password = await promptForPassword();
-          if (password === null) {
-            setStatus('Load cancelled', 'warn', 'File not loaded.');
-            toast('File loading cancelled.', 'warn');
-            return;
-          }
-          try {
-            readOpts.password = password;
-            wb = XLSX.read(data, readOpts);
-          } catch (err_pass) {
-            if (err_pass.message.includes('password')) {
-              toast('Incorrect password. Please try again.', 'error');
-            } else { throw err_pass; }
-          }
-        }
-      } else { throw e; }
-    }
-    
-    originalWb = wb;
-
-    // --- Capture Metadata ---
-    originalWorkbookViews = wb.Workbook?.Views ? JSON.parse(JSON.stringify(wb.Workbook.Views)) : null;
-    originalWorkbookProps = wb.Props ? JSON.parse(JSON.stringify(wb.Props)) : null;
-    learnersSheetName = wb.SheetNames.find(n => n.toLowerCase() === 'learners') || wb.SheetNames[0];
-    const wsLearners = wb.Sheets[learnersSheetName];
-    if (!wsLearners) throw new Error("A worksheet named 'Learners' was not found.");
-    learnersSheetCols = wsLearners['!cols'] ? JSON.parse(JSON.stringify(wsLearners['!cols'])) : null;
-    learnersSheetRows = wsLearners['!rows'] ? JSON.parse(JSON.stringify(wsLearners['!rows'])) : null;
-    learnersSheetMerges = wsLearners['!merges'] ? JSON.parse(JSON.stringify(wsLearners['!merges'])) : null;
-    sheetSavedViews = wsLearners['!views'] ? JSON.parse(JSON.stringify(wsLearners['!views'])) : null;
-
-    const headerRows = XLSX.utils.sheet_to_json(wsLearners, { header: 1, defval: '' });
-    const learnerHeaders = headerRows?.[0] || [];
-    headerIndexMap = {};
-    learnerHeaders.forEach((h, i) => { headerIndexMap[String(h)] = i; });
-
-    learners = XLSX.utils.sheet_to_json(wsLearners, { defval: '' });
-    learners.forEach((learner, index) => { learner._rowNumber = index + 1; });
-    originalLearnersSnapshot = learners.map(o => ({...o}));
-
-    const wsGrading = wb.Sheets['Grading'] || wb.Sheets['grading'];
-    if (wsGrading) {
-        try {
-            const gradingRows = XLSX.utils.sheet_to_json(wsGrading, { defval: '' });
-            const mappedThresholds = gradingRows
-                .map(r => ({ min: Number(r.Score), grade: String(r.Grade || r.grade || '').trim() }))
-                .filter(r => !Number.isNaN(r.min) && r.grade);
-            if (mappedThresholds.length >= 2) {
-                thresholds = mappedThresholds.sort((a, b) => b.min - a.min);
-            }
-        } catch (e) {
-            console.warn("Could not parse 'Grading' sheet, using defaults.", e);
-        }
-    }
-
-    $mainContent.style.display = 'block';
-    $dropZone.querySelectorAll('p, .icon').forEach(el => el.style.display = 'none');
-    $filename.textContent = file.name;
-
-    hydrateGrades();
-    clearFilters();
-    showUnsaved(false);
-
-    toast('Workbook loaded successfully', 'success');
-    setStatus(`Loaded ${learners.length} learners ✓`, 'ok', 'Ready to edit or print.');
-  });
-  
-  // --- Event Wiring ---
+  // --- Event wiring ---
   function setupEventListeners() {
+    // drop zone click/keyboard
     $dropZone.addEventListener('click', () => $fileInput.click());
+    $dropZone.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $fileInput.click(); } });
+
     $fileInput.addEventListener('change', (e) => processFile(e.target.files?.[0]));
+
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
       $dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); });
     });
@@ -927,12 +919,13 @@
     $phaseSel.addEventListener('change', () => { if (currentSelectedRow()) buildMarksGrid(currentSelectedRow()); });
     $savePhaseBtn.addEventListener('click', savePhaseToLearner);
     $applyOutOfAllBtn.addEventListener('click', applyOutOfToAllLearners);
-    
+
     $printSelectedBtn.addEventListener('click', () => { const row = currentSelectedRow(); if (row) printRows([row]); });
     $printFilteredBtn.addEventListener('click', () => printRows(filteredLearners));
-    $downloadExcelLink.addEventListener('click', e => {
-      if ($downloadExcelLink.getAttribute('aria-disabled') === 'true') {
-        e.preventDefault();
+
+    $downloadExcelBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if ($downloadExcelBtn.getAttribute('aria-disabled') === 'true') {
         toast('No unsaved changes to download', 'warn');
       } else {
         downloadUpdatedWorkbook();
@@ -941,15 +934,16 @@
 
     $applyFiltersBtn.addEventListener('click', applyFilters);
     $clearFiltersBtn.addEventListener('click', clearFilters);
-    
+
     $('#copyErrBtn').addEventListener('click', async () => {
       try { await navigator.clipboard.writeText($errDetails.textContent || ''); toast('Copied!', 'success', 1000); } catch (e) { alert('Copy failed.'); }
     });
     $('#closeErrBtn').addEventListener('click', () => $errorDlg.close());
 
     window.addEventListener('afterprint', () => { $batchContainer.innerHTML = ''; setStatus('Ready', 'ok', 'Idle.'); });
-    window.addEventListener('error', (e) => withErrorUI(() => { throw e.error; })());
-    window.addEventListener('unhandledrejection', (e) => withErrorUI(() => { throw e.reason; })());
+
+    window.addEventListener('error', (e) => { withErrorUI(() => { throw e.error || e.message || e; })(); });
+    window.addEventListener('unhandledrejection', (e) => { withErrorUI(() => { throw e.reason || e; })(); });
   }
 
   setupEventListeners();
