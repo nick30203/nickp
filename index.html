@@ -80,6 +80,97 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .chip { display: inline-flex; align-items: center; gap: 6px; background: #e0f2fe; color: var(--accent); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; border: 1px solid rgba(30, 64, 175, 0.1); }
 
+    /* --- [NEW] Navigation Drawer & Hamburger --- */
+    .hamburger-btn {
+        background: transparent;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        margin-right: 8px;
+        transition: background-color 0.2s;
+    }
+    .hamburger-btn:hover { background-color: #f3f4f6; }
+    .hamburger-btn .icon {
+        width: 24px;
+        height: 24px;
+        color: var(--primary-text);
+    }
+
+    .nav-drawer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 280px;
+        background: var(--card-bg);
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+        z-index: 1001;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+    }
+    .nav-drawer.open {
+        transform: translateX(0);
+    }
+    .nav-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .nav-header h3 {
+        margin: 0;
+        font-size: 18px;
+        color: var(--accent);
+    }
+    .nav-links {
+        list-style: none;
+        padding: 16px 0;
+        margin: 0;
+        flex-grow: 1;
+    }
+    .nav-links li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 20px;
+        text-decoration: none;
+        color: var(--primary-text);
+        font-weight: 600;
+        font-size: 14px;
+        border-left: 3px solid transparent;
+        transition: background-color 0.2s, border-color 0.2s;
+    }
+    .nav-links li a:hover {
+        background-color: #f9fafb;
+        border-left-color: var(--accent);
+    }
+    .nav-links .separator {
+        height: 1px;
+        background-color: var(--border-color);
+        margin: 12px 20px;
+    }
+    .nav-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out;
+    }
+    .nav-backdrop.open {
+        opacity: 1;
+        visibility: visible;
+    }
+    /* --- [END NEW] --- */
+
     /* File Drop Zone */
     #drop_zone { border: 2px dashed var(--border-color); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: background-color 0.2s, border-color 0.2s; }
     #drop_zone.dragover { background-color: #e0f2fe; border-color: var(--accent); }
@@ -341,6 +432,12 @@
     #confirmDlg .dlg-hd { background: #fffbeb; color: #854d0e; }
     pre.err { background: #f9fafb; border: 1px solid var(--border-color); padding: 12px; max-height: 240px; overflow: auto; border-radius: 6px; font-size: 13px; }
 
+    /* --- [NEW] Details Dialog --- */
+    .details-form { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    .details-form .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .details-form label { font-weight: 600; font-size: 13px; color: var(--primary-text); }
+    .details-form input { width: 100%; }
+
     /* --- Responsive & Print --- */
     @media (max-width: 960px) {
       .app { padding: 0 16px; margin: 16px auto; }
@@ -352,7 +449,7 @@
     @media print {
       @page { size: A4 portrait; margin: 8mm; } 
       html, body { height: auto !important; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .bar, .panel, .statusbar, .toasts, #singleView { display: none !important; }
+      .bar, .panel, .statusbar, .toasts, #singleView, .nav-drawer, .nav-backdrop { display: none !important; } /* [MODIFIED] */
       #batchContainer { display: block !important; }
       .sheet {
         width: 100%; margin: 0; padding: 6mm; border: none; border-radius: 0; box-shadow: none;
@@ -383,8 +480,54 @@
   </style>
 </head>
 <body>
+<!-- [NEW] Navigation Drawer -->
+<div class="nav-backdrop" id="navBackdrop"></div>
+<aside class="nav-drawer" id="navDrawer">
+    <div class="nav-header">
+        <h3>CBC Report Form</h3>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#" id="navLoadWorkbook">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
+            Load Workbook
+        </a></li>
+        <li><a href="#" id="navDetails">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" /></svg>
+            Report & School Details
+        </a></li>
+        <li class="separator"></li>
+        <li><a href="#" id="navFilter">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.572a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" /></svg>
+            Filter & Select Learner
+        </a></li>
+        <li><a href="#" id="navEdit">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
+            Edit Marks
+        </a></li>
+        <li class="separator"></li>
+        <li><a href="#" id="navDownload">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+            Download Updated Excel
+        </a></li>
+        <li><a href="#" id="navBatchPrint">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6 3.75m10.56 0L18 3.75m0 0a45.093 45.093 0 00-3.72-.321M3 3h18M3 7.5h18M3 12h18m-9 3.75h.008v.008H12v-.008z" /></svg>
+            Batch Print (Filtered)
+        </a></li>
+        <li><a href="#" id="navPrintCurrent">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="24" height="24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6 3.75m10.56 0L18 3.75m0 0a45.093 45.093 0 00-3.72-.321M3 3h18M3 7.5h18M3 12h18m-9 3.75h.008v.008H12v-.008z" /></svg>
+            Print Current Report
+        </a></li>
+    </ul>
+</aside>
+<!-- [END NEW] -->
+
 <div class="app">
   <div class="bar" role="toolbar" aria-label="Main toolbar">
+    <!-- [NEW] Hamburger Button -->
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open menu">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+    </button>
+    <!-- [END NEW] -->
     <div class="group" style="flex: 1;">
       <div id="drop_zone">
         <input type="file" id="file" accept=".xlsx,.xls" hidden />
@@ -476,6 +619,32 @@
   </div>
 </dialog>
 
+<!-- [NEW] Details Dialog -->
+<dialog id="detailsDlg">
+  <div class="dlg-hd">Report & School Details</div>
+  <div class="dlg-bd">
+    <form id="detailsForm" class="details-form">
+        <div class="input-group">
+            <label for="schoolNameInp">School Name</label>
+            <input type="text" id="schoolNameInp" value="ITIATI JUNIOR SCHOOL">
+        </div>
+        <div class="input-group">
+            <label for="assessmentTitleInp">Assessment Title</label>
+            <input type="text" id="assessmentTitleInp" value="END TERM {term} ASSESSMENT - YEAR {year}">
+        </div>
+        <div class="input-group">
+            <label for="headteacherNameInp">Headteacher's Name</label>
+            <input type="text" id="headteacherNameInp" placeholder="Enter Headteacher's Name">
+        </div>
+        <p class="muted" style="font-size:12px; margin-top:10px;">Note: These values will be used on the printed reports. Use placeholders like {term} and {year} for dynamic data.</p>
+    </form>
+  </div>
+  <div class="dlg-ft">
+    <button id="detailsCancelBtn" class="secondary">Cancel</button>
+    <button id="detailsSaveBtn">Save & Apply</button>
+  </div>
+</dialog>
+
 <script>
 (function() {
   "use strict";
@@ -501,10 +670,15 @@
   ]);
   const DEFAULT_THRESHOLDS = [{min:81,grade:'EE'},{min:50,grade:'ME'},{min:26,grade:'AE'},{min:0,grade:'BE'}];
 
-  // --- DOM References ---
+  // --- [MODIFIED] DOM References ---
   const $ = sel => document.querySelector(sel);
   const $$ = sel => document.querySelectorAll(sel);
   
+  // Navigation
+  const $hamburgerBtn = $('#hamburgerBtn');
+  const $navDrawer = $('#navDrawer');
+  const $navBackdrop = $('#navBackdrop');
+
   // Toolbar & File
   const $dropZone = $('#drop_zone');
   const $fileInput = $('#file');
@@ -521,6 +695,7 @@
   const $mainContent = $('#mainContent');
 
   // Filters
+  const $filtersPanel = $('#filtersPanel');
   const $learnerSel = $('#learnerSel');
   const $fGender = $('#fGender');
   const $fGrade = $('#fGrade');
@@ -529,6 +704,7 @@
   const $matchCountChip = $('#matchCountChip');
 
   // Editor
+  const $editorPanel = $('#editorPanel');
   const $phaseSel = $('#phaseSel');
   const $marksBody = $('#marksBody');
   const $savePhaseBtn = $('#savePhaseBtn');
@@ -542,6 +718,7 @@
   const $errDetails = $('#errDetails');
   const $confirmDlg = $('#confirmDlg');
   const $confirmMsg = $('#confirmMsg');
+  const $detailsDlg = $('#detailsDlg'); // [NEW]
 
   // --- Application State ---
   let learners = [];
@@ -551,6 +728,15 @@
   let originalWb = null;
   let headerIndexMap = {};
   let unsavedChanges = false;
+  // [NEW] Report Metadata State
+  let reportDetails = {
+    schoolName: 'ITIATI JUNIOR SCHOOL',
+    address1: 'P.O. BOX 160-10101',
+    town: 'KARATINA',
+    motto: 'HARDWORK FOR EXCELLENCE',
+    titleTemplate: 'END TERM {term} ASSESSMENT - YEAR {year}',
+    headteacherName: ''
+  };
 
   // Persisted sheet visual properties for high-fidelity saving
   let learnersSheetName = null;
@@ -688,14 +874,15 @@
     </div>`;
   }
 
-  /** Generates the full HTML for a single report form (V13/V15) */
+  /** [MODIFIED] Generates the full HTML for a single report form */
   function htmlReport(row) {
-    const school = { name: 'ITIATI JUNIOR SCHOOL', address1: 'P.O. BOX 160-10101', town: 'KARATINA', motto: 'HARDWORK FOR EXCELLENCE' };
+    // const school = { name: 'ITIATI JUNIOR SCHOOL', address1: 'P.O. BOX 160-10101', town: 'KARATINA', motto: 'HARDWORK FOR EXCELLENCE' };
     const pupilName = row["Pupil's Name"] || row["Pupil Name"] || ''; const grade = row["Grade"] ?? ''; const term = row["Term"] ?? ''; const year = row["Year"] ?? '';
     
-    // Teacher/Headteacher fields 
+    // Teacher/Headteacher fields
     const ctComment = row["Class_Teacher_Comment"] || ''; const ctName = row["Class_Teacher_Name"] || ''; const ctSign = row["Class_Teacher_Signature"] || row["Class_Teacher_Sign"] || ''; 
-    const htComment = row["Head_Teacher_Comment"] || ''; const htName = row["Head_Teacher_Name"] || ''; const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || ''; 
+    const htComment = row["Head_Teacher_Comment"] || ''; const htName = row["Head_Teacher_Name"] || reportDetails.headteacherName || ''; // Use state for HT name
+    const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || ''; 
     
     // Parent/Guardian fields
     const parentComment = row["Parent_Comment"] || ''; const parentName = row["Parent_Name"] || ''; const parentSign = row["Parent_Signature"] || row["Parent_Sign"] || '';
@@ -711,15 +898,18 @@
     });
     // Calculate totals for the chart
     const total = subRows.reduce((a, r) => { a.oSc += r.oSc; a.oMax += r.oMax; a.mSc += r.mSc; a.mMax += r.mMax; a.eSc += r.eSc; a.eMax += r.eMax; return a; }, { oSc: 0, oMax: 0, mSc: 0, mMax: 0, eSc: 0, eMax: 0 });
-    const title = `END TERM ${termWord(Number(term))} ASSESSMENT - YEAR ${year}`;
+    
+    const title = reportDetails.titleTemplate
+        .replace('{term}', termWord(Number(term)))
+        .replace('{year}', year);
 
     return `<div class="school-head">
-        <h1>${escapeHTML(school.name)}</h1>
-        <div class="addr">${escapeHTML(school.address1)} • ${escapeHTML(school.town)}</div>
-        <div class="motto">${escapeHTML(school.motto)}</div>
+        <h1 id="repSchoolName">${escapeHTML(reportDetails.schoolName)}</h1>
+        <div class="addr">${escapeHTML(reportDetails.address1)} • ${escapeHTML(reportDetails.town)}</div>
+        <div class="motto">${escapeHTML(reportDetails.motto)}</div>
       </div>
       <div class="key">KEY: <b>EE</b>–Exceeding Expectations, <b>ME</b>–Meeting Expectations, <b>AE</b>–Approaching Expectations, <b>BE</b>–Below Expectations</div>
-      <div class="title">${escapeHTML(title)}</div>
+      <div class="title" id="repTitle">${escapeHTML(title)}</div>
       <div class="meta">
         <div><label>PUPIL'S NAME:</label><div>${escapeHTML(pupilName)}</div></div>
         <div><label>GRADE:</label><div>${escapeHTML(String(grade))}</div></div>
@@ -756,7 +946,7 @@
       
       <div class="sign-row">
         <div class="sign"><b>Class Teacher Name:</b> ${escapeHTML(ctName)}</div>
-        <div class="sign"><b>Head Teacher Name:</b> ${escapeHTML(htName)}</div>
+        <div class="sign" id="repHeadteacherName"><b>Head Teacher Name:</b> ${escapeHTML(htName)}</div>
       </div>
       
       <div class="sign-row">
@@ -838,7 +1028,7 @@
       return `<option value="${i}">${labelIdx}. ${escapeHTML(name)}</option>`;
     }).join('');
     const hasLearners = learners.length > 0;
-    $$('button, a.btn, select').forEach(el => { if(el.id !== 'file') el.disabled = !hasLearners });
+    $$('button, a.btn, select').forEach(el => { if(el.id !== 'file' && !el.closest('.nav-drawer')) el.disabled = !hasLearners }); // [MODIFIED]
     showUnsaved(unsavedChanges); // Re-apply disabled state to download link
     $matchCountChip.textContent = `${filteredLearners.length} selected`;
   }
@@ -1053,9 +1243,60 @@
     toast('Workbook loaded successfully', 'success');
     setStatus(`Loaded ${learners.length} learners ✓`, 'Ready to edit or print.');
   });
+
+  // --- [NEW] Navigation Drawer Logic ---
+  function toggleNavDrawer(open) {
+      if (open) {
+          $navDrawer.classList.add('open');
+          $navBackdrop.classList.add('open');
+      } else {
+          $navDrawer.classList.remove('open');
+          $navBackdrop.classList.remove('open');
+      }
+  }
+
+  function handleNavLink(e, targetEl, options = { focus: false, click: false }) {
+    e.preventDefault();
+    if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (options.focus) targetEl.focus();
+        if (options.click) targetEl.click();
+    }
+    toggleNavDrawer(false);
+  }
+
   
   // --- Event Wiring ---
   function setupEventListeners() {
+    // [NEW] Navigation Drawer
+    $hamburgerBtn.addEventListener('click', () => toggleNavDrawer(true));
+    $navBackdrop.addEventListener('click', () => toggleNavDrawer(false));
+    
+    // [NEW] Drawer Links
+    $('#navLoadWorkbook').addEventListener('click', e => handleNavLink(e, $dropZone, { click: true }));
+    $('#navDetails').addEventListener('click', e => {
+      e.preventDefault();
+      $('#schoolNameInp').value = reportDetails.schoolName;
+      $('#assessmentTitleInp').value = reportDetails.titleTemplate;
+      $('#headteacherNameInp').value = reportDetails.headteacherName;
+      $detailsDlg.showModal();
+      toggleNavDrawer(false);
+    });
+    $('#navFilter').addEventListener('click', e => handleNavLink(e, $filtersPanel));
+    $('#navEdit').addEventListener('click', e => handleNavLink(e, $editorPanel));
+    $('#navDownload').addEventListener('click', e => handleNavLink(e, $downloadExcelLink, { click: true }));
+    $('#navBatchPrint').addEventListener('click', e => handleNavLink(e, $printFilteredBtn, { click: true }));
+    $('#navPrintCurrent').addEventListener('click', e => {
+        e.preventDefault();
+        const row = currentSelectedRow();
+        if (row) {
+            printRows([row]);
+        } else {
+            toast('Please select a learner first', 'warn');
+        }
+        toggleNavDrawer(false);
+    });
+
     // File Drop Zone
     $dropZone.addEventListener('click', () => $fileInput.click());
     $fileInput.addEventListener('change', (e) => processFile(e.target.files?.[0]));
@@ -1097,6 +1338,20 @@
       try { await navigator.clipboard.writeText($errDetails.textContent || ''); toast('Copied!', 'success', 1000); } catch (e) { alert('Copy failed.'); }
     });
     $('#closeErrBtn').addEventListener('click', () => $errorDlg.close());
+
+    // [NEW] Details Dialog buttons
+    $('#detailsCancelBtn').addEventListener('click', () => $detailsDlg.close());
+    $('#detailsSaveBtn').addEventListener('click', () => {
+        reportDetails.schoolName = $('#schoolNameInp').value;
+        reportDetails.titleTemplate = $('#assessmentTitleInp').value;
+        reportDetails.headteacherName = $('#headteacherNameInp').value;
+        toast('Details saved. The current report preview is updated.', 'success');
+        $detailsDlg.close();
+        // Re-render the current report to reflect changes
+        if(currentSelectedRow()) {
+            renderSelected(Number($learnerSel.value));
+        }
+    });
 
     // Window Listeners
     window.addEventListener('afterprint', () => { $batchContainer.innerHTML = ''; setStatus('Ready', 'Idle.'); });
