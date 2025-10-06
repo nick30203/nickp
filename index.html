@@ -1,318 +1,958 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>CBC Report Form – Pro + Editor (Marks & Comments • Save to Excel)</title>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-<style>
-  :root{
-    --page-w: 210mm; --page-h: 297mm; --margin: 10mm; --content-w: calc(var(--page-w) - 2*var(--margin));
-    --accent:#0b3d91; --border:#333; --bg:#f4f6f8; --font:"Segoe UI", Roboto, Arial, sans-serif;
-  }
-  html,body{height:100%;margin:0;background:var(--bg);font-family:var(--font);color:#111}
-  .app{max-width:1280px;margin:16px auto;padding:16px}
-  .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:#fff;padding:12px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
-  .group{display:flex;gap:8px;align-items:center}
-  .group label{font-size:.95rem;color:#333;white-space:nowrap}
-  select,input[type=text],input[type=number],textarea{padding:8px 10px;border:1px solid #ccc;border-radius:6px;min-width:120px;font-family:var(--font)}
-  input[type=file]{border:1px dashed #aaa;padding:8px;border-radius:6px;background:#fafafa}
-  button{padding:10px 12px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer}
-  button.secondary{background:#5b6f94}button.danger{background:#b9372b}button:disabled{background:#9bb1e1;cursor:not-allowed}
-  .panel{background:#fff;border:1px solid #e6e6e6;border-radius:8px;padding:12px;margin-top:12px}
-  .panel h3{margin:0 0 8px 0;font-size:1.05rem}
-  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .editor-grid{width:100%;border-collapse:collapse;font-size:13px}
-  .editor-grid th,.editor-grid td{border:1px solid #ddd;padding:6px}
-  .editor-grid th{background:#f0f4ff;text-align:left}
-  .muted{color:#666;font-size:.9rem}
-  .chip{display:inline-flex;align-items:center;gap:6px;background:#eef2ff;color:#0b3d91;border:1px solid #ccd6ff;border-radius:999px;padding:2px 8px;font-size:12px}
-  #singleView .sheet{width:var(--content-w);min-height:calc(var(--page-h) - 2*var(--margin));background:#fff;margin:16px auto;padding:16mm 14mm;box-sizing:border-box;border:1px solid #ddd;border-radius:8px}
-  .school-head{text-align:center;line-height:1.15;margin-bottom:8px}
-  .school-head h1{margin:0;font-size:22px;letter-spacing:.5px}
-  .school-head .addr{font-size:12px;color:#333}.school-head .motto{margin-top:2px;font-weight:600;color:#0b3d91;font-size:12px}
-  .key{font-size:11px;color:#333;text-align:center;margin:6px 0 4px}.title{text-align:center;font-weight:700;margin:6px 0 12px;font-size:14px}
-  .meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;border:1px solid var(--border);padding:6px 10px;font-size:12px;margin-bottom:10px}
-  .meta div{display:flex;gap:6px}.meta label{font-weight:600;min-width:120px}
-  table.report{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
-  table.report th,table.report td{border:1px solid #000;padding:5px 6px;text-align:center}
-  table.report th{background:#eef2ff;font-weight:700}table.report td.label{text-align:left;font-weight:600}
-  .comments{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;font-size:12px}
-  .comments .block{border:1px solid var(--border);padding:8px;min-height:56px}
-  .sign-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
-  .sign{border:1px solid var(--border);padding:6px;min-height:40px;font-size:12px}
-  .foot-dates{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;font-size:12px}
-  .small{color:#555;font-size:11px}.consent{margin-top:6px;font-size:10.5px;color:#444}
-  #batchContainer{display:none}#batchContainer .sheet{width:auto;min-height:auto;padding:0;margin:0}
-  @media print{@page{size:A4 portrait;margin:10mm}body{background:#fff}.bar,.panel{display:none!important}#singleView{display:none!important}#batchContainer{display:block!important}.sheet{width:auto;min-height:auto;margin:0;border:none;border-radius:0;padding:0;page-break-after:always}.sheet:last-child{page-break-after:auto}}
-  dialog#errorDlg{border:1px solid #c00;border-radius:8px;padding:0;max-width:760px;width:90%}.dlg-hd{background:#ffecec;color:#a00;padding:10px 12px;font-weight:700;border-bottom:1px solid #f6caca}.dlg-bd{padding:12px}.dlg-ft{padding:10px 12px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid #eee}pre.err{background:#fafafa;border:1px solid #eee;padding:8px;max-height:240px;overflow:auto}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#2563eb" />
+  <title>CBC Report Form – Professional UI (Marks Editor • One‑Page Print • Save to Excel)</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+
+  <style>
+    :root {
+      /* Professional Design System */
+      --color-primary: #2563eb;
+      --color-primary-hover: #1d4ed8;
+      --color-text-primary: #1e293b;
+      --color-text-secondary: #475569;
+      --color-text-muted: #64748b;
+      --color-bg: #f1f5f9;
+      --color-card-bg: #ffffff;
+      --color-border: #e2e8f0;
+      --color-success: #16a34a;
+      --color-warn: #f59e0b;
+      --color-danger: #dc2626;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Keyframe animations */
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUpIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastOut { to { opacity: 0; transform: translateY(15px); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* --- Base & Reset --- */
+    html, body {
+      height: 100%; margin: 0; background-color: var(--color-bg);
+      font-family: var(--font-sans); color: var(--color-text-primary); font-size: 14px; line-height: 1.5;
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+    }
+    .app { max-width: 1280px; margin: 32px auto; padding: 0 24px; animation: fadeIn 0.5s ease-out; }
+    * { box-sizing: border-box; }
+
+    /* --- Toolbar & Controls --- */
+    .bar {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px);
+      padding: 12px 16px; border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--color-border);
+      position: sticky; top: 16px; z-index: 100;
+    }
+    .group { display: flex; gap: 10px; align-items: center; }
+    .group label { font-size: 13px; color: var(--color-text-secondary); font-weight: 500; }
+    select, input[type=text], input[type=number], input[type=password] {
+      padding: 8px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-md);
+      min-width: 160px; background: var(--color-card-bg); font-family: var(--font-sans);
+      font-size: 14px; transition: var(--transition-base);
+    }
+    select:focus, input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+    button, a.btn {
+      padding: 9px 16px; background-color: var(--color-primary); color: white;
+      border: none; border-radius: var(--radius-md); cursor: pointer; text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; font-size: 13px;
+      transition: var(--transition-base);
+    }
+    button:hover, a.btn:hover { background-color: var(--color-primary-hover); box-shadow: var(--shadow-sm); }
+    button:active, a.btn:active { transform: translateY(1px); }
+    button.secondary, a.btn.secondary { background-color: #f8fafc; color: #334155; border: 1px solid var(--color-border); }
+    button.secondary:hover, a.btn.secondary:hover { background-color: #f1f5f9; }
+    button.ghost { background: transparent; color: var(--color-primary); border: 1px solid #a5b4fc; }
+    button.ghost:hover { background: #eef2ff; }
+    button:disabled, a.btn[aria-disabled="true"] { background-color: #e2e8f0; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
+    button .icon { width: 16px; height: 16px; }
+    button .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; color: var(--color-primary); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; border: 1px solid rgba(37, 99, 235, 0.1); }
+
+    /* --- File Drop Zone --- */
+    #drop_zone {
+      border: 2px dashed var(--color-border); border-radius: var(--radius-lg); padding: 24px;
+      text-align: center; cursor: pointer; transition: var(--transition-base);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background-color: var(--color-card-bg);
+    }
+    #drop_zone:hover { border-color: var(--color-primary); }
+    #drop_zone.dragover { background-color: #eef2ff; border-color: var(--color-primary); border-style: solid; }
+    #drop_zone .icon { width: 32px; height: 32px; color: var(--color-primary); margin-bottom: 8px; }
+    #drop_zone p { margin: 0; color: var(--color-text-secondary); font-weight: 500; }
+    #drop_zone p small { display: block; font-size: 12px; margin-top: 4px; color: var(--color-text-muted); }
+    #filename { font-weight: 600; color: var(--color-primary); margin-top: 8px; font-size: 13px; }
+
+    /* --- Panels, Drawers & Layout --- */
+    .panel-drawer {
+      background: var(--color-card-bg); border-radius: var(--radius-lg); margin-top: 24px;
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-md);
+      animation: slideUpIn 0.5s ease-out forwards;
+      overflow: hidden;
+    }
+    .panel-drawer summary {
+      padding: 16px 20px; font-size: 16px; font-weight: 600; color: var(--color-text-primary);
+      cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-drawer summary::-webkit-details-marker { display: none; }
+    .panel-drawer summary .icon { width: 20px; height: 20px; color: var(--color-text-muted); transition: var(--transition-base); }
+    .panel-drawer[open] > summary .icon { transform: rotate(90deg); }
+    .panel-drawer-content { padding: 0 20px 20px; border-top: 1px solid var(--color-border); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 400px; gap: 24px; }
+    .editor-grid { width: 100%; border-collapse: collapse; font-size: 14px; border-radius: var(--radius-md); overflow: hidden; border: 1px solid #eef2f7; }
+    .editor-grid th, .editor-grid td { border-bottom: 1px solid #eef2f7; padding: 10px 12px; text-align: left; }
+    .editor-grid th { background: #f8fafc; font-weight: 600; color: var(--color-text-secondary); }
+    .editor-grid tr:hover td { background-color: #f8fafc; }
+
+    /* --- Status Bar --- */
+    .statusbar {
+      position: sticky; top: 96px; z-index: 50; background: var(--color-card-bg); border-radius: var(--radius-md);
+      padding: 8px 16px; border: 1px solid var(--color-border); font-size: 13px; margin: 20px 0;
+      display: flex; justify-content: space-between; align-items: center; animation: slideUpIn 0.4s ease-out forwards;
+    }
+    .statusbar .left { font-weight: 600; }
+    .statusbar.ok { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .statusbar.warn { background: #fffbeb; border-color: #fde68a; color: #854d0e; }
+    .statusbar.err { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+
+    /* --- Report Preview --- */
+    #singleView .sheet {
+      width: 100%; min-height: 420px; background: #fff; padding: 20px; border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+    .school-head h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: .5px; }
+    .school-head .addr { font-size: 12px; color: var(--color-text-secondary); }
+    .school-head .motto { margin-top: 4px; font-weight: 700; color: var(--color-primary); font-size: 13px; }
+    .key { font-size: 11px; color: var(--color-text-secondary); text-align: center; margin: 8px 0; }
+    .title { text-align: center; font-weight: 700; margin: 8px 0 14px; font-size: 14px; text-transform: uppercase; }
+    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; border: 1px solid var(--color-border); padding: 10px; border-radius: var(--radius-md); font-size: 12px; margin-bottom: 12px; }
+    .meta label { font-weight: 700; min-width: 110px; color: var(--color-text-primary); }
+
+    /* --- Report Table & Chart --- */
+    table.report { width: 100%; border-collapse: collapse; font-size: 11px; table-layout: fixed; }
+    table.report th, table.report td { border: 1px solid #333; padding: 6px; text-align: center; word-break: break-word; }
+    table.report th { background-color: #f1f5f9; font-weight: 700; }
+    table.report td.label { text-align: left; padding-left: 8px; font-weight: 600; }
+    .mini-chart { height: 50px; display: flex; gap: 8px; align-items: flex-end; justify-content: center; margin-top: 12px; }
+    .chart-bar { width: 12px; border-radius: 4px; display: inline-block; transition: height 0.3s ease-out; }
+    .chart-bar.opener { background: linear-gradient(to top, #4285f4, #6aa2f8); border: 1px solid #4285f4; }
+    .chart-bar.mid { background: linear-gradient(to top, #0f9d58, #34a853); border: 1px solid #0f9d58; }
+    .chart-bar.end { background: linear-gradient(to top, #db4437, #ea6a5f); border: 1px solid #db4437; }
+    .chart-labels { display: flex; gap: 8px; justify-content: center; margin-top: 6px; font-size: 11px; color: var(--color-text-muted); }
+
+    /* --- Comments & Footer --- */
+    .comments-wrapper { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; font-size: 12px; }
+    .comments-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .comments-grid .block, .parent-comment-block { border: 1px solid var(--color-border); padding: 8px; border-radius: var(--radius-md); min-height: 64px; background: #fff; }
+    .sign-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .sign { border: 1px solid var(--color-border); padding: 8px; border-radius: var(--radius-md); min-height: 40px; background: #fff; }
+    .foot-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; font-size: 12px; }
+    .small { color: var(--color-text-muted); font-size: 11px; margin-top: 8px; }
+
+    /* --- Toasts & Dialogs --- */
+    .toasts { position: fixed; right: 20px; bottom: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
+    .toast {
+      background: #27272a; color: white; padding: 12px 16px; border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 500;
+      animation: toastIn 0.4s ease-out;
+    }
+    .toast.exiting { animation: toastOut 0.4s ease-in forwards; }
+    .toast.success { background-color: var(--color-success); }
+    .toast.error { background-color: var(--color-danger); }
+    .toast.warn { background-color: var(--color-warn); color: #1e293b; }
+
+    dialog { border-radius: var(--radius-lg); padding: 0; border: 1px solid var(--color-border); box-shadow: var(--shadow-lg); max-width: 740px; width: 90%; }
+    dialog::backdrop { background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+    dialog[open] { animation: slideUpIn 0.4s ease-out; }
+    .dlg-hd { padding: 16px 20px; font-weight: 700; font-size: 16px; border-bottom: 1px solid var(--color-border); }
+    .dlg-bd { padding: 20px; line-height: 1.6; }
+    .dlg-ft { padding: 12px 20px; display: flex; gap: 10px; justify-content: flex-end; border-top: 1px solid var(--color-border); background: #f8fafc; }
+    #errorDlg .dlg-hd { background: #fef2f2; color: var(--color-danger); }
+    #confirmDlg .dlg-hd { background: #fffbeb; color: #854d0e; }
+    #passwordDlg .dlg-hd { background: #eef2ff; color: var(--color-primary); }
+    pre.err { background: #f8fafc; border: 1px solid var(--color-border); padding: 12px; max-height: 240px; overflow: auto; border-radius: 6px; font-size: 13px; }
+
+    /* --- Responsive & Print --- */
+    @media (max-width: 960px) {
+      .app { padding: 0 16px; margin: 16px auto; }
+      .two-col { grid-template-columns: 1fr; }
+      .bar { flex-direction: column; align-items: stretch; top: 0; border-radius: 0; }
+      .statusbar { top: 180px; }
+      #singleView .sheet { padding: 12px; box-shadow: var(--shadow-md); }
+    }
+    @media print {
+      @page { size: A4 portrait; margin: 10mm; }
+      html, body { height: auto !important; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .bar, details, .statusbar, .toasts, #singleView { display: none !important; }
+      #batchContainer { display: block !important; }
+      .sheet {
+        width: 100%; margin: 0; padding: 8mm; border: none; border-radius: 0; box-shadow: none;
+        page-break-after: always; box-sizing: border-box; overflow: visible;
+      }
+      .school-head h1 { font-size: 18px; }
+      .title { font-size: 13px; }
+      table.report { font-size: 10px; }
+      table.report th, table.report td { padding: 4px; border-color: #000; }
+      .meta { font-size: 11px; padding: 6px; }
+      .comments-grid .block, .parent-comment-block { min-height: 48px; padding: 6px; }
+      .small { font-size: 10px; }
+    }
+  </style>
 </head>
 <body>
 <div class="app">
-  <!-- Top bar -->
-  <div class="bar">
-    <div class="group"><label>Workbook (.xlsx):</label><input id="file" type="file" accept=".xlsx,.xls" /></div>
-    <div class="group"><label>Learner:</label><select id="learnerSel" disabled></select></div>
-    <div class="group"><button id="printSelectedBtn" disabled>Print selected</button><button id="printFilteredBtn" disabled>Batch Print (filtered)</button></div>
-    <div class="group"><button id="saveToExcelBtn" class="secondary" disabled>Save changes to Excel</button><span class="chip" id="unsavedChip" style="display:none">Unsaved changes</span></div>
-    <div class="group"><span class="muted">All processing is local in your browser.</span></div>
-  </div>
-
-  <!-- Filters (kept minimal here for brevity) -->
-  <div class="panel" id="filtersPanel">
-    <h3>Filters</h3>
-    <div class="bar" style="gap:16px;box-shadow:none;padding:8px;">
-      <div class="group"><label>Gender:</label><select id="fGender"><option value="">All</option><option>M</option><option>F</option></select></div>
-      <div class="group"><label>Grade:</label><select id="fGrade"><option value="">All</option></select></div>
-      <div class="group"><button id="applyFiltersBtn" class="secondary" disabled>Apply</button><button id="clearFiltersBtn" class="secondary" disabled>Clear</button><span class="chip" id="matchCountChip">0 selected</span></div>
+  <div class="bar" role="toolbar" aria-label="Main toolbar">
+    <div class="group" style="flex: 1;">
+      <div id="drop_zone">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l-3 3m3-3l3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" /></svg>
+        <input type="file" id="file" accept=".xlsx,.xls" hidden />
+        <p>Drop your Excel workbook here or click to browse</p>
+        <p><small>All processing is done locally in your browser.</small></p>
+        <div id="filename"></div>
+      </div>
+    </div>
+    <div class="group">
+      <button id="printSelectedBtn" disabled class="ghost">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a8.25 8.25 0 018.25-8.25H12M12 21a8.25 8.25 0 00-8.25-8.25M12 21V11.25m0 9.75a8.25 8.25 0 01-8.25-8.25M12 21a8.25 8.25 0 008.25-8.25M12 3c-4.556 0-8.25 3.694-8.25 8.25m8.25-8.25V3m0 9.75H3.75M21 12a9 9 0 00-9-9M3.75 12H21" /></svg>
+        Print Selected
+      </button>
+      <button id="printFilteredBtn" disabled class="ghost">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a8.25 8.25 0 018.25-8.25H12M12 21a8.25 8.25 0 00-8.25-8.25M12 21V11.25m0 9.75a8.25 8.25 0 01-8.25-8.25M12 21a8.25 8.25 0 008.25-8.25M12 3c-4.556 0-8.25 3.694-8.25 8.25m8.25-8.25V3m0 9.75H3.75M21 12a9 9 0 00-9-9M3.75 12H21" /></svg>
+        Batch Print
+      </button>
+    </div>
+    <div class="group">
+      <a id="downloadExcelLink" class="btn secondary" aria-disabled="true">
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+        Download Excel
+      </a>
+      <span class="chip" id="unsavedChip" style="display:none">Unsaved</span>
     </div>
   </div>
 
-  <!-- EDITOR -->
-  <div class="panel" id="editorPanel">
-    <h3>Edit marks & comments (writes back to Learners sheet)</h3>
-    <div class="bar" style="gap:16px;box-shadow:none;padding:8px;">
-      <div class="group"><label>Phase:</label>
-        <select id="phaseSel"><option value="Opener">Opener</option><option value="Mid">Midterm</option><option value="End">End term</option></select>
-      </div>
-      <div class="group"><button id="savePhaseBtn" disabled>Save phase to learner</button><button id="applyOutOfAllBtn" class="secondary" disabled>Apply Out Of (this phase) to ALL learners</button></div>
-    </div>
-
-    <div class="two-col">
-      <div>
-        <table class="editor-grid" id="marksGrid" aria-label="Marks editor">
-          <thead><tr><th>Learning Area</th><th>Score</th><th>Out Of</th></tr></thead>
-          <tbody id="marksBody"></tbody>
-        </table>
-      </div>
-      <div>
-        <table class="editor-grid" aria-label="Comments editor">
-          <thead><tr><th colspan="2">Comments & Dates</th></tr></thead>
-          <tbody>
-            <tr><td>Class Teacher Comment</td><td><textarea id="ctComment" rows="2"></textarea></td></tr>
-            <tr><td>Class Teacher Name</td><td><input id="ctName" type="text"/></td></tr>
-            <tr><td>CT Date</td><td><input id="ctDate" type="text" placeholder="YYYY-MM-DD"/></td></tr>
-            <tr><td>Head Teacher Comment</td><td><textarea id="htComment" rows="2"></textarea></td></tr>
-            <tr><td>Head Teacher Signature</td><td><input id="htSign" type="text"/></td></tr>
-            <tr><td>HT Date</td><td><input id="htDate" type="text" placeholder="YYYY-MM-DD"/></td></tr>
-            <tr><td>Parent Comment</td><td><textarea id="pComment" rows="2"></textarea></td></tr>
-            <tr><td>Parent Name</td><td><input id="pName" type="text"/></td></tr>
-            <tr><td>Parent Signature</td><td><input id="pSign" type="text"/></td></tr>
-            <tr><td>Parent Date</td><td><input id="pDate" type="text" placeholder="YYYY-MM-DD"/></td></tr>
-            <tr><td>Closing Date</td><td><input id="closingDate" type="text" placeholder="YYYY-MM-DD"/></td></tr>
-            <tr><td>Opening Date</td><td><input id="openingDate" type="text" placeholder="YYYY-MM-DD"/></td></tr>
-          </tbody>
-        </table>
-        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button id="saveCommentsBtn" disabled>Save comments to learner</button></div>
-      </div>
-    </div>
+  <div id="statusBar" class="statusbar" aria-live="polite" style="display:none;">
+    <div class="left">Ready</div>
+    <div class="right muted" id="statusDetails">Load a workbook to begin.</div>
   </div>
 
-  <!-- Preview -->
-  <div id="singleView"><div class="sheet" id="singleSheet" aria-label="Report Form"></div></div>
-  <div id="batchContainer" aria-hidden="true"></div>
+  <div id="mainContent" style="display:none;">
+    <details class="panel-drawer" id="filtersPanel" open>
+      <summary>
+        <span>Filters & Learner Selection</span>
+        <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+      </summary>
+      <div class="panel-drawer-content">
+        <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center; padding-top:16px;">
+          <div class="group"><label for="learnerSel">Learner:</label><select id="learnerSel"></select></div>
+          <div class="group"><label for="fGender">Gender:</label><select id="fGender"><option value="">All</option><option>M</option><option>F</option></select></div>
+          <div class="group"><label for="fGrade">Grade:</label><select id="fGrade"><option value="">All</option></select></div>
+          <div class="group">
+            <button id="applyFiltersBtn" class="secondary">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.572a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" /></svg>
+                Apply
+            </button>
+            <button id="clearFiltersBtn" class="secondary">Clear</button>
+            <span class="muted" id="matchCountChip">0 selected</span>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="panel-drawer" id="editorPanel" open>
+        <summary>
+            <span>Marks Editor & Preview</span>
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        </summary>
+        <div class="panel-drawer-content">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px; padding-top:16px;">
+                <div class="group"><label for="phaseSel">Phase:</label>
+                <select id="phaseSel"><option value="Opener">Opener</option><option value="Mid">Midterm</option><option value="End">End term</option></select>
+                </div>
+                <div class="group">
+                <button id="savePhaseBtn">
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9" /></svg>
+                    Save to Learner
+                </button>
+                <button id="applyOutOfAllBtn" class="secondary">Apply 'Out Of' to ALL</button>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div>
+                  <h4 style="margin:0 0 8px; font-size:15px; font-weight:600; color: var(--color-text-primary);">Edit Marks</h4>
+                  <p style="margin:-4px 0 12px; font-size:13px; color: var(--color-text-muted);">Changes here are written back to the 'Learners' sheet.</p>
+                  <table class="editor-grid" id="marksGrid" aria-label="Marks editor">
+                      <thead><tr><th>Learning Area</th><th style="width:140px">Score</th><th style="width:140px">Out Of</th></tr></thead>
+                      <tbody id="marksBody"></tbody>
+                  </table>
+                </div>
+                <div>
+                  <h4 style="margin:0 0 8px; font-size:15px; font-weight:600; color: var(--color-text-primary);">Live Preview</h4>
+                  <div id="singleView"><div class="sheet" id="singleSheet" aria-label="Report Form Preview"></div></div>
+                </div>
+            </div>
+        </div>
+    </details>
+  </div>
+
+  <div id="batchContainer" aria-hidden="true" style="display:none"></div>
 </div>
 
-<!-- Error UI -->
-<dialog id="errorDlg"><div class="dlg-hd">Something went wrong</div><div class="dlg-bd"><p>We hit a problem while processing your data.</p><pre class="err" id="errDetails"></pre></div><div class="dlg-ft"><button id="copyErrBtn" class="secondary">Copy error details</button><button id="closeErrBtn">Close</button></div></dialog>
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="true"></div>
+
+<dialog id="errorDlg">
+  <div class="dlg-hd">An Error Occurred</div>
+  <div class="dlg-bd">
+    <p>We encountered a problem while processing your request. Please see the details below.</p>
+    <pre class="err" id="errDetails"></pre>
+  </div>
+  <div class="dlg-ft">
+    <button id="copyErrBtn" class="secondary">Copy Details</button>
+    <button id="closeErrBtn">Close</button>
+  </div>
+</dialog>
+
+<dialog id="confirmDlg">
+  <div class="dlg-hd">Confirm Action</div>
+  <div class="dlg-bd" id="confirmMsg"></div>
+  <div class="dlg-ft">
+    <button id="confirmCancelBtn" class="secondary">Cancel</button>
+    <button id="confirmOkBtn" class="warn">Confirm</button>
+  </div>
+</dialog>
+
+<dialog id="passwordDlg">
+  <div class="dlg-hd">Password Required</div>
+  <div class="dlg-bd">
+    <p>This Excel file is protected. Please enter the password to open it.</p>
+    <input type="password" id="filePassword" style="width: 100%;" placeholder="Enter workbook password">
+  </div>
+  <div class="dlg-ft">
+    <button id="passwordCancelBtn" class="secondary">Cancel</button>
+    <button id="passwordOkBtn">Submit</button>
+  </div>
+</dialog>
 
 <script>
-(function(){
+(function() {
+  "use strict";
+
+  // --- Configuration ---
   const SUBJECTS = [
-    { key:'ENG',    label:'ENGLISH' },
-    { key:'COMP',   label:'COMPOSITION' },
-    { key:'KISW',   label:'KISWAHILI' },
-    { key:'INSHA',  label:'INSHA' },
-    { key:'MATH',   label:'MATHEMATICS' },
-    { key:'SCIE',   label:'INTER/SCIE' },
-    { key:'SST',    label:'S/S' },
-    { key:'CRE',    label:'CRE' },
-    { key:'AGRI',   label:'AGRI/NUT' },
-    { key:'CA',     label:'C/ART' },
-    { key:'PRETECH',label:'PRE-TECH' },
+    { key:'ENG',     label:'ENGLISH' },
+    { key:'COMP',    label:'COMPOSITION' },
+    { key:'KISW',    label:'KISWAHILI' },
+    { key:'INSHA',   label:'INSHA' },
+    { key:'MATH',    label:'MATHEMATICS' },
+    { key:'SCIE',    label:'INTER/SCIE' },
+    { key:'SST',     label:'S/S' },
+    { key:'CRE',     label:'CRE' },
+    { key:'AGRI',    label:'AGRI/NUT' },
+    { key:'CA',      label:'C/ART' },
+    { key:'PRETECH', label:'PRE-TECH' },
   ];
+  const MARK_KEYS = SUBJECTS.flatMap(s => [
+    `${s.key}_Opener`, `${s.key}_Opener_OutOf`,
+    `${s.key}_Mid`,    `${s.key}_Mid_OutOf`,
+    `${s.key}_End`,    `${s.key}_End_OutOf`
+  ]);
   const DEFAULT_THRESHOLDS = [{min:81,grade:'EE'},{min:50,grade:'ME'},{min:26,grade:'AE'},{min:0,grade:'BE'}];
 
-  // DOM
+  // --- DOM References ---
   const $ = sel => document.querySelector(sel);
-  const $file = $('#file');
-  const $learnerSel = $('#learnerSel');
+  const $$ = sel => document.querySelectorAll(sel);
+  
+  // Toolbar & File
+  const $dropZone = $('#drop_zone');
+  const $fileInput = $('#file');
+  const $filename = $('#filename');
   const $printSelectedBtn = $('#printSelectedBtn');
   const $printFilteredBtn = $('#printFilteredBtn');
-  const $saveToExcelBtn = $('#saveToExcelBtn');
+  const $downloadExcelLink = $('#downloadExcelLink');
   const $unsavedChip = $('#unsavedChip');
 
+  // Main UI
+  const $statusBar = $('#statusBar');
+  const $statusLeft = $('#statusBar .left');
+  const $statusDetails = $('#statusBar .right');
+  const $mainContent = $('#mainContent');
+
+  // Filters
+  const $learnerSel = $('#learnerSel');
   const $fGender = $('#fGender');
   const $fGrade = $('#fGrade');
   const $applyFiltersBtn = $('#applyFiltersBtn');
   const $clearFiltersBtn = $('#clearFiltersBtn');
   const $matchCountChip = $('#matchCountChip');
 
+  // Editor
   const $phaseSel = $('#phaseSel');
   const $marksBody = $('#marksBody');
   const $savePhaseBtn = $('#savePhaseBtn');
   const $applyOutOfAllBtn = $('#applyOutOfAllBtn');
-
-  const $ctComment = $('#ctComment');
-  const $ctName = $('#ctName');
-  const $ctDate = $('#ctDate');
-  const $htComment = $('#htComment');
-  const $htSign = $('#htSign');
-  const $htDate = $('#htDate');
-  const $pComment = $('#pComment');
-  const $pName = $('#pName');
-  const $pSign = $('#pSign');
-  const $pDate = $('#pDate');
-  const $closingDate = $('#closingDate');
-  const $openingDate = $('#openingDate');
-  const $saveCommentsBtn = $('#saveCommentsBtn');
-
   const $singleSheet = $('#singleSheet');
   const $batchContainer = $('#batchContainer');
 
-  const $errDlg = $('#errorDlg');
+  // Dialogs & Toasts
+  const $toasts = $('#toasts');
+  const $errorDlg = $('#errorDlg');
   const $errDetails = $('#errDetails');
-  const $copyErrBtn = $('#copyErrBtn');
-  const $closeErrBtn = $('#closeErrBtn');
+  const $confirmDlg = $('#confirmDlg');
+  const $confirmMsg = $('#confirmMsg');
+  const $passwordDlg = $('#passwordDlg');
+  const $filePasswordInput = $('#filePassword');
 
-  // State
+  // --- Application State ---
   let learners = [];
+  let originalLearnersSnapshot = [];
   let thresholds = DEFAULT_THRESHOLDS;
-  let filtered = [];
-  let originalWb = null; // original workbook object (for saving back)
-  let learnerHeaders = null; // to preserve column order when rewriting
-  let unsaved = false;
+  let filteredLearners = [];
+  let originalWb = null;
+  let headerIndexMap = {};
+  let unsavedChanges = false;
 
-  function showUnsaved(flag){ unsaved = flag; $unsavedChip.style.display = flag ? 'inline-flex':'none'; $saveToExcelBtn.disabled = !flag; }
+  // Persisted sheet visual properties for high-fidelity saving
+  let learnersSheetName = null;
+  let learnersSheetCols = null;
+  let learnersSheetRows = null;
+  let learnersSheetMerges = null;
+  let originalWorkbookViews = null;
+  let originalWorkbookProps = null;
+  let sheetSavedViews = null;
 
-  function withErrorUI(fn){ return async (...args)=>{ try{ return await fn(...args); } catch(err){ console.error(err); const details = `Message: ${err?.message||err}\n\nStack:\n${err?.stack||'(no stack)'}\n`; $errDetails.textContent = details; $errDlg.showModal(); } } }
+  // --- UI & Utility Helpers ---
+  
+  function setStatus(msg, type = 'ok', details = '') {
+    $statusBar.style.display = 'flex';
+    $statusBar.className = `statusbar ${type}`;
+    $statusLeft.textContent = msg;
+    $statusDetails.textContent = details;
+  }
+  
+  function toast(msg, type = 'success', timeout = 2500) {
+    const el = document.createElement('div');
+    el.className = `toast ${type}`;
+    el.textContent = msg;
+    $toasts.appendChild(el);
+    setTimeout(() => {
+      el.classList.add('exiting');
+      el.addEventListener('animationend', () => el.remove());
+    }, timeout);
+  }
 
-  function getIndex(row){ const v = row.Index ?? row.index ?? row.INDEX; const n = Number(v); return Number.isNaN(n)?NaN:(Number.isInteger(n)?n:Math.round(n)); }
-
-  function pctGrade(score, outOf){ if(outOf<=0||score==null||score==='') return{pct:0,grade:'BE'}; const pct=Math.max(0,Math.round((Number(score)/Number(outOf))*100)); const t=thresholds.find(t=>pct>=t.min)||{grade:'BE'}; return{pct,grade:t.grade}; }
-
-  function escapeHTML(s){ return String(s).replace(/[&<>"']/g, (c)=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
-
-  function termWord(n){ const names={1:'ONE',2:'TWO',3:'THREE'}; return names[n]||String(n); }
-
-  function htmlReport(row){
-    const school = {name:'ITIATI JUNIOR SCHOOL', address1:'P.O. BOX 160-10101', town:'KARATINA', motto:'SCHOOL MOTTO: HARDWORK FOR EXCELLENCE'};
-    const pupilName = row["Pupil's Name"]||row["Pupil Name"]||''; const grade=row["Grade"]??''; const term=row["Term"]??''; const year=row["Year"]??'';
-    const ctComment=row["Class_Teacher_Comment"]||''; const ctName=row["Class_Teacher_Name"]||''; const ctDate=row["CT_Date"]||'';
-    const htComment=row["Head_Teacher_Comment"]||''; const htSign=row["Head_Teacher_Signature"]||row["Head_Teacher_Sign"]||''; const htDate=row["HT_Date"]||'';
-    const closingDate=row["Closing_Date"]||row["Closing Date"]||''; const openingDate=row["Opening_Date"]||row["Opening Date"]||'';
-
-    const subRows = SUBJECTS.map(s=>{
-      const oSc=Number(row[`${s.key}_Opener`])||0, oMax=Number(row[`${s.key}_Opener_OutOf`])||0;
-      const mSc=Number(row[`${s.key}_Mid`])||0,    mMax=Number(row[`${s.key}_Mid_OutOf`])||0;
-      const eSc=Number(row[`${s.key}_End`])||0,    eMax=Number(row[`${s.key}_End_OutOf`])||0;
-      const oG=pctGrade(oSc,oMax).grade, mG=pctGrade(mSc,mMax).grade, eG=pctGrade(eSc,eMax).grade;
-      return {label:s.label,oSc,oMax,oG,mSc,mMax,mG,eSc,eMax,eG};
+  function withErrorUI(fn) {
+    return async (...args) => {
+      try {
+        return await fn(...args);
+      } catch (err) {
+        console.error(err);
+        const details = `Message: ${err?.message || err}\n\nStack:\n${err?.stack || '(no stack)'}`;
+        $errDetails.textContent = details;
+        $errorDlg.showModal();
+        setStatus('Action failed', 'err', err.message);
+        toast('Something went wrong', 'error');
+      }
+    };
+  }
+  
+  function confirmAction(message) {
+    return new Promise(resolve => {
+      $confirmMsg.textContent = message;
+      $confirmDlg.showModal();
+      const onConfirm = () => { cleanup(); resolve(true); };
+      const onCancel = () => { cleanup(); resolve(false); };
+      const cleanup = () => {
+        $('#confirmOkBtn').removeEventListener('click', onConfirm);
+        $('#confirmCancelBtn').removeEventListener('click', onCancel);
+        $confirmDlg.close();
+      };
+      $('#confirmOkBtn').addEventListener('click', onConfirm, { once: true });
+      $('#confirmCancelBtn').addEventListener('click', onCancel, { once: true });
     });
-    const total=subRows.reduce((a,r)=>{a.oSc+=r.oSc;a.oMax+=r.oMax;a.mSc+=r.mSc;a.mMax+=r.mMax;a.eSc+=r.eSc;a.eMax+=r.eMax;return a;},{oSc:0,oMax:0,mSc:0,mMax:0,eSc:0,eMax:0});
-    const oG=pctGrade(total.oSc,total.oMax).grade, mG=pctGrade(total.mSc,total.mMax).grade, eG=pctGrade(total.eSc,total.eMax).grade;
-
-    const title=`END TERM ${termWord(Number(term))} ASSESSMENT - YEAR ${year}`;
-    return `
-    <div class="school-head"><h1>${school.name}</h1><div class="addr">${school.address1}</div><div class="addr">${school.town}</div><div class="motto">${school.motto}</div></div>
-    <div class="key">KEY: <b>EE</b> – Exceed Expectations, <b>ME</b> – Meet Expectations, <b>AE</b> – Approach Expectation, <b>BE</b> – Below Expectation</div>
-    <div class="title">${title}</div>
-    <div class="meta"><div><label>PUPIL'S NAME:</label><div>${escapeHTML(pupilName)}</div></div><div><label>GRADE:</label><div>${escapeHTML(String(grade))}</div></div></div>
-    <table class="report"><thead><tr><th rowspan="2">LEARNING AREA</th><th colspan="3">OPENER</th><th colspan="3">MIDTERM</th><th colspan="3">END TERM</th></tr><tr><th>OUT OF</th><th>SCORE</th><th>GRADE</th><th>OUT OF</th><th>SCORE</th><th>GRADE</th><th>OUT OF</th><th>SCORE</th><th>GRADE</th></tr></thead>
-    <tbody>${subRows.map(r=>`<tr><td class="label">${r.label}</td><td>${r.oMax}</td><td>${r.oSc}</td><td>${r.oG}</td><td>${r.mMax}</td><td>${r.mSc}</td><td>${r.mG}</td><td>${r.eMax}</td><td>${r.eSc}</td><td>${r.eG}</td></tr>`).join('')}</tbody>
-    <tfoot><tr class="totals"><th class="label">TOTAL MARK</th><th>${total.oMax}</th><th>${total.oSc}</th><th>${oG}</th><th>${total.mMax}</th><th>${total.mSc}</th><th>${mG}</th><th>${total.eMax}</th><th>${total.eSc}</th><th>${eG}</th></tr></tfoot></table>
-    <div class="comments"><div class="block"><label>CLASS TEACHER COMMENT:</label><div>${escapeHTML(ctComment)||'&nbsp;'}</div><div class="sign-row"><div class="sign"><b>CLASS TEACHER NAME:</b> ${escapeHTML(ctName)||'&nbsp;'}</div><div class="sign"><b>DATE:</b> ${escapeHTML(ctDate)||'&nbsp;'}</div></div></div>
-    <div class="block"><label>HEAD TEACHER COMMENT:</label><div>${escapeHTML(htComment)||'&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Signature:</b> ${escapeHTML(htSign)||'&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(htDate)||'&nbsp;'}</div></div></div></div>
-    <div class="foot-dates"><div class="sign"><b>CLOSING DATE:</b> ${escapeHTML(closingDate)||'&nbsp;'}</div><div class="sign"><b>OPENING DATE:</b> ${escapeHTML(openingDate)||'&nbsp;'}</div></div>
-    <div class="small" style="margin-top:8px;">Note: Use the browser’s Print dialog to save as PDF (A4 portrait, 100% scale).</div>`;
   }
 
-  function hydrateGrades(){ const grades = Array.from(new Set(learners.map(r=>String(r.Grade||'').trim()).filter(Boolean))).sort(); $('#fGrade').innerHTML = '<option value="">All</option>'+grades.map(g=>`<option>${g}</option>`).join(''); }
+  function promptForPassword() {
+    return new Promise(resolve => {
+      $filePasswordInput.value = '';
+      $passwordDlg.showModal();
+      $filePasswordInput.focus();
 
-  function applyFilters(){ const g=($fGender.value||'').trim().toUpperCase(); const grade=($fGrade.value||'').trim(); filtered = learners.filter(r=>{ if(g&&String(r.Gender||'').trim().toUpperCase()!==g) return false; if(grade&&String(r.Grade||'').trim()!==grade) return false; return true; }).sort((a,b)=>getIndex(a)-getIndex(b)); hydrateLearnerDropdown(); if(filtered.length){ $learnerSel.selectedIndex=1; renderSelected(0);} else { $singleSheet.innerHTML='<p>No learners match filters.</p>'; } }
-  function clearFilters(){ $fGender.value=''; $fGrade.value=''; filtered=[...learners].sort((a,b)=>getIndex(a)-getIndex(b)); hydrateLearnerDropdown(); if(filtered.length){ $learnerSel.selectedIndex=1; renderSelected(0);} }
+      const onConfirm = () => { cleanup(); resolve($filePasswordInput.value); };
+      const onCancel = () => { cleanup(); resolve(null); };
 
-  function hydrateLearnerDropdown(){ $learnerSel.innerHTML = '<option value="">— Select learner —</option>'+ filtered.map((r,i)=>{ const idx=getIndex(r); const labelIdx=Number.isNaN(idx)?(i+1):idx; const name=r["Pupil's Name"]||`Learner ${i+1}`; return `<option value="${i}">${labelIdx}. ${escapeHTML(name)}</option>`; }).join(''); const has=filtered.length>0; [$learnerSel,$printSelectedBtn,$printFilteredBtn,$applyFiltersBtn,$clearFiltersBtn].forEach(el=>el.disabled=!learners.length); $matchCountChip.textContent=`${filtered.length} selected`; $savePhaseBtn.disabled=!has; $applyOutOfAllBtn.disabled=!has; $saveCommentsBtn.disabled=!has; $saveToExcelBtn.disabled=!unsaved; }
+      const cleanup = () => {
+        $('#passwordOkBtn').removeEventListener('click', onConfirm);
+        $('#passwordCancelBtn').removeEventListener('click', onCancel);
+        $filePasswordInput.removeEventListener('keydown', onKeydown);
+        $passwordDlg.close();
+      };
+      
+      const onKeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onConfirm();
+        }
+      };
 
-  function renderSelected(i){ const row=filtered[i]; if(!row) return; // preview
-    $singleSheet.innerHTML = htmlReport(row);
-    // build edit grid
+      $('#passwordOkBtn').addEventListener('click', onConfirm, { once: true });
+      $('#passwordCancelBtn').addEventListener('click', onCancel, { once: true });
+      $filePasswordInput.addEventListener('keydown', onKeydown);
+    });
+  }
+
+  function setButtonLoading(button, isLoading) {
+    if (isLoading) {
+      button.disabled = true;
+      button.dataset.originalText = button.innerHTML;
+      button.innerHTML = `<span class="spinner"></span> Loading...`;
+    } else {
+      button.disabled = false;
+      button.innerHTML = button.dataset.originalText || 'Action';
+    }
+  }
+
+  function showUnsaved(flag) {
+    unsavedChanges = flag;
+    $unsavedChip.style.display = flag ? 'inline-flex' : 'none';
+    $downloadExcelLink.setAttribute('aria-disabled', !flag);
+  }
+  
+  // --- Core Logic Helpers ---
+  const getIndex = (row) => Number(row.Index ?? row.index ?? row.INDEX);
+  const pctGrade = (score, outOf) => {
+    if (outOf <= 0 || score === null || score === '') return { pct: 0, grade: 'BE' };
+    const pct = Math.max(0, Math.round((Number(score) / Number(outOf)) * 100));
+    const t = thresholds.find(t => pct >= t.min) || { grade: 'BE' };
+    return { pct, grade: t.grade };
+  };
+  const escapeHTML = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const termWord = (n) => ({ 1: 'ONE', 2: 'TWO', 3: 'THREE' }[n] || String(n));
+
+  // --- HTML Generation ---
+  function htmlChartTotals(oSc, mSc, eSc) {
+    const maxVal = Math.max(oSc, mSc, eSc, 1);
+    const h = (v) => Math.max(6, Math.round((v / maxVal) * 48));
+    return `<div aria-hidden="true">
+      <div class="mini-chart" role="img" aria-label="Performance overview chart">
+        <span class="chart-bar opener" style="height:${h(oSc)}px" title="Opener Total: ${oSc}"></span>
+        <span class="chart-bar mid" style="height:${h(mSc)}px" title="Midterm Total: ${mSc}"></span>
+        <span class="chart-bar end" style="height:${h(eSc)}px" title="End term Total: ${eSc}"></span>
+      </div>
+      <div class="chart-labels"><span>Opener</span><span>Mid</span><span>End</span></div>
+    </div>`;
+  }
+
+  function htmlReport(row) {
+    const school = { name: 'ITIATI JUNIOR SCHOOL', address1: 'P.O. BOX 160-10101', town: 'KARATINA', motto: 'HARDWORK FOR EXCELLENCE' };
+    const pupilName = row["Pupil's Name"] || row["Pupil Name"] || ''; const grade = row["Grade"] ?? ''; const term = row["Term"] ?? ''; const year = row["Year"] ?? '';
+    const ctComment = row["Class_Teacher_Comment"] || ''; const ctName = row["Class_Teacher_Name"] || ''; const ctDate = row["CT_Date"] || '';
+    const htComment = row["Head_Teacher_Comment"] || ''; const htSign = row["Head_Teacher_Signature"] || row["Head_Teacher_Sign"] || ''; const htDate = row["HT_Date"] || '';
+    const closingDate = row["Closing_Date"] || row["Closing Date"] || ''; const openingDate = row["Opening_Date"] || row["Opening Date"] || '';
+    
+    const subRows = SUBJECTS.map(s => {
+      const oSc = Number(row[`${s.key}_Opener`]) || 0, oMax = Number(row[`${s.key}_Opener_OutOf`]) || 0;
+      const mSc = Number(row[`${s.key}_Mid`]) || 0, mMax = Number(row[`${s.key}_Mid_OutOf`]) || 0;
+      const eSc = Number(row[`${s.key}_End`]) || 0, eMax = Number(row[`${s.key}_End_OutOf`]) || 0;
+      const oG = pctGrade(oSc, oMax).grade, mG = pctGrade(mSc, mMax).grade, eG = pctGrade(eSc, eMax).grade;
+      return { label: s.label, oSc, oMax, oG, mSc, mMax, mG, eSc, eMax, eG };
+    });
+    const total = subRows.reduce((a, r) => { a.oSc += r.oSc; a.oMax += r.oMax; a.mSc += r.mSc; a.mMax += r.mMax; a.eSc += r.eSc; a.eMax += r.eMax; return a; }, { oSc: 0, oMax: 0, mSc: 0, mMax: 0, eSc: 0, eMax: 0 });
+    const oG = pctGrade(total.oSc, total.oMax).grade, mG = pctGrade(total.mSc, total.mMax).grade, eG = pctGrade(total.eSc, total.eMax).grade;
+    const title = `END TERM ${termWord(Number(term))} ASSESSMENT - YEAR ${year}`;
+
+    return `<div class="school-head" style="text-align: center; line-height: 1.1; margin-bottom: 8px;">
+        <h1>${escapeHTML(school.name)}</h1>
+        <div class="addr">${escapeHTML(school.address1)} • ${escapeHTML(school.town)}</div>
+        <div class="motto">${escapeHTML(school.motto)}</div>
+      </div>
+      <div class="key">KEY: <b>EE</b>–Exceed, <b>ME</b>–Meet, <b>AE</b>–Approach, <b>BE</b>–Below Expectation</div>
+      <div class="title">${escapeHTML(title)}</div>
+      <div class="meta">
+        <div><label>PUPIL'S NAME:</label><div>${escapeHTML(pupilName)}</div></div>
+        <div><label>GRADE:</label><div>${escapeHTML(String(grade))}</div></div>
+      </div>
+      <table class="report" role="table" aria-label="Learner report">
+        <thead>
+          <tr><th rowspan="2">LEARNING AREA</th><th colspan="3">OPENER</th><th colspan="3">MIDTERM</th><th colspan="3">END TERM</th></tr>
+          <tr><th>SCORE</th><th>OUT OF</th><th>GRADE</th><th>SCORE</th><th>OUT OF</th><th>GRADE</th><th>SCORE</th><th>OUT OF</th><th>GRADE</th></tr>
+        </thead>
+        <tbody>${subRows.map(r => `<tr><td class="label">${r.label}</td><td>${r.oSc}</td><td>${r.oMax}</td><td>${r.oG}</td><td>${r.mSc}</td><td>${r.mMax}</td><td>${r.mG}</td><td>${r.eSc}</td><td>${r.eMax}</td><td>${r.eG}</td></tr>`).join('')}</tbody>
+        <tfoot><tr><th class="label">TOTAL MARK</th><th>${total.oSc}</th><th>${total.oMax}</th><th>${oG}</th><th>${total.mSc}</th><th>${total.mMax}</th><th>${mG}</th><th>${total.eSc}</th><th>${total.eMax}</th><th>${eG}</th></tr></tfoot>
+      </table>
+      ${htmlChartTotals(total.oSc, total.mSc, total.eSc)}
+      <div class="comments-wrapper">
+        <div class="comments-grid">
+            <div class="block"><div style="font-weight:700;margin-bottom:6px">CLASS TEACHER</div><div>${escapeHTML(ctComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Name:</b> ${escapeHTML(ctName) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(ctDate) || '&nbsp;'}</div></div></div>
+            <div class="block"><div style="font-weight:700;margin-bottom:6px">HEAD TEACHER</div><div>${escapeHTML(htComment) || '&nbsp;'}</div><div class="sign-row"><div class="sign"><b>Signature:</b> ${escapeHTML(htSign) || '&nbsp;'}</div><div class="sign"><b>Date:</b> ${escapeHTML(htDate) || '&nbsp;'}</div></div></div>
+        </div>
+        <div class="parent-comment-block">
+            <div style="font-weight:700;margin-bottom:6px">PARENT'S / GUARDIAN'S REMARKS</div>
+            <div style="min-height: 24px; border-bottom: 1px dotted #94a3b8; margin-bottom:8px;"></div>
+            <div class="sign-row" style="grid-template-columns: 1fr 120px;">
+                <div class="sign" style="border:0; padding:0;"><b>Signature:</b> ....................................</div>
+                <div class="sign" style="border:0; padding:0;"><b>Date:</b> .......................</div>
+            </div>
+        </div>
+      </div>
+      <div class="foot-dates"><div class="sign"><b>CLOSING DATE:</b> ${escapeHTML(closingDate) || '&nbsp;'}</div><div class="sign"><b>OPENING DATE:</b> ${escapeHTML(openingDate) || '&nbsp;'}</div></div>
+      <div class="small">This report is designed to fit on a single A4 page when printed at 100% scale.</div>`;
+  }
+
+  // --- UI Update Functions ---
+  
+  function resetUI() {
+    $mainContent.style.display = 'none';
+    $statusBar.style.display = 'none';
+    $filename.textContent = '';
+    learners = [];
+    originalLearnersSnapshot = [];
+    filteredLearners = [];
+    originalWb = null;
+    showUnsaved(false);
+    $$('button, a.btn, select').forEach(el => el.disabled = true);
+    $dropZone.querySelectorAll('p, .icon').forEach(el => el.style.display = 'block');
+    $fileInput.value = '';
+  }
+
+  function hydrateGrades() {
+    const grades = [...new Set(learners.map(r => String(r.Grade || '').trim()).filter(Boolean))].sort();
+    $fGrade.innerHTML = '<option value="">All</option>' + grades.map(g => `<option>${g}</option>`).join('');
+  }
+  
+  function applyFilters() {
+    const gender = ($fGender.value || '').trim().toUpperCase();
+    const grade = ($fGrade.value || '').trim();
+    filteredLearners = learners.filter(r => {
+      if (gender && String(r.Gender || '').trim().toUpperCase() !== gender) return false;
+      if (grade && String(r.Grade || '').trim() !== grade) return false;
+      return true;
+    }).sort((a, b) => getIndex(a) - getIndex(b));
+    hydrateLearnerDropdown();
+    if (filteredLearners.length) {
+      $learnerSel.selectedIndex = 0;
+      renderSelected(0);
+    } else {
+      $singleSheet.innerHTML = '<p style="text-align:center;padding:2rem;">No learners match the selected filters.</p>';
+      $marksBody.innerHTML = '';
+    }
+  }
+
+  function clearFilters() {
+    $fGender.value = '';
+    $fGrade.value = '';
+    applyFilters();
+  }
+  
+  function hydrateLearnerDropdown() {
+    $learnerSel.innerHTML = filteredLearners.map((r, i) => {
+      const idx = getIndex(r);
+      const labelIdx = Number.isNaN(idx) ? `(${i + 1})` : idx;
+      const name = r["Pupil's Name"] || `Learner ${i + 1}`;
+      return `<option value="${i}">${labelIdx}. ${escapeHTML(name)}</option>`;
+    }).join('');
+    const hasLearners = learners.length > 0;
+    $$('button, a.btn, select').forEach(el => { if(el.id !== 'file') el.disabled = !hasLearners });
+    showUnsaved(unsavedChanges);
+    $matchCountChip.textContent = `${filteredLearners.length} selected`;
+  }
+
+  function renderSelected(index) {
+    const row = filteredLearners[index];
+    if (!row) return;
+    $singleSheet.innerHTML = `<div class="sheet">${htmlReport(row)}</div>`;
     buildMarksGrid(row);
-    // load comments
-    $ctComment.value=row["Class_Teacher_Comment"]||''; $ctName.value=row["Class_Teacher_Name"]||''; $ctDate.value=row["CT_Date"]||'';
-    $htComment.value=row["Head_Teacher_Comment"]||''; $htSign.value=row["Head_Teacher_Signature"]||row["Head_Teacher_Sign"]||''; $htDate.value=row["HT_Date"]||'';
-    $pComment.value=row["Parent_Comment"]||''; $pName.value=row["Parent_Name"]||''; $pSign.value=row["Parent_Signature"]||''; $pDate.value=row["Parent_Date"]||'';
-    $closingDate.value=row["Closing_Date"]||row["Closing Date"]||''; $openingDate.value=row["Opening_Date"]||row["Opening Date"]||'';
   }
 
-  function buildMarksGrid(row){ const phase=$phaseSel.value; const rows = SUBJECTS.map(s=>{ const score = row[`${s.key}_${phase}`] ?? ''; const outOf = row[`${s.key}_${phase}_OutOf`] ?? ''; return `<tr data-key="${s.key}"><td>${s.label}</td><td><input type="number" step="0.01" class="score" value="${score}"></td><td><input type="number" step="0.01" class="outof" value="${outOf}"></td></tr>`; }).join(''); $marksBody.innerHTML=rows; }
-
-  function currentSelectedRow(){ const idx = Number($learnerSel.value); return Number.isInteger(idx)&&idx>=0? filtered[idx] : null; }
-
-  function savePhaseToLearner(){ const row=currentSelectedRow(); if(!row) return; const phase=$phaseSel.value; // read grid
-    $marksBody.querySelectorAll('tr').forEach(tr=>{ const key=tr.getAttribute('data-key'); const score=Number(tr.querySelector('input.score').value||0); const outOf=Number(tr.querySelector('input.outof').value||0); row[`${key}_${phase}`]=score; row[`${key}_${phase}_OutOf`]=outOf; });
-    showUnsaved(true); // refresh preview
-    $singleSheet.innerHTML = htmlReport(row);
+  function buildMarksGrid(row) {
+    const phase = $phaseSel.value;
+    $marksBody.innerHTML = SUBJECTS.map(s => {
+      const score = row[`${s.key}_${phase}`] ?? '';
+      const outOf = row[`${s.key}_${phase}_OutOf`] ?? '';
+      return `<tr data-key="${s.key}"><td>${s.label}</td><td><input type="number" step="0.01" class="score" value="${score}"></td><td><input type="number" step="0.01" class="outof" value="${outOf}"></td></tr>`;
+    }).join('');
   }
+  
+  const currentSelectedRow = () => {
+    const idx = Number($learnerSel.value);
+    return (Number.isInteger(idx) && idx >= 0) ? filteredLearners[idx] : null;
+  }
+  
+  // --- Data Manipulation & Actions ---
 
-  function applyOutOfToAllLearners(){ const phase=$phaseSel.value; // build template from grid
-    const template={}; $marksBody.querySelectorAll('tr').forEach(tr=>{ const key=tr.getAttribute('data-key'); const outOf=tr.querySelector('input.outof').value; if(outOf!=='' && !Number.isNaN(Number(outOf))) template[key]=Number(outOf); });
-    if(Object.keys(template).length===0) return;
-    learners.forEach(r=>{ for(const k in template){ r[`${k}_${phase}_OutOf`]=template[k]; } });
+  function savePhaseToLearner() {
+    const row = currentSelectedRow();
+    if (!row) return;
+    const phase = $phaseSel.value;
+    $marksBody.querySelectorAll('tr').forEach(tr => {
+      const key = tr.dataset.key;
+      row[`${key}_${phase}`] = Number(tr.querySelector('input.score').value || 0);
+      row[`${key}_${phase}_OutOf`] = Number(tr.querySelector('input.outof').value || 0);
+    });
     showUnsaved(true);
-    // also refresh current preview totals/grades
-    const row=currentSelectedRow(); if(row){ $singleSheet.innerHTML=htmlReport(row); }
+    renderSelected(Number($learnerSel.value));
+    toast(`Saved marks for ${phase} phase ✓`, 'success');
+    setStatus('Marks saved', 'ok');
   }
 
-  function saveCommentsToLearner(){ const row=currentSelectedRow(); if(!row) return; row["Class_Teacher_Comment"]=$ctComment.value; row["Class_Teacher_Name"]=$ctName.value; row["CT_Date"]=$ctDate.value; row["Head_Teacher_Comment"]=$htComment.value; row["Head_Teacher_Signature"]=$htSign.value; row["HT_Date"]=$htDate.value; row["Parent_Comment"]=$pComment.value; row["Parent_Name"]=$pName.value; row["Parent_Signature"]=$pSign.value; row["Parent_Date"]=$pDate.value; row["Closing_Date"]=$closingDate.value; row["Opening_Date"]=$openingDate.value; showUnsaved(true); $singleSheet.innerHTML = htmlReport(row); }
+  async function applyOutOfToAllLearners() {
+      const confirmed = await confirmAction("This will apply the 'Out Of' values from the currently displayed learner to ALL learners in the workbook for this phase. This action cannot be undone. Are you sure you want to proceed?");
+      if (!confirmed) return;
 
-  function printRows(rows){ if(!rows.length) return; $batchContainer.innerHTML = rows.map(htmlReport).join(''); requestAnimationFrame(()=>{ window.print(); setTimeout(()=>{ $batchContainer.innerHTML=''; }, 600); }); }
-
-  function updateWorkbookAndDownload(){ if(!originalWb) return; // Preserve other sheets; replace Learners with updated data keeping header order
-    const wb = originalWb; // mutate in place
-    const headers = learnerHeaders || Array.from(new Set(learners.reduce((a,r)=>{ Object.keys(r).forEach(k=>{ if(!a.includes(k)) a.push(k); }); return a; }, [])));
-    const data = [headers].concat(learners.map(r=> headers.map(h=> r[h]!==undefined?r[h]:'')));
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    wb.Sheets['Learners'] = ws;
-    // Ensure sheet order: keep original names
-    const filename = (wb.Props && wb.Props.Title ? wb.Props.Title : 'REPORT_FORM_G7') + '_updated.xlsx';
-    XLSX.writeFile(wb, filename);
-    showUnsaved(false);
+      const phase = $phaseSel.value;
+      const template = {};
+      $marksBody.querySelectorAll('tr').forEach(tr => {
+        const key = tr.dataset.key;
+        const outOf = tr.querySelector('input.outof').value;
+        if (outOf !== '' && !Number.isNaN(Number(outOf))) template[key] = Number(outOf);
+      });
+      if (!Object.keys(template).length) return;
+      learners.forEach(r => {
+        for (const k in template) { r[`${k}_${phase}_OutOf`] = template[k]; }
+      });
+      showUnsaved(true);
+      if (currentSelectedRow()) renderSelected(Number($learnerSel.value));
+      toast("'Out Of' values applied to ALL learners ✓", 'success');
+      setStatus("Applied 'Out Of' to all", 'ok');
   }
 
-  // Events
-  $learnerSel.addEventListener('change', e=>{ const i=Number(e.target.value); if(Number.isInteger(i)&&i>=0) renderSelected(i); });
-  $phaseSel.addEventListener('change', ()=>{ const i=Number($learnerSel.value); if(Number.isInteger(i)&&i>=0) buildMarksGrid(filtered[i]); });
-  $savePhaseBtn.addEventListener('click', savePhaseToLearner);
-  $applyOutOfAllBtn.addEventListener('click', applyOutOfToAllLearners);
-  $saveCommentsBtn.addEventListener('click', saveCommentsToLearner);
-  $printSelectedBtn.addEventListener('click', ()=>{ const idx=Number($learnerSel.value); const chosen=(Number.isInteger(idx)&&idx>=0)?[filtered[idx]]:(filtered.length?[filtered[0]]:[]); printRows(chosen); });
-  $printFilteredBtn.addEventListener('click', ()=> printRows(filtered));
-  $applyFiltersBtn.addEventListener('click', applyFilters);
-  $clearFiltersBtn.addEventListener('click', clearFilters);
-  $saveToExcelBtn.addEventListener('click', updateWorkbookAndDownload);
+  // --- Printing ---
+  function printRows(rows) {
+    if (!rows || !rows.length) return;
+    $batchContainer.innerHTML = rows.map(r => `<div class='sheet'>${htmlReport(r)}</div>`).join('');
+    requestAnimationFrame(() => {
+      window.print();
+    });
+    toast('Opening print dialog…', 'warn', 1800);
+    setStatus('Printing…', 'warn');
+  }
+  
+  // --- Excel File Handling ---
+  function updateMarksInPlace() {
+    const ws = originalWb.Sheets[learnersSheetName];
+    if (!ws) throw new Error(`Could not find the worksheet named '${learnersSheetName}'.`);
+    
+    const getRowNumByIndex = (index) => {
+        const learner = originalLearnersSnapshot.find(l => getIndex(l) == index);
+        return learner ? learner._rowNumber : -1;
+    }
 
-  $copyErrBtn.addEventListener('click', async()=>{ try{ await navigator.clipboard.writeText($errDetails.textContent||''); $copyErrBtn.textContent='Copied!'; setTimeout(()=>{$copyErrBtn.textContent='Copy error details';},1200);}catch(e){ alert('Copy failed. Select and copy manually.'); } });
-  $closeErrBtn.addEventListener('click', ()=> $errDlg.close());
+    learners.forEach(currentLearner => {
+      const learnerIndex = getIndex(currentLearner);
+      const rowNum = getRowNumByIndex(learnerIndex);
+      if (rowNum === -1) return;
 
-  window.addEventListener('error', (e)=>{ $errDetails.textContent = e.error?.stack || e.message || 'Unknown error'; $errDlg.showModal(); });
-  window.addEventListener('unhandledrejection', (e)=>{ $errDetails.textContent = (e.reason&&e.reason.stack)||String(e.reason)||'Unhandled rejection'; $errDlg.showModal(); });
+      MARK_KEYS.forEach(key => {
+        const c = headerIndexMap[key];
+        if (c === undefined) return;
 
-  $file.addEventListener('change', withErrorUI(async(ev)=>{
-    const f=ev.target.files?.[0]; if(!f) return; const data=await f.arrayBuffer(); const wb=XLSX.read(data,{type:'array'}); originalWb=wb;
-    // Extract headers for Learners
-    const wsLearners = wb.Sheets['Learners'] || wb.Sheets['LEARNERS'] || wb.Sheets[wb.SheetNames[0]];
-    const headerRows = XLSX.utils.sheet_to_json(wsLearners, {header:1}); learnerHeaders = headerRows && headerRows[0] ? headerRows[0] : null;
-    learners = XLSX.utils.sheet_to_json(wsLearners, {defval:''});
-    const wsGrading = wb.Sheets['Grading'] || wb.Sheets['grading'] || wb.Sheets['GRADING'];
-    thresholds = wsGrading ? (function parse(ws){ try{ const rows = XLSX.utils.sheet_to_json(ws,{defval:''}); const map = rows.filter(r=> (r.Grade||r.grade) && (r.Score!==undefined && r.Score!=='')) .map(r=>({min:Number(r.Score),grade:String(r.Grade||r.grade).trim()})).filter(r=>!Number.isNaN(r.min)&&['EE','ME','AE','BE'].includes(r.grade)); if(map.length>=4){ map.sort((a,b)=>b.min-a.min); return map; } }catch(e){} return DEFAULT_THRESHOLDS; })(wsGrading) : DEFAULT_THRESHOLDS;
+        const originalValue = originalLearnersSnapshot.find(l => getIndex(l) === learnerIndex)?.[key];
+        const currentValue = currentLearner[key];
 
-    // Filters
-    hydrateGrades(); filtered=[...learners].sort((a,b)=>getIndex(a)-getIndex(b));
-    hydrateLearnerDropdown(); if(filtered.length){ $learnerSel.selectedIndex=1; renderSelected(0); }
+        if (currentValue === originalValue) return;
+
+        const addr = XLSX.utils.encode_cell({ r: rowNum, c });
+        const val = currentValue ?? '';
+
+        if (ws[addr]) {
+            ws[addr].v = val;
+            ws[addr].t = (typeof val === 'number') ? 'n' : 's';
+        } else {
+            const headerAddr = XLSX.utils.encode_cell({r: 0, c});
+            const headerCell = ws[headerAddr];
+            ws[addr] = { v: val, t: (typeof val === 'number') ? 'n' : 's' };
+            if(headerCell && headerCell.s) {
+                ws[addr].s = JSON.parse(JSON.stringify(headerCell.s));
+            }
+        }
+      });
+    });
+  }
+
+  function downloadUpdatedWorkbook() {
+    if (!originalWb) return;
+    setStatus('Generating Excel file...', 'warn');
+
+    updateMarksInPlace();
+
+    const ws = originalWb.Sheets[learnersSheetName];
+    if (!ws) throw new Error('Learners worksheet missing at write time.');
+
+    // --- Fidelity Preservation ---
+    if (learnersSheetCols) ws['!cols'] = JSON.parse(JSON.stringify(learnersSheetCols));
+    if (learnersSheetRows) ws['!rows'] = JSON.parse(JSON.stringify(learnersSheetRows));
+    if (learnersSheetMerges) ws['!merges'] = JSON.parse(JSON.stringify(learnersSheetMerges));
+    if (sheetSavedViews) ws['!views'] = JSON.parse(JSON.stringify(sheetSavedViews));
+    if (originalWorkbookViews) {
+      originalWb.Workbook = originalWb.Workbook || {};
+      originalWb.Workbook.Views = JSON.parse(JSON.stringify(originalWorkbookViews));
+    }
+    if (originalWorkbookProps) {
+      originalWb.Props = JSON.parse(JSON.stringify(originalWorkbookProps));
+    }
+    // --- End Fidelity ---
+
+    const writeOpts = { bookType: 'xlsx', type: 'array', bookSST: true, cellStyles: true };
+    const wbout = XLSX.write(originalWb, writeOpts);
+    const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const filename = `REPORT_FORM_updated_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 500);
+
     showUnsaved(false);
-  }));
+    toast('Downloaded updated Excel file', 'success');
+    setStatus('Download complete ✓', 'ok');
+  }
+  
+  // --- File Loading & Initialization ---
+  const processFile = withErrorUI(async (file) => {
+    if (!file) return;
+    resetUI();
+    setStatus('Reading file...', 'warn', file.name);
+    const data = await file.arrayBuffer();
+    let wb;
+    const readOpts = { type: 'array', cellStyles: true, bookSST: true };
+
+    try {
+      wb = XLSX.read(data, readOpts);
+    } catch (e) {
+      if (e.message.includes('Password')) {
+        setStatus('Password required', 'warn', 'Please enter the workbook password.');
+        while (!wb) {
+          const password = await promptForPassword();
+          if (password === null) {
+            setStatus('Load cancelled', 'warn', 'File not loaded.');
+            toast('File loading cancelled.', 'warn');
+            return;
+          }
+          try {
+            readOpts.password = password;
+            wb = XLSX.read(data, readOpts);
+          } catch (err_pass) {
+            if (err_pass.message.includes('password')) {
+              toast('Incorrect password. Please try again.', 'error');
+            } else { throw err_pass; }
+          }
+        }
+      } else { throw e; }
+    }
+    
+    originalWb = wb;
+
+    // --- Capture Metadata ---
+    originalWorkbookViews = wb.Workbook?.Views ? JSON.parse(JSON.stringify(wb.Workbook.Views)) : null;
+    originalWorkbookProps = wb.Props ? JSON.parse(JSON.stringify(wb.Props)) : null;
+    learnersSheetName = wb.SheetNames.find(n => n.toLowerCase() === 'learners') || wb.SheetNames[0];
+    const wsLearners = wb.Sheets[learnersSheetName];
+    if (!wsLearners) throw new Error("A worksheet named 'Learners' was not found.");
+    learnersSheetCols = wsLearners['!cols'] ? JSON.parse(JSON.stringify(wsLearners['!cols'])) : null;
+    learnersSheetRows = wsLearners['!rows'] ? JSON.parse(JSON.stringify(wsLearners['!rows'])) : null;
+    learnersSheetMerges = wsLearners['!merges'] ? JSON.parse(JSON.stringify(wsLearners['!merges'])) : null;
+    sheetSavedViews = wsLearners['!views'] ? JSON.parse(JSON.stringify(wsLearners['!views'])) : null;
+
+    const headerRows = XLSX.utils.sheet_to_json(wsLearners, { header: 1, defval: '' });
+    const learnerHeaders = headerRows?.[0] || [];
+    headerIndexMap = {};
+    learnerHeaders.forEach((h, i) => { headerIndexMap[String(h)] = i; });
+
+    learners = XLSX.utils.sheet_to_json(wsLearners, { defval: '' });
+    learners.forEach((learner, index) => { learner._rowNumber = index + 1; });
+    originalLearnersSnapshot = learners.map(o => ({...o}));
+
+    const wsGrading = wb.Sheets['Grading'] || wb.Sheets['grading'];
+    if (wsGrading) {
+        try {
+            const gradingRows = XLSX.utils.sheet_to_json(wsGrading, { defval: '' });
+            const mappedThresholds = gradingRows
+                .map(r => ({ min: Number(r.Score), grade: String(r.Grade || r.grade || '').trim() }))
+                .filter(r => !Number.isNaN(r.min) && r.grade);
+            if (mappedThresholds.length >= 2) {
+                thresholds = mappedThresholds.sort((a, b) => b.min - a.min);
+            }
+        } catch (e) {
+            console.warn("Could not parse 'Grading' sheet, using defaults.", e);
+        }
+    }
+
+    $mainContent.style.display = 'block';
+    $dropZone.querySelectorAll('p, .icon').forEach(el => el.style.display = 'none');
+    $filename.textContent = file.name;
+
+    hydrateGrades();
+    clearFilters();
+    showUnsaved(false);
+
+    toast('Workbook loaded successfully', 'success');
+    setStatus(`Loaded ${learners.length} learners ✓`, 'ok', 'Ready to edit or print.');
+  });
+  
+  // --- Event Wiring ---
+  function setupEventListeners() {
+    $dropZone.addEventListener('click', () => $fileInput.click());
+    $fileInput.addEventListener('change', (e) => processFile(e.target.files?.[0]));
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      $dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); });
+    });
+    $dropZone.addEventListener('dragenter', () => $dropZone.classList.add('dragover'));
+    $dropZone.addEventListener('dragover', () => $dropZone.classList.add('dragover'));
+    $dropZone.addEventListener('dragleave', () => $dropZone.classList.remove('dragover'));
+    $dropZone.addEventListener('drop', (e) => {
+      $dropZone.classList.remove('dragover');
+      processFile(e.dataTransfer.files?.[0]);
+    });
+
+    $learnerSel.addEventListener('change', e => renderSelected(Number(e.target.value)));
+    $phaseSel.addEventListener('change', () => { if (currentSelectedRow()) buildMarksGrid(currentSelectedRow()); });
+    $savePhaseBtn.addEventListener('click', savePhaseToLearner);
+    $applyOutOfAllBtn.addEventListener('click', applyOutOfToAllLearners);
+    
+    $printSelectedBtn.addEventListener('click', () => { const row = currentSelectedRow(); if (row) printRows([row]); });
+    $printFilteredBtn.addEventListener('click', () => printRows(filteredLearners));
+    $downloadExcelLink.addEventListener('click', e => {
+      if ($downloadExcelLink.getAttribute('aria-disabled') === 'true') {
+        e.preventDefault();
+        toast('No unsaved changes to download', 'warn');
+      } else {
+        downloadUpdatedWorkbook();
+      }
+    });
+
+    $applyFiltersBtn.addEventListener('click', applyFilters);
+    $clearFiltersBtn.addEventListener('click', clearFilters);
+    
+    $('#copyErrBtn').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText($errDetails.textContent || ''); toast('Copied!', 'success', 1000); } catch (e) { alert('Copy failed.'); }
+    });
+    $('#closeErrBtn').addEventListener('click', () => $errorDlg.close());
+
+    window.addEventListener('afterprint', () => { $batchContainer.innerHTML = ''; setStatus('Ready', 'ok', 'Idle.'); });
+    window.addEventListener('error', (e) => withErrorUI(() => { throw e.error; })());
+    window.addEventListener('unhandledrejection', (e) => withErrorUI(() => { throw e.reason; })());
+  }
+
+  setupEventListeners();
 })();
 </script>
 </body>
